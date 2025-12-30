@@ -55,7 +55,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
     b) Save the list into a file  
     c) Keep checking and updating the file every x minutes  
 
-### 3) Fetch results history from PVC directory
+### 3) Fetch results metadata history from PVC directory
 
 #### a) Create / fetch **status metadata** view
 
