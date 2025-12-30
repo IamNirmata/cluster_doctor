@@ -49,7 +49,7 @@ Example:
 
 ### 2) Fetch nodes list
 
-a) Free nodes ???  
+a) get free nod  
 b) Save the list into a file  
 c) Keep checking and updating the file every 10 minutes  
 
