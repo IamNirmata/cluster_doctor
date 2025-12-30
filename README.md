@@ -54,7 +54,6 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
     a) get free nodes from cluster manager  
     b) Save the list into a file  
     c) Keep checking and updating the file every 10 minutes  
-### 2) Fetch nodes list
 
 
 ### 3) Fetch results history from PVC directory
