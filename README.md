@@ -39,7 +39,7 @@ Example:
 
   2) **History metadata table**
 
-     | Node | Test        | Timestamp   | Pass/ Fail/ Failed to complete test |
+     | node | test        | timestamp   | result                              |
      |-----:|-------------|------------:|-------------------------------------|
      | 001  | DL unit test| 0897089098  | Pass                                |
      | 001  | DL unit test| 089708sdfgd | fail                                |
