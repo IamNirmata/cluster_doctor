@@ -11,7 +11,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - `tests/` - all test categories and test scripts
 
 ## Directory layout
-  Al
+  All 
 - **Logs Directory**
   - **Storage ( sample test category )**
     - `Node_001/`
