@@ -51,12 +51,12 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 ### 1) An orchestrator python script runs periodically (e.g., every hour)
 
 ### 2) Get Cluster status
-    a) get free nodes from cluster manager  
+####    a) get free nodes from cluster manager  
     b) Save the list into a file  
     c) Keep checking and updating the file every x minutes  
 
 ### 3) Fetch results metadata
-  
+
 
 #### a) Create / fetch **status metadata** view
 
