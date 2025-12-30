@@ -6,7 +6,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 ## Structure
 - `cluster_doctor/` - main code directory
-- `cluster_man
+- `cluster_management/` - cluster management code (job submission, node status checking, etc)
 
 ### 1) Fetch results history from PVC directory
 
