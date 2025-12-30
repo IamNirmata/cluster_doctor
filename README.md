@@ -76,7 +76,7 @@ b) Build the priority queue based on the following criteria:
 ### 4) Job submission
 a) Thresholds:
 - Max concurrent jobs: **2**
-- Max queue time before ca: **30 mins**
+- Max queue time before cancellat: **30 mins**
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
