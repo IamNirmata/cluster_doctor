@@ -29,7 +29,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
       - `DL_test_Node002_timestamp2.log`
 
 - **Test Results Metadata**
-  1) **Status metadata view** (S)
+  1) **Status metadata view** (SQLl)
 
      | node | test        | latest_timestamp | result                              |
      |-----:|-------------|-----------------:|-------------------------------------|
