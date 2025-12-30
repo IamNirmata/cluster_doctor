@@ -85,7 +85,9 @@ b) Process:
   - Submit jobs using orchestrator script
   - Keep track of submitted jobs and their statuses
   - Cancel jobs if
-    
+    - Node becomes unavailable
+    - Job exceeds timeout
+    - Job waits more than pending timeout
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
 - cutoff for timestamp delta
