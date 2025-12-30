@@ -66,6 +66,7 @@ a) For each node in the free nodes list:
 - Check if the latest test result timestamp is older than the defined threshold (e.g., 7 days), if yes, add to priority queue
 b) Build the priority queue based on the following criteria:
 - Priority 1 : Nodes that have never been tested
+- Priority 2 : Nodes with test results older than the defined threshold
 - Nodes with shorter threshold delta are 
 - Nodes with older test result timestamps have higher priority
 - Nodes that have never been tested have the highest priority
