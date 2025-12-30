@@ -98,3 +98,4 @@ b) Process:
 - Python 3.x
 - test libraries (e.g., pytest, unittest)
 - Cluster management tools (kubectl, volcano, etc)
+- Database (SQLite, PostgreSQL, etc)
