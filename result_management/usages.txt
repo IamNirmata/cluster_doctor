@@ -11,5 +11,4 @@ python3 result_manager.py.py history --tail 5
 
 
 python3 result_manager.py.py export-csv --out /data/continuous_validation/metadata/status.csv
-python3 cv_sqlite.py export-json --out /data/continuous_validation/metadata/status.json
-
+python3 result_manager.py.py export-json --out /data/continuous_validation/metadata/status.json
