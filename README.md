@@ -68,6 +68,7 @@ b) Build the priority queue based on the following criteria:
 - Qualification to be added to the queue:
   - Nodes that have never been tested
   - Nodes with test results older than the defined threshold
+- Priority criteria:
 - Priority 1 : Nodes that have never been tested
 - Priority 2 : Nodes with test results older than the defined threshold
 - Nodes with shorter threshold delta are 
