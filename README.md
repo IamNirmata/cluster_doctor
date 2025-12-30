@@ -25,32 +25,7 @@ Example:
 
 #### b) Directory structure — `/data`
 
-- **Storage**
-  - `Node_001/`
-    - `Storage_node001_timestamp1.log`
-    - `Storage_Node001_timestamp2.log`
-  - `Node_002/`
-    - `Storage_Node002_timestamp1.log`
-    - `Storage_Node002_timestamp2.log`
 
-- **DL_test** (same format and files as storage example above)
-- **Collective**
-- **IB**
-- **Metadata**
-  1) **Status metadata view** (one node has one row per test type only)
-
-     | node | test        | latest_timestamp | result                              |
-     |-----:|-------------|-----------------:|-------------------------------------|
-     | 001  | DL unit test| 0897089098       | Pass                                |
-     | 002  | DL unit test| 0897089erer      | pass                                |
-
-  2) **History metadata table**
-
-     | node | test        | timestamp   | result                              |
-     |-----:|-------------|------------:|-------------------------------------|
-     | 001  | DL unit test| 0897089098  | Pass                                |
-     | 001  | DL unit test| 089708sdfgd | fail                                |
-     | 002  | storage     | 0897082323  | pass                                |
 
 ---
 
