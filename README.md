@@ -49,7 +49,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 ## Workflow
 
 
-### 1. Fetch results history from PVC directory
+### 1. Get Cluster Nodes List
 
 ### 1. Fetch results history from PVC directory
 
