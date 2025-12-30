@@ -97,3 +97,4 @@ b) Process:
 ## Requirements
 - Python 3.x
 - test libraries (e.g., pytest, unittest)
+- Cluster management tools (kubectl, slurm, etc)
