@@ -48,7 +48,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 ## Workflow
 
-### 1) An 
+### 1) An orchestrator script runs periodically (e.g., every hour)
 
 ### 1) Get Cluster status, free nodes list
 
