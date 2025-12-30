@@ -81,7 +81,6 @@ a) Thresholds:
 - Frequency of checking node availability: **5 mins**
 
 b) 
-
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
 - cutoff for timestamp delta
