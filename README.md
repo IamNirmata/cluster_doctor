@@ -78,7 +78,7 @@ a) Thresholds:
 - Max concurrent jobs: **2**
 - Max queue time before cancellation: **30 mins**
 - Node test timeout: **20 mins**
-b) 
+b)
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
