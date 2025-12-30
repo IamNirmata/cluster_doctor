@@ -1,1 +1,2 @@
 python3 cv_sqlite.py --db /data/continuous_validation/metadata/validation.db init
+
