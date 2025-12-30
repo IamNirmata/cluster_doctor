@@ -81,6 +81,7 @@ a) Thresholds:
 - Frequency of checking node availability: **5 mins**
 
 b) Process:
+- While there are free slots for concurrent jobs and nodes in the priority queue:
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
