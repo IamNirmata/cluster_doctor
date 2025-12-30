@@ -60,7 +60,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - fetch latest test results metadata from status metadata view
 - Save the metadata table into a file
 
-### 3) Build priority 
+### 3) Build priority queue of nodes to test
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
