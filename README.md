@@ -91,4 +91,4 @@ b) Process:
 
 ### 5) Fetch results
 - After job completion, test scripts save logs to predefined directory structure
-- Results management module fetch
+- Results management module fetches test results and updates metadata tables
