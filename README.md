@@ -14,12 +14,12 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 - **Logs Directory**
   - **Storage ( sample test category )**
-  - `Node_001/`
-    - `Storage_node001_timestamp1.log`
-    - `Storage_Node001_timestamp2.log`
-  - `Node_002/`
-    - `Storage_Node002_timestamp1.log`
-    - `Storage_Node002_timestamp2.log`
+    - `Node_001/`
+      - `Storage_node001_timestamp1.log`
+      - `Storage_Node001_timestamp2.log`
+    - `Node_002/`
+      - `Storage_Node002_timestamp1.log`
+      - `Storage_Node002_timestamp2.log`
 
 - **DL_test** (same format and files as storage example above)
 - **Collective**
