@@ -75,6 +75,7 @@ b) Build the priority queue based on the following criteria:
 
 ### 4) Job submission
 
+
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
 - cutoff for timestamp delta
