@@ -13,6 +13,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 ## Directory layout
 
 - **Logs Directory**
+
   - `Node_001/`
     - `Storage_node001_timestamp1.log`
     - `Storage_Node001_timestamp2.log`
