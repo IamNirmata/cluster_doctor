@@ -44,6 +44,11 @@
 # echo "TOTAL: cap=$tcap  alloc=$talloc  used=$tused  free=$tfree"
 
 
+
+
+
+
+
 #!/usr/bin/env bash
 set -euo pipefail
 
