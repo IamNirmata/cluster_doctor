@@ -31,7 +31,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - **Test Results Metadata**
   1) **Status metadata view** (SQLlite view)
 
-     | node | test        | timestamp         | result                              |
+     | node | test        | timestamp        | result                              |
      |-----:|-------------|-----------------:|-------------------------------------|
      | 001  | DL unit test| 0897089098       | Pass                                |
      | 002  | DL unit test| 0897089erer      | pass                                |
