@@ -22,6 +22,7 @@ CLUSTER_MANAGEMENT_DIR = os.path.join(os.path.dirname(__file__), 'cluster_manage
 FREE_NODES_SCRIPT = os.path.join(CLUSTER_MANAGEMENT_DIR, 'freenodes.sh')
 FREE_NODES_FILE = os.path.join(CLUSTER_MANAGEMENT_DIR, 'free.txt')
 DB_PATH = os.environ.get('CV_DB_PATH', './validation.db')
+LOGS_DIR = os.environ.get('CV_LOGS_DIR', './logs')
 
 # Thresholds
 MAX_CONCURRENT_JOBS = 2
@@ -92,6 +93,94 @@ def get_latest_results() -> Dict[str, Dict]:
     except Exception as e:
         logger.error(f"Error fetching results: {e}")
         return {}
+
+def fetch_and_update_results():
+    """
+    Scan logs directory for new results and update the database.
+    """
+    logger.info("Fetching and updating results from logs...")
+    if not os.path.exists(LOGS_DIR):
+        logger.warning(f"Logs directory {LOGS_DIR} does not exist.")
+        return
+
+    conn = result_manager.connect(DB_PATH)
+    result_manager.init_db(conn)
+    
+    # Get existing runs to avoid duplicates (simple cache)
+    # For a large DB, this is inefficient. Better to query max timestamp per node/test.
+    # But result_manager doesn't expose that easily without raw SQL.
+    # We'll use query_latest_status to get the high water mark.
+    latest_status = { (r['node'], r['test']): r['latest_timestamp'] for r in result_manager.query_latest_status(conn) }
+    
+    # Walk through the logs directory
+    # Structure: LOGS_DIR / TestCategory / Node_XXX / LogFile
+    for root, dirs, files in os.walk(LOGS_DIR):
+        for file in files:
+            if not file.endswith('.log'):
+                continue
+                
+            # Example filename: Storage_node001_timestamp1.log
+            # We need to parse this. Let's assume: TestName_NodeName_Timestamp.log
+            # Or use the directory structure.
+            # Parent dir: Node_XXX
+            # Grandparent dir: TestCategory
+            
+            path_parts = root.split(os.sep)
+            if len(path_parts) < 2:
+                continue
+                
+            node_dir = path_parts[-1] # Node_001
+            test_category = path_parts[-2] # Storage
+            
+            # Extract node name from directory or filename
+            # Let's assume node_dir is "Node_001" -> node "001"
+            if node_dir.lower().startswith("node_"):
+                node = node_dir[5:]
+            else:
+                node = node_dir
+                
+            # Extract timestamp from filename
+            # Storage_node001_1234567890.log
+            try:
+                base_name = os.path.splitext(file)[0]
+                parts = base_name.split('_')
+                timestamp_str = parts[-1]
+                timestamp = int(timestamp_str)
+            except ValueError:
+                logger.warning(f"Could not parse timestamp from filename: {file}")
+                continue
+                
+            test_name = test_category
+            
+            # Check if we already have this result or newer
+            if (node, test_name) in latest_status:
+                if timestamp <= latest_status[(node, test_name)]:
+                    continue
+            
+            # Read result from file
+            file_path = os.path.join(root, file)
+            result = "incomplete"
+            try:
+                with open(file_path, 'r') as f:
+                    content = f.read().lower()
+                    if "pass" in content:
+                        result = "pass"
+                    elif "fail" in content:
+                        result = "fail"
+            except Exception as e:
+                logger.error(f"Error reading log file {file_path}: {e}")
+                continue
+                
+            # Insert into DB
+            try:
+                logger.info(f"Adding new result: Node={node}, Test={test_name}, TS={timestamp}, Result={result}")
+                result_manager.insert_run(conn, node, test_name, timestamp, result)
+                # Update local cache
+                latest_status[(node, test_name)] = timestamp
+            except Exception as e:
+                logger.error(f"Error inserting run into DB: {e}")
+
+    conn.close()
 
 def build_priority_queue(free_nodes: Set[str], latest_results: Dict[str, Dict]) -> List[str]:
     """
