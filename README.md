@@ -68,11 +68,7 @@ Example:
 
 ---
 
-### 2) Fetch nodes list
 
-a) get free nodes from cluster manager  
-b) Save the list into a file  
-c) Keep checking and updating the file every 10 minutes  
 
 ---
 
