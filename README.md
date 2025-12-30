@@ -74,7 +74,7 @@ b) Build the priority queue based on the following criteria:
     - Nodes with shorter threshold delta have higher priority
 
 ### 4) Job submission
-a) 
+a) Thresholds:
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
