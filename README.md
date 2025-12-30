@@ -23,6 +23,10 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
   - **DL_test ( sample test category )**
     - `Node_001/`
       - `DL_test_node001_timestamp1.log`
+      - `DL_test_Node001_timestamp2.log`
+    - `Node_002/`
+      - `DL_test_Node002_timestamp1.log`
+      - `DL_test_Node002_timestamp2.log`
 
 - **DL_test** (same format and files as storage example above)
 - **Collective**
