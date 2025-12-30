@@ -37,7 +37,7 @@ Example:
      | 001  | DL unit test| 0897089098       | Pass                                |
      | 002  | DL unit test| 0897089erer      | pass                                |
 
-  2) **History metadata **
+  2) **History metadata table**
 
      | Node | Test        | Timestamp   | Pass/ Fail/ Failed to complete test |
      |-----:|-------------|------------:|-------------------------------------|
