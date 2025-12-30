@@ -95,3 +95,4 @@ b) Process:
 - Orchestrator script repeats the process periodically once the cuncurrent job slots are freed up
 
 ## Requirements
+- Python 3.x
