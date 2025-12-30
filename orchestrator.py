@@ -229,43 +229,105 @@ def build_priority_queue(free_nodes: Set[str], latest_results: Dict[str, Dict]) 
     logger.info(f"Priority queue built with {len(final_queue)} nodes.")
     return final_queue
 
-def submit_job(node: str):
+def submit_job(node: str) -> str:
     """
-    Submit job for the node.
+    Submit job for the node. Returns job ID.
     """
     logger.info(f"Submitting job for node {node}...")
     # TODO: Implement actual job submission logic
     # This might involve creating a yaml file and running kubectl apply
     # For now, we'll simulate it.
+    job_id = f"job-{node}-{int(time.time())}"
     time.sleep(1) # Simulate submission time
-    return True
+    return job_id
+
+def cancel_job(node: str, job_id: str):
+    """
+    Cancel the job for the node.
+    """
+    logger.info(f"Cancelling job {job_id} for node {node}...")
+    # TODO: Implement actual job cancellation logic (e.g., kubectl delete)
+    pass
+
+def check_job_status(node: str, job_id: str) -> str:
+    """
+    Check status of the job. Returns 'running', 'completed', 'failed', 'pending'.
+    """
+    # TODO: Implement actual status check
+    # For simulation, let's say it completes after 10 seconds
+    # In real life, we might check kubectl get pods or similar
+    import random
+    if random.random() < 0.1:
+        return 'completed'
+    return 'running'
 
 def main():
     logger.info("Starting Cluster Doctor Orchestrator")
     
+    active_jobs: Dict[str, Dict] = {} # node -> {'job_id': str, 'submitted_at': float}
+    
     while True:
         try:
+            current_time = time.time()
+            
+            # 5) Fetch results (and update DB)
+            fetch_and_update_results()
+            
+            # Check active jobs
+            nodes_to_remove = []
+            for node, job_info in active_jobs.items():
+                job_id = job_info['job_id']
+                submitted_at = job_info['submitted_at']
+                
+                # Check timeouts
+                duration_mins = (current_time - submitted_at) / 60
+                if duration_mins > MAX_QUEUE_TIME_MINS:
+                    logger.warning(f"Job {job_id} for node {node} timed out (queue time). Cancelling.")
+                    cancel_job(node, job_id)
+                    nodes_to_remove.append(node)
+                    continue
+                
+                status = check_job_status(node, job_id)
+                if status in ['completed', 'failed']:
+                    logger.info(f"Job {job_id} for node {node} finished with status {status}.")
+                    nodes_to_remove.append(node)
+                
+                # TODO: Check pending timeout if we can distinguish pending vs running
+            
+            for node in nodes_to_remove:
+                del active_jobs[node]
+            
             # 2) Get Cluster status
             free_nodes = get_free_nodes()
             
-            # 3) Fetch results metadata
+            # 3) Fetch results metadata (refresh)
             latest_results = get_latest_results()
             
             # 3) Build priority queue
-            node_queue = build_priority_queue(free_nodes, latest_results)
+            # Filter out nodes that already have active jobs
+            available_nodes = {n for n in free_nodes if n not in active_jobs}
+            node_queue = build_priority_queue(available_nodes, latest_results)
             
             # 4) Job submission
-            # We need to manage concurrent jobs.
-            # For simplicity in this step, let's just print what we would do.
+            free_slots = MAX_CONCURRENT_JOBS - len(active_jobs)
             
-            active_jobs = 0 # Placeholder
-            
-            for node in node_queue:
-                if active_jobs < MAX_CONCURRENT_JOBS:
-                    if submit_job(node):
-                        active_jobs += 1
-                else:
-                    break
+            if free_slots > 0 and node_queue:
+                logger.info(f"Found {free_slots} free slots. Queue length: {len(node_queue)}")
+                for node in node_queue:
+                    if free_slots <= 0:
+                        break
+                    
+                    try:
+                        job_id = submit_job(node)
+                        active_jobs[node] = {
+                            'job_id': job_id,
+                            'submitted_at': time.time()
+                        }
+                        free_slots -= 1
+                    except Exception as e:
+                        logger.error(f"Failed to submit job for node {node}: {e}")
+            else:
+                logger.info(f"No free slots or empty queue. Active jobs: {len(active_jobs)}")
             
             logger.info(f"Sleeping for {NODE_CHECK_INTERVAL_MINS} minutes...")
             time.sleep(NODE_CHECK_INTERVAL_MINS * 60)
