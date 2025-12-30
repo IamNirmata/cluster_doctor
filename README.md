@@ -12,7 +12,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 Example:
 
-| Node | Test        | Timestamp   | Pass/ Fail/ Failed to complete test |
+| Node | Test        | Timestamp   | r |
 |-----:|-------------|------------:|-------------------------------------|
 | 001  | DL unit test| 0897089098  | pass                                |
 
