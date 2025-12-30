@@ -70,7 +70,7 @@ b) Build the priority queue based on the following criteria:
   - Nodes with test results older than the defined threshold
 - Priority criteria:
   - Nodes with shorter threshold delta have higher priority
-  - Nodes that have never been tested have the highest priority
+  - Nodes that have nev
 
 
 Submit jobs in **reverse order of status metadata timestamp**:
