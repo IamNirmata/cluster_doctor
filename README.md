@@ -78,6 +78,7 @@ a) Thresholds:
 - Max concurrent jobs: **2**
 - Max queue time before cancellation: **30 mins**
 
+
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
 - cutoff for timestamp delta
