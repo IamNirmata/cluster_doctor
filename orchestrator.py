@@ -268,12 +268,15 @@ def main():
     
     while True:
         try:
+            logger.info("--- Starting new orchestration cycle ---")
             current_time = time.time()
             
             # 5) Fetch results (and update DB)
+            logger.info("Phase 1: Fetching and updating results...")
             fetch_and_update_results()
             
             # Check active jobs
+            logger.info(f"Phase 2: Checking active jobs (Count: {len(active_jobs)})...")
             nodes_to_remove = []
             for node, job_info in active_jobs.items():
                 job_id = job_info['job_id']
@@ -288,6 +291,7 @@ def main():
                     continue
                 
                 status = check_job_status(node, job_id)
+                logger.info(f"  Node {node}: Job {job_id} status is {status}")
                 if status in ['completed', 'failed']:
                     logger.info(f"Job {job_id} for node {node} finished with status {status}.")
                     nodes_to_remove.append(node)
@@ -298,17 +302,21 @@ def main():
                 del active_jobs[node]
             
             # 2) Get Cluster status
+            logger.info("Phase 3: Getting cluster status (free nodes)...")
             free_nodes = get_free_nodes()
             
             # 3) Fetch results metadata (refresh)
+            logger.info("Phase 4: Fetching latest results metadata...")
             latest_results = get_latest_results()
             
             # 3) Build priority queue
+            logger.info("Phase 5: Building priority queue...")
             # Filter out nodes that already have active jobs
             available_nodes = {n for n in free_nodes if n not in active_jobs}
             node_queue = build_priority_queue(available_nodes, latest_results)
             
             # 4) Job submission
+            logger.info("Phase 6: Job submission...")
             free_slots = MAX_CONCURRENT_JOBS - len(active_jobs)
             
             if free_slots > 0 and node_queue:
@@ -329,7 +337,7 @@ def main():
             else:
                 logger.info(f"No free slots or empty queue. Active jobs: {len(active_jobs)}")
             
-            logger.info(f"Sleeping for {NODE_CHECK_INTERVAL_MINS} minutes...")
+            logger.info(f"Cycle complete. Sleeping for {NODE_CHECK_INTERVAL_MINS} minutes...")
             time.sleep(NODE_CHECK_INTERVAL_MINS * 60)
             
         except KeyboardInterrupt:
