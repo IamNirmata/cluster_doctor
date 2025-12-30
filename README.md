@@ -8,7 +8,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - `cluster_doctor/` - main code directory
 - `cluster_management/` - cluster management code (job submission, node status checking, etc)
 - 'results_management/' - results fetching and metadata table of all test results
-- `tests/` - all test 
+- `tests/` - all test cate
 ### 1) Fetch results history from PVC directory
 
 #### a) Create / fetch **status metadata** view
