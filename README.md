@@ -83,7 +83,8 @@ a) Thresholds:
 b) Process:
 - While there are free slots for concurrent jobs and nodes in the priority queue:
   - Submit jobs using orchestrator script
-  - Keep 
+  - Keep track of submitted jobs and their statuses
+  - 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
 - cutoff for timestamp delta
