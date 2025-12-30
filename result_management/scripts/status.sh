@@ -4,5 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
-echo "Fetching status remotely..."
-python3 "${REPO_ROOT}/result_manager.py" --remote status
+POD="${POD:-gcr-admin-pvc-access}"
+NAMESPACE="${NAMESPACE:-gcr-admin}"
+
+echo "Fetching status remotely from pod ${POD} (ns: ${NAMESPACE})..."
+python3 "${REPO_ROOT}/result_manager.py" --remote --pod "$POD" --namespace "$NAMESPACE" status
