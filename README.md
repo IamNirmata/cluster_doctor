@@ -65,7 +65,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
-- + cutoff for timestamp delta
+- cutoff for timestamp delta
 
 ---
 
