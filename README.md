@@ -104,4 +104,6 @@ b) Process:
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone 
+   git clone https://github.com/yourusername/cluster_doctor.git
+
+  
