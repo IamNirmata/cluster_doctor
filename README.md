@@ -80,7 +80,8 @@ a) Thresholds:
 - Node test timeout: **20 mins**
 - Frequency of checking node availability: **5 mins**
 
-b) 
+b) Process:
+
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
 - cutoff for timestamp delta
