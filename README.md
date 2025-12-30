@@ -32,7 +32,7 @@ Example:
 - **Metadata**
   1) **Status metadata view** (one node has one row per test type only)
 
-     | Node | Test        | Latest_Timestamp | Pass/ Fail/ Failed to complete test |
+     | node | test        | latest_timestamp | result                              |
      |-----:|-------------|-----------------:|-------------------------------------|
      | 001  | DL unit test| 0897089098       | Pass                                |
      | 002  | DL unit test| 0897089erer      | pass                                |
