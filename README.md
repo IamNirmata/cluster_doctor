@@ -69,7 +69,7 @@ b) Build the priority queue based on the following criteria:
   - Nodes that have never been tested
   - Nodes with test results older than the defined threshold
 - Priority criteria:
-- Priority 
+- Priority order
 - Nodes with shorter threshold delta are 
 - Nodes with older test result timestamps have higher priority
 - Nodes that have never been tested have the highest priority
