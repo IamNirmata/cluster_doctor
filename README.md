@@ -7,7 +7,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 ## Structure
 - `cluster_doctor/` - main code directory
 - `cluster_management/` - cluster management code (job submission, node status checking, etc)
-- 'results_management/' - results fetching and metadata table of all test results
+- `results_management/` - results fetching and metadata table of all test results
 - `tests/` - all test categories and test scripts
 
 ## Directory layout
