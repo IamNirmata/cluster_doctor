@@ -30,7 +30,7 @@ Example:
 - **Collective**
 - **IB**
 - **Metadata**
-  1) **Status metadata** (one node has one row per test type only)
+  1) **Status metadata view** (one node has one row per test type only)
 
      | Node | Test        | Latest_Timestamp | Pass/ Fail/ Failed to complete test |
      |-----:|-------------|-----------------:|-------------------------------------|
