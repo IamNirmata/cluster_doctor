@@ -106,4 +106,7 @@ b) Process:
    ```bash
    git clone https://github.com/yourusername/cluster_doctor.git
 
-  
+2. Navigate to the project directory:
+   ```bash
+   cd cluster_doctor
+   
