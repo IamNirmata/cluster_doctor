@@ -61,24 +61,6 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - Save the metadata table into a file
 
 
-#### a) Create / fetch **status metadata** view
-
-Example:
-
-| node | test        | timestamp   | result |
-|-----:|-------------|------------:|-------------------------------------|
-| 001  | DL unit test| 0897089098  | pass                                |
-
-#### b) Directory structure — `/data`
-
-
-
----
-
-
-
----
-
 ### 3) Submit jobs to free nodes
 
 Submit jobs in **reverse order of status metadata timestamp**:
