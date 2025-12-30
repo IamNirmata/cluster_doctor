@@ -67,11 +67,11 @@ a) For each node in the free nodes list:
   - Check if the latest test result timestamp is older than the defined threshold (e.g., 7 days), if yes, add to priority queue
 
 b) Build the priority queue based on the following criteria:
-- Qualification to be added to the queue:
-  - Nodes that have never been tested
-  - Nodes with test results older than the defined threshold
-- Priority criteria:
-  - Nodes with shorter threshold delta have higher priority
+  - Qualification to be added to the queue:
+    - Nodes that have never been tested
+    - Nodes with test results older than the defined threshold
+  - Priority criteria:
+    - Nodes with shorter threshold delta have higher priority
 
 
 Submit jobs in **reverse order of status metadata timestamp**:
