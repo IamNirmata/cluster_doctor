@@ -9,14 +9,6 @@ import sqlite3
 from typing import List, Dict, Set, Tuple
 import queue
 
-# Add result_management to sys.path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'result_management'))
-try:
-    import result_manager
-except ImportError:
-    print("Error: Could not import result_manager. Make sure result_management/result_manager.py exists.")
-    sys.exit(1)
-
 # Configuration
 CLUSTER_MANAGEMENT_DIR = os.path.join(os.path.dirname(__file__), 'cluster_management')
 FREE_NODES_SCRIPT = os.path.join(CLUSTER_MANAGEMENT_DIR, 'freenodes.sh')
@@ -41,6 +33,56 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+# -----------------------
+# DB Helpers
+# -----------------------
+def connect_db(db_path: str) -> sqlite3.Connection:
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    conn = sqlite3.connect(db_path, timeout=30)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db(conn: sqlite3.Connection) -> None:
+    cur = conn.cursor()
+    cur.execute("PRAGMA journal_mode=WAL;")
+    cur.execute("PRAGMA synchronous=NORMAL;")
+    cur.execute("""
+      CREATE TABLE IF NOT EXISTS runs (
+        node      TEXT NOT NULL,
+        test      TEXT NOT NULL,
+        timestamp INTEGER NOT NULL,
+        result    TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete'))
+      );
+    """)
+    cur.execute("""
+      CREATE INDEX IF NOT EXISTS idx_runs_node_test_ts
+      ON runs(node, test, timestamp);
+    """)
+    cur.execute("""
+      CREATE VIEW IF NOT EXISTS latest_status AS
+      SELECT r.node, r.test, r.timestamp AS latest_timestamp, r.result
+      FROM runs r
+      JOIN (
+        SELECT node, test, MAX(timestamp) AS max_ts
+        FROM runs
+        GROUP BY node, test
+      ) x
+      ON r.node=x.node AND r.test=x.test AND r.timestamp=x.max_ts;
+    """)
+    conn.commit()
+
+def insert_run(conn: sqlite3.Connection, node: str, test: str, epoch_ts: int, result: str) -> None:
+    conn.execute(
+        "INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)",
+        (node, test, epoch_ts, result),
+    )
+    conn.commit()
+
+def query_latest_status(conn: sqlite3.Connection) -> List[sqlite3.Row]:
+    return conn.execute(
+        "SELECT node, test, latest_timestamp, result FROM latest_status ORDER BY node, test"
+    ).fetchall()
 
 def get_free_nodes() -> Set[str]:
     """
@@ -73,9 +115,9 @@ def get_latest_results() -> Dict[str, Dict]:
     Returns a dictionary: {node_name: {'timestamp': int, 'result': str, 'test': str}}
     """
     try:
-        conn = result_manager.connect(DB_PATH)
-        result_manager.init_db(conn)
-        rows = result_manager.query_latest_status(conn)
+        conn = connect_db(DB_PATH)
+        init_db(conn)
+        rows = query_latest_status(conn)
         conn.close()
         
         results = {}
@@ -103,14 +145,14 @@ def fetch_and_update_results():
         logger.warning(f"Logs directory {LOGS_DIR} does not exist.")
         return
 
-    conn = result_manager.connect(DB_PATH)
-    result_manager.init_db(conn)
+    conn = connect_db(DB_PATH)
+    init_db(conn)
     
     # Get existing runs to avoid duplicates (simple cache)
     # For a large DB, this is inefficient. Better to query max timestamp per node/test.
     # But result_manager doesn't expose that easily without raw SQL.
     # We'll use query_latest_status to get the high water mark.
-    latest_status = { (r['node'], r['test']): r['latest_timestamp'] for r in result_manager.query_latest_status(conn) }
+    latest_status = { (r['node'], r['test']): r['latest_timestamp'] for r in query_latest_status(conn) }
     
     # Walk through the logs directory
     # Structure: LOGS_DIR / TestCategory / Node_XXX / LogFile
@@ -174,7 +216,7 @@ def fetch_and_update_results():
             # Insert into DB
             try:
                 logger.info(f"Adding new result: Node={node}, Test={test_name}, TS={timestamp}, Result={result}")
-                result_manager.insert_run(conn, node, test_name, timestamp, result)
+                insert_run(conn, node, test_name, timestamp, result)
                 # Update local cache
                 latest_status[(node, test_name)] = timestamp
             except Exception as e:
