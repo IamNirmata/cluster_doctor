@@ -90,4 +90,4 @@ b) Process:
     - Job waits more than pending timeout
 
 ### 5) Fetch results
-- After job completion,
+- After job completion, test scripts save logs to predefined directory structure
