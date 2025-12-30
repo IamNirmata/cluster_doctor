@@ -75,7 +75,7 @@ b) Build the priority queue based on the following criteria:
 
 ### 4) Job submission
 a) Thresholds:
-- Max concurrent jobs: **10**
+- Max concurrent jobs: ****
 
 Submit jobs in **reverse order of status metadata timestamp**:
 - Oldest timestamped node first  
