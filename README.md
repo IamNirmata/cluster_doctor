@@ -57,6 +57,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 ### 3) Fetch results metadata
 - Use results management module to fetch latest test results metadata from status metadata view
+- Save the metadata table into a file
 
 
 #### a) Create / fetch **status metadata** view
