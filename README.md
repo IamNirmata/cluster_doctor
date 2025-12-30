@@ -77,7 +77,7 @@ b) Build the priority queue based on the following criteria:
 a) Thresholds:
 - Max concurrent jobs: **2**
 - Max queue time before cancellation: **30 mins**
-- Job pendtimeout: **20 mins**
+- Job pending timeout: **20 mins**
 - Frequency of checking node availability: **5 mins**
 
 b) Process:
