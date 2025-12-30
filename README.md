@@ -50,7 +50,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 ### 1) An orchestrator python script runs periodically (e.g., every hour)
 
-### 2) Get Cluster status, free nodes list 
+### 2) Get Cluster status, free nodes list feed 
 
 ### 1. Fetch results history from PVC directory
 
