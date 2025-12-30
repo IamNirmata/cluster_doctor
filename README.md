@@ -79,6 +79,7 @@ a) Thresholds:
 - Max queue time before cancellation: **30 mins**
 - Node test timeout: **20 mins**
 - Frequency of checking node availability: **5 mins**
+
 b) 
 
 Submit jobs in **reverse order of status metadata timestamp**:
