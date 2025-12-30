@@ -60,7 +60,6 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - fetch latest test results metadata from status metadata view
 - Save the metadata table into a file
 
-
 ### 3) Submit jobs to free nodes
 
 Submit jobs in **reverse order of status metadata timestamp**:
