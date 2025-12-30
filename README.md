@@ -12,8 +12,8 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 ## Directory layout
   All test metadata and logs are stored in a predefined directory structure in PVC or NFS mount accessible by all nodes at /data/continuous_validation/directory.
-
   
+
 - **Logs Directory**
   - **Storage ( sample test category )**
     - `Node_001/`
