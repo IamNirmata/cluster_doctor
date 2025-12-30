@@ -65,6 +65,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 a) For each node in the free nodes list:
 - Check the latest test result timestamp from the metadata table
 - Check if the latest test result timestamp is older than the defined threshold (e.g., 7 days), if yes, add to priority queue
+
 b) Build the priority queue based on the following criteria:
 - Qualification to be added to the queue:
   - Nodes that have never been tested
