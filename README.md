@@ -90,4 +90,4 @@ b) Process:
     - Job waits more than pending timeout
 
 ### 5) Fetch results
-- After job completion, fetch test results using results management module fetch function
+- After job completion,
