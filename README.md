@@ -56,7 +56,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - Keep checking and updating the file every x minutes
 
 ### 3) Fetch results metadata
-- [optionally] Create direc
+- [optionally] Create directory structure and 
 - Use results management module to fetch latest test results metadata from status metadata view
 - Save the metadata table into a file
 
