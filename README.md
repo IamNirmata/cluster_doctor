@@ -56,7 +56,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 - Keep checking and updating the file every x minutes
 
 ### 3) Fetch results metadata
-- 
+- Use 
 
 
 #### a) Create / fetch **status metadata** view
