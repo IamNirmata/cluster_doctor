@@ -1,3 +1,9 @@
-kubectl -n $1 exec $2 -- ls $3
+#!/usr/bin/env bash
+set -euo pipefail
 
-# kubectl -n gcr-admin exec gcr-admin-pvc-access -- ls /data/continuous_validation
+POD="${POD:-gcr-admin-pvc-access}"
+NAMESPACE="${NAMESPACE:-gcr-admin}"
+TARGET_DIR="${1:-/data/continuous_validation}"
+
+echo "Listing ${TARGET_DIR} remotely on pod ${POD} (ns: ${NAMESPACE})..."
+kubectl -n "$NAMESPACE" exec "$POD" -- ls -F "$TARGET_DIR"
