@@ -77,6 +77,7 @@ b) Build the priority queue based on the following criteria:
 a) Thresholds:
 - Max concurrent jobs: **2**
 - Max queue time before cancellation: **30 mins**
+- Node test timeout: **20 mins**
 
 
 Submit jobs in **reverse order of status metadata timestamp**:
