@@ -132,10 +132,14 @@ def insert_run(conn: sqlite3.Connection, node: str, test: str, epoch_ts: int, re
     conn.commit()
 
 
-def query_latest_status(conn: sqlite3.Connection) -> List[sqlite3.Row]:
-    return conn.execute(
-        "SELECT node, test, latest_timestamp, result FROM latest_status ORDER BY node, test"
-    ).fetchall()
+def query_latest_status(conn: sqlite3.Connection, node_filter: str = None) -> List[sqlite3.Row]:
+    query = "SELECT node, test, latest_timestamp, result FROM latest_status"
+    params = []
+    if node_filter:
+        query += " WHERE node = ?"
+        params.append(node_filter)
+    query += " ORDER BY node, test"
+    return conn.execute(query, params).fetchall()
 
 
 def query_history_tail(conn: sqlite3.Connection, limit: int) -> List[sqlite3.Row]:
@@ -250,7 +254,7 @@ def cmd_status(args: argparse.Namespace) -> None:
     conn = connect(db_path)
     try:
         init_db(conn)
-        rows = query_latest_status(conn)
+        rows = query_latest_status(conn, args.node)
     finally:
         conn.close()
         if temp_path and os.path.exists(temp_path):
@@ -397,6 +401,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(fn=cmd_add)
 
     p = sub.add_parser("status", help="Show latest status per (node,test) from view")
+    p.add_argument("--node", help="Filter by node name")
     p.set_defaults(fn=cmd_status)
 
     p = sub.add_parser("history", help="Show latest N history rows")
