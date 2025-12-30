@@ -50,7 +50,7 @@ Continuous validation methods for largescale GPU clusters. This runs health chec
 
 
 ### 1. Get Cluster status
-#### a Fetch nodes list from cluster manager
+#### a] Fetch nodes list from cluster manager
 
 ### 1. Fetch results history from PVC directory
 
