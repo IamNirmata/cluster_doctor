@@ -5,15 +5,53 @@
 
 
 
-
-
-
-
 #!/usr/bin/env bash
 set -euo pipefail
 
-OUT="${OUT:-./free_nodes.txt}"
-: > "$OUT"   # truncate output file
+usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS]
+
+Options:
+  -o, --out PATH     Path to save fully free nodes list (default: ./free_nodes.txt or \$OUT)
+  -h, --help         Show this help
+
+Examples:
+  $0
+  $0 -o /tmp/free_nodes.txt
+  OUT=/data/free_nodes.txt $0
+EOF
+}
+
+# Defaults (env var still supported)
+OUT_DEFAULT="${OUT:-./free_nodes.txt}"
+OUT_PATH="$OUT_DEFAULT"
+
+# Parse args
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -o|--out)
+      [[ $# -ge 2 ]] || { echo "ERROR: missing value for $1" >&2; usage; exit 2; }
+      OUT_PATH="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "ERROR: unknown argument: $1" >&2
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+# Ensure output directory exists (if a directory was provided)
+OUT_DIR="$(dirname "$OUT_PATH")"
+mkdir -p "$OUT_DIR"
+
+: > "$OUT_PATH"   # truncate output file
 
 # Build: node -> used GPUs (sum of per-pod effective GPU request)
 USED_JSON="$(
@@ -49,7 +87,7 @@ while read -r n cap alloc; do
 
   # Save fully free nodes (no GPU usage at all)
   if [[ "$alloc" -gt 0 && "$used" -eq 0 ]]; then
-    echo "$n" >> "$OUT"
+    echo "$n" >> "$OUT_PATH"
   fi
 
   tcap=$((tcap+cap)); talloc=$((talloc+alloc)); tused=$((tused+used)); tfree=$((tfree+free))
@@ -61,5 +99,5 @@ done < <(
 
 echo
 echo "TOTAL: cap=$tcap  alloc=$talloc  used=$tused  free=$tfree"
-echo "Fully free nodes saved to: $OUT"
+echo "Fully free nodes saved to: $OUT_PATH"
 
