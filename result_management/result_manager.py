@@ -33,6 +33,8 @@ import json
 import os
 import sqlite3
 import sys
+import subprocess
+import tempfile
 from typing import Iterable, List, Tuple
 
 
@@ -144,10 +146,67 @@ def query_history_tail(conn: sqlite3.Connection, limit: int) -> List[sqlite3.Row
 
 
 # -----------------------
+# Remote DB helpers
+# -----------------------
+
+def fetch_remote_db(args) -> str:
+    print(f"Fetching remote DB from {args.pod} (ns: {args.namespace})...")
+    fd, temp_path = tempfile.mkstemp(suffix='.db')
+    os.close(fd)
+    
+    cmd = [
+        "kubectl", "-n", args.namespace, "exec", args.pod, "--",
+        "cat", args.db
+    ]
+    try:
+        with open(temp_path, "wb") as f:
+            subprocess.check_call(cmd, stdout=f)
+        return temp_path
+    except subprocess.CalledProcessError as e:
+        os.remove(temp_path)
+        raise RuntimeError(f"Failed to fetch remote DB: {e}")
+
+def run_remote_init(args) -> None:
+    print(f"Initializing remote DB at {args.pod}:{args.db} ...")
+    script = """
+import sqlite3
+import os
+import sys
+
+db_path = '{}'
+try:
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("PRAGMA journal_mode=WAL;")
+    cur.execute("PRAGMA synchronous=NORMAL;")
+    cur.execute("CREATE TABLE IF NOT EXISTS runs (node TEXT NOT NULL, test TEXT NOT NULL, timestamp INTEGER NOT NULL, result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete')));")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_runs_node_test_ts ON runs(node, test, timestamp);")
+    cur.execute("CREATE VIEW IF NOT EXISTS latest_status AS SELECT r.node, r.test, r.timestamp AS latest_timestamp, r.result FROM runs r JOIN (SELECT node, test, MAX(timestamp) AS max_ts FROM runs GROUP BY node, test) x ON r.node=x.node AND r.test=x.test AND r.timestamp=x.max_ts;")
+    conn.commit()
+    conn.close()
+    print("Initialized DB at " + db_path)
+except Exception as e:
+    print(f"Error initializing DB: {e}", file=sys.stderr)
+    sys.exit(1)
+""".format(args.db)
+    
+    cmd = [
+        "kubectl", "-n", args.namespace, "exec", args.pod, "--",
+        "python3", "-c", script
+    ]
+    subprocess.check_call(cmd)
+
+
+# -----------------------
 # CLI commands
 # -----------------------
 
 def cmd_init(args: argparse.Namespace) -> None:
+    if args.remote:
+        run_remote_init(args)
+        return
+
     conn = connect(args.db)
     try:
         init_db(conn)
@@ -159,6 +218,7 @@ def cmd_init(args: argparse.Namespace) -> None:
 
 
 def cmd_add(args: argparse.Namespace) -> None:
+    # add is always local (in pod)
     epoch = parse_timestamp_to_epoch(args.timestamp)
 
     conn = connect(args.db)
@@ -176,12 +236,25 @@ def cmd_add(args: argparse.Namespace) -> None:
 
 
 def cmd_status(args: argparse.Namespace) -> None:
-    conn = connect(args.db)
+    db_path = args.db
+    temp_path = None
+    
+    if args.remote:
+        try:
+            temp_path = fetch_remote_db(args)
+            db_path = temp_path
+        except RuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return
+
+    conn = connect(db_path)
     try:
         init_db(conn)
         rows = query_latest_status(conn)
     finally:
         conn.close()
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
     # Print as a simple table
     print("node\ttest\tlatest_timestamp\tresult")
@@ -190,12 +263,25 @@ def cmd_status(args: argparse.Namespace) -> None:
 
 
 def cmd_history(args: argparse.Namespace) -> None:
-    conn = connect(args.db)
+    db_path = args.db
+    temp_path = None
+    
+    if args.remote:
+        try:
+            temp_path = fetch_remote_db(args)
+            db_path = temp_path
+        except RuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return
+
+    conn = connect(db_path)
     try:
         init_db(conn)
         rows = query_history_tail(conn, args.tail)
     finally:
         conn.close()
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
     print("node\ttest\ttimestamp\tresult")
     for r in rows:
@@ -203,12 +289,25 @@ def cmd_history(args: argparse.Namespace) -> None:
 
 
 def cmd_export_csv(args: argparse.Namespace) -> None:
-    conn = connect(args.db)
+    db_path = args.db
+    temp_path = None
+    
+    if args.remote:
+        try:
+            temp_path = fetch_remote_db(args)
+            db_path = temp_path
+        except RuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return
+
+    conn = connect(db_path)
     try:
         init_db(conn)
         rows = query_latest_status(conn)
     finally:
         conn.close()
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w", newline="", encoding="utf-8") as f:
@@ -221,12 +320,25 @@ def cmd_export_csv(args: argparse.Namespace) -> None:
 
 
 def cmd_export_json(args: argparse.Namespace) -> None:
-    conn = connect(args.db)
+    db_path = args.db
+    temp_path = None
+    
+    if args.remote:
+        try:
+            temp_path = fetch_remote_db(args)
+            db_path = temp_path
+        except RuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return
+
+    conn = connect(db_path)
     try:
         init_db(conn)
         rows = query_latest_status(conn)
     finally:
         conn.close()
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
     payload = {
         "generated_at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -256,6 +368,22 @@ def build_parser() -> argparse.ArgumentParser:
         default="/data/continuous_validation/metadata/validation.db",
         help="Path to SQLite DB on PVC",
     )
+    ap.add_argument(
+        "--remote",
+        action="store_true",
+        help="Access DB remotely via kubectl exec (for status/history/export/init)",
+    )
+    ap.add_argument(
+        "--pod",
+        default="gcr-admin-pvc-access",
+        help="Pod name for remote access (default: gcr-admin-pvc-access)",
+    )
+    ap.add_argument(
+        "--namespace",
+        default="gcr-admin",
+        help="Namespace for remote access (default: gcr-admin)",
+    )
+    
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("init", help="Create runs table + latest_status view")
