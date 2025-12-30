@@ -101,3 +101,5 @@ b) Process:
 - Database (SQLite, PostgreSQL, etc)
 - Access to GPU cluster with job submission capabilities
 
+## Installation
+1. Clone the repository:
