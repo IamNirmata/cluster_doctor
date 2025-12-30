@@ -109,4 +109,7 @@ b) Process:
 2. Navigate to the project directory:
    ```bash
    cd cluster_doctor
+3. Install required dependencies:
+   ```bash
+   pip install -r requirements.txt
    
