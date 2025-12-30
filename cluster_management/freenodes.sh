@@ -47,37 +47,49 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+PAR=${PAR:-12}          # parallelism (try 8/12/16)
+CHUNK=${CHUNK:-5000}
+
 declare -A USED
 
-# Build node -> used GPUs (sum of per-pod effective GPU request)
-# Server-side filter reduces payload a lot.
-while IFS=$'\t' read -r node g; do
-  [[ -n "${node:-}" ]] || continue
-  USED["$node"]=$(( ${USED["$node"]:-0} + g ))
-done < <(
-  kubectl get pods -A \
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+
+# 1) Fetch pods per-namespace in parallel and emit: node<TAB>gpus
+kubectl get ns -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' \
+| xargs -n1 -P "$PAR" -I{} bash -c '
+  ns="$1"
+  kubectl get pods -n "$ns" \
     --field-selector=spec.nodeName!=,status.phase!=Succeeded,status.phase!=Failed \
-    --chunk-size=5000 \
-    -o json \
-  | jq -r '
+    --chunk-size='"$CHUNK"' \
+    -o json 2>/dev/null \
+  | jq -r "
       .items[]
-      | .spec.nodeName as $n
+      | .spec.nodeName as \$n
       | (
-          ([.spec.containers[]?     | (.resources.requests["nvidia.com/gpu"] // "0")]
+          ([.spec.containers[]?     | (.resources.requests[\"nvidia.com/gpu\"] // \"0\")]
            | map(tonumber) | add) // 0
-        ) as $app
+        ) as \$app
       | (
-          ([.spec.initContainers[]? | (.resources.requests["nvidia.com/gpu"] // "0")]
+          ([.spec.initContainers[]? | (.resources.requests[\"nvidia.com/gpu\"] // \"0\")]
            | map(tonumber) | max) // 0
-        ) as $init
-      | ($app, $init | max) as $g
-      | select($g > 0)
-      | "\($n)\t\($g)"
-    '
+        ) as \$init
+      | (\$app, \$init | max) as \$g
+      | select(\$g > 0)
+      | \"\(\$n)\t\(\$g)\"
+    "
+' _ {} >> "$tmp"
+
+# 2) Aggregate node GPU usage (single pass)
+while IFS=$'\t' read -r node used; do
+  USED["$node"]="$used"
+done < <(
+  awk -F'\t' '{u[$1]+=$2} END{for (n in u) print n "\t" u[n]}' "$tmp"
 )
 
 tcap=0; talloc=0; tused=0; tfree=0
 
+# 3) Print nodes
 while read -r n cap alloc; do
   cap=${cap:-0};     [[ "$cap"   == "<none>" ]] && cap=0
   alloc=${alloc:-0}; [[ "$alloc" == "<none>" ]] && alloc=0
