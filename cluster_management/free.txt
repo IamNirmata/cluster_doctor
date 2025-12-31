@@ -106,3 +106,16 @@ slc01-cl02-hgx-0399
 slc01-cl02-hgx-0402
 slc01-cl02-hgx-0403
 slc01-cl02-hgx-0408
+slc01-cl02-hgx-0417
+slc01-cl02-hgx-0419
+slc01-cl02-hgx-0422
+slc01-cl02-hgx-0432
+slc01-cl02-hgx-0433
+slc01-cl02-hgx-0438
+slc01-cl02-hgx-0445
+slc01-cl02-hgx-0448
+slc01-cl02-hgx-0460
+slc01-cl02-hgx-0466
+slc01-cl02-hgx-0468
+slc01-cl02-hgx-0472
+slc01-cl02-hgx-0476
