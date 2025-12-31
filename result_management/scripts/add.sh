@@ -10,7 +10,7 @@ fi
 NODE="$1"
 TEST="$2"
 RESULT="$3"
-TIMESTAMP="${4:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")}"
+TIMESTAMP="${4:-$(date +%s)}"
 DB_PATH="${DB_PATH:-/data/continuous_validation/metadata/validation.db}"
 
 echo "Adding result locally (in-pod)..."
