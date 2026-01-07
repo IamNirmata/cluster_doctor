@@ -2,4 +2,5 @@ hiome directory: cluster_doctor
 
 1. get free nodes list
     - save it to list ./gitignored/free.txt
-2. Get latest test 
+2. Get latest test results from DB
+    - save it to ./gitignored/latest_test_results.json
