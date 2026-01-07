@@ -2,6 +2,6 @@ hiome directory: cluster_doctor
 
 1. get free nodes list
     - save it to list ./gitignored/free.txt
-2. Get latest test results timmestamp from validation.db ( by access)
+2. Get latest test results timmestamp from validation.db ( by accessing gcr)
     - from ./gitignored/test_results/
     - save it to variable latest_timestamp
