@@ -20,4 +20,8 @@ hiome directory: cluster_doctor
     - Update validation.db with new test results and timestamps
     - Log job completion status
 
-7. Generate a da
+7. Generate a daily report
+    - Summary of nodes tested
+    - Summary of test results
+    - List of nodes that were never tested
+    - Save report to ./gitignored/reports/daily_report_<date>.txt
