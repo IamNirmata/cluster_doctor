@@ -11,3 +11,5 @@ hiome directory: cluster_doctor
     - Create a job to run cluster-doctor validation tests on that node
     - Submit the job to k8s cluster
     - Log job submission status
+
+5. Monitor job status
