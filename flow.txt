@@ -20,3 +20,4 @@ hiome directory: cluster_doctor
     - Update validation.db with new test results and timestamps
     - Log job completion status
 
+7. Generate a da
