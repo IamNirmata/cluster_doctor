@@ -15,9 +15,12 @@ db_path = '${DB_PATH}'
 print(f'Target DB path: {db_path}')
 
 try:
-    if not os.path.exists(os.path.dirname(db_path)):
-        print(f'Creating directory: {os.path.dirname(db_path)}')
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    db_dir = os.path.dirname(db_path)
+    if not os.path.exists(db_dir):
+        print(f'Creating directory: {db_dir}')
+        os.makedirs(db_dir, exist_ok=True)
+    else:
+        print(f'Directory {db_dir} already exists.')
 
     conn = sqlite3.connect(db_path)
     conn.execute('PRAGMA journal_mode=WAL;')
