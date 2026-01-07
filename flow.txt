@@ -14,4 +14,4 @@ hiome directory: cluster_doctor
 
 5. Monitor job status
     - if a job pending for more than X minutes - cancel the job and log the event
-    - if a job runs longer than Y minutes - ca
+    - if a job runs longer than Y minutes - cancel
