@@ -1,3 +1,4 @@
 hiome directory: cluster_doctor
+
 1. get free nodes list
     - save it to list ./gitignored/free.txt
