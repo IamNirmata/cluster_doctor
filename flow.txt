@@ -6,3 +6,4 @@ hiome directory: cluster_doctor
     - per node per test - latest timestamp
     - if a node has no test results - mark it as "never tested" - hihest priority
 3. Combine free nodes list with latest test results timestamps
+4. Sort nodes by latest test results timestamps (oldest first)
