@@ -1,5 +1,5 @@
 home directory: cluster_doctor
-
+function 
 1. get free nodes list
     - save it to list ./gitignored/free.txt
 2. Get latest test results timmestamp from validation.db ( by accessing gcr-admin-pvc-access pod)
