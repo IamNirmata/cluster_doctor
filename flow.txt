@@ -2,7 +2,7 @@ home directory: cluster_doctor
 function availability : ./kubectl/
 1. get free nodes list
     - save it to list ./gitignored/free.txt
-2. Get latest test results timmestamp from validation.db for all the free m ( by accessing gcr-admin-pvc-access pod)
+2. Get latest test results timmestamp from validation.db for all the free nodes in the free node list ( by accessing gcr-admin-pvc-access pod)
     - per node per test - latest timestamp
     - if a node has no test results - mark it as "never tested" - highest priority
 3. Combine free nodes list with latest test results timestamps create a job queue list 
