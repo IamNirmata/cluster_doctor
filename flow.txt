@@ -16,3 +16,6 @@ hiome directory: cluster_doctor
     - if a job pending for more than X minutes - cancel the job and log the event
     - if a job runs longer than Y minutes - cancel the job
 6. After job completion ( inside job pod)
+    - Collect test results
+    - Update validation.db with new test results and timestamps
+    - Log job completion status
