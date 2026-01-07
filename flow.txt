@@ -13,4 +13,4 @@ hiome directory: cluster_doctor
     - Log job submission status
 
 5. Monitor job status
-    - if a job pending for more than X minutes - ca
+    - if a job pending for more than X minutes - cancel the
