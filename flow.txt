@@ -5,5 +5,5 @@ hiome directory: cluster_doctor
 2. Get latest test results timmestamp from validation.db ( by accessing gcr-admin-pvc-access pod)
     - per node per test - latest timestamp
     - if a node has no test results - mark it as "never tested" - highest priority
-3. Combine free nodes list with latest test results timestamps create a job queue  
+3. Combine free nodes list with latest test results timestamps create a job queue list 
     - Sort nodes by latest test results timestamps (oldest first - highest priority)
