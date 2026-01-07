@@ -3,4 +3,4 @@ hiome directory: cluster_doctor
 1. get free nodes list
     - save it to list ./gitignored/free.txt
 2. Get latest test results timmestamp from validation.db ( by accessing gcr-admin-pvc-access pod)
-    - per node per 
+    - per node per test - latest timestamp
