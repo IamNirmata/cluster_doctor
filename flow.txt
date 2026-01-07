@@ -4,5 +4,5 @@ hiome directory: cluster_doctor
     - save it to list ./gitignored/free.txt
 2. Get latest test results timmestamp from validation.db ( by accessing gcr-admin-pvc-access pod)
     - per node per test - latest timestamp
-    - if a node has no test results - mark it as "never tested" - 
+    - if a node has no test results - mark it as "never tested" - hihest predefined
 3. 
