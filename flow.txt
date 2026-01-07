@@ -13,4 +13,4 @@ hiome directory: cluster_doctor
     - Log job submission status
 
 5. Monitor job status
-    - Periodically check the status of submitted jobs
+    - Periodically check 
