@@ -1,2 +1,2 @@
 1. get free nodes list
-    - save 
+    - save it to list 
