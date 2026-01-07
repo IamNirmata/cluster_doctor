@@ -1,2 +1,2 @@
 1. get free nodes list
-    - save it to list /home/hari/b200/validation/cluster_doctor/gitignored/free.txt
+    - save it to list ./gitignored/free.txt
