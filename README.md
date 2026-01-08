@@ -84,7 +84,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 - **Action:** Tracks the status of submitted batches.
 - **Timeout Logic:**
     - If a job remains `Pending` > `X` minutes:
-        - Cancel the job us
+        - Cancel the job using delete_job() from `kubectl/functions.py`.
         - Update `job_submission_status` to `canceled` in the queue list.
 
 ### 6. Job Execution (Inside the Job Pod)
