@@ -1,0 +1,2 @@
+2026-01-07T23:34:10Z	START	home=/home/hari/b200/validation/cluster_doctor	functions=/home/hari/b200/validation/cluster_doctor/kubectl
+2026-01-07T23:34:44Z	FREE_NODES	count=128	saved=/home/hari/b200/validation/cluster_doctor/gitignored/free.txt

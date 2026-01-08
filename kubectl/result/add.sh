@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [[ $# -lt 3 ]]; then
   echo "Usage: $0 <node> <test> <result> [timestamp]"
-  echo "Example: $0 slc01-cl02-hgx-0453 dl_test pass"
+  echo "Example: $0 slc01-cl02-hgx-0453 dl_test pass 1696543200"
   exit 1
 fi
 
