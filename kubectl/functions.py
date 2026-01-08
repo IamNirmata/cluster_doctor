@@ -360,7 +360,7 @@ if __name__ == "__main__":
     if args.command == "exec":
         exec_pod(args.pod_name, namespace=args.namespace)
     elif args.command == "freenodes":
-        nodes = get_free_node_list()
+        nodes = get_free_nodes()
         for node in nodes:
             print(node)
     elif args.command == "ls":
