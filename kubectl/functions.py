@@ -26,7 +26,76 @@ def run_command(command, shell=False, check=True):
         raise e
 
 #flow
-""""""
+"""Cluster Doctor Kubectl Functions
+
+## Workflow
+
+The orchestration is handled by `job-runner.ipynb` implementing the following logic:
+
+### 1. Get Free Node List
+- **Function:** `get_free_node_list()` from `kubectl/functions.py`.
+- **Action:** Queries the cluster manager for currently available nodes.
+- **Output:** Saves to list `get_free_node_list[]`.
+
+### 2. Get DB Latest Status
+- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod using `get_db_latest_status()` from `kubectl/functions.py`.
+- **Action:** Retrieves the latest test timestamp for every node in the database.
+- **Logic:**
+    - If a node has no history, it is marked with a "very old" timestamp (highest priority).
+    - Maps: `Node -> Test -> Latest Timestamp`.
+
+### 3. Build Priority Queue
+- **Function:** `build_priority_queue(free_nodes_list, db_latest_status, Z_days_threshold)`
+- **Logic:**
+    1.  **Filter:** Only considers nodes currently in the `free_nodes_list`.
+    2.  **Qualify:** Skips nodes where the latest test result is *newer* than `Z` days.
+    3.  **Sort:** Orders by timestamp (oldest = highest priority).
+- **Output:** `job_priority_queue_list`
+  ```python
+  [
+      [node1, 1, True],  # [nodename, priority_order, job_submission_status]
+      [node2, 2, False],
+      ...
+  ]
+
+  ```
+
+### 4. Batch Job Submission
+**Inputs:**
+- **Batch Size:** `N` jobs.
+- **Queue:** `job_priority_queue_list`.
+- **Template:** `/home/hari/b200/validation/cluster_doctor/ymls/specific-node-job.yml`.
+
+**Process (per batch):**
+1.  Read the YAML template.
+2.  Inject node name (`<node-name>`).
+3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
+4.  Submit to K8s cluster using create_job() function from `kubectl/functions.py`.
+
+### 5. Monitor Job Status
+- **Action:** Tracks the status of submitted batches.
+- **Timeout Logic:**
+    - If a job remains `Pending` > `X` minutes:
+        - Cancel the job using delete_job() from `kubectl/functions.py`.
+        - Update `job_submission_status` to `canceled` in the queue list.
+
+### 6. Job Execution (Inside the Job Pod)
+Once the job is scheduled on the specific node:
+1.  **Setup:** Git clones `cluster_doctor` to `/opt/cluster_doctor`.
+2.  **Execute:** Runs validation tests, piping output via `tee`.
+3.  **Log Archival:** Saves STDOUT/STDERR to: `/data/continuous_validation/<test-name>/<node-name>/<node-name>-<testname>-<timestamp>.log`
+4.  **DB Update:** Calls `add_result_local()` (from `/opt/cluster_doctor/kubectl/functions.py`) to update `validation.db` with the new timestamp and pass/fail status.
+
+### 7. Generate Daily Report
+- **Action:** Summarizes the run statistics.
+- **Content:**
+    - Summary of nodes tested.
+    - Summary of pass/fail results.
+    - List of nodes never tested.
+- **Output:** Saved to `./gitignored/reports/daily_report_<date>.txt`.
+
+
+"""
 
 #1 Get free nodes list
 def get_free_node_list():
