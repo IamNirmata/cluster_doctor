@@ -37,12 +37,12 @@ def get_cordoned_nodes():
 
 def get_free_node_list():
     """
-    Returns a list of node names that have free GPUs (`free > 0`).
-    Equivalent to: kubectl/cluster/freenode_list.sh
+    Returns a list of node names that have ALL GPUs free.
+    Strictly returns nodes where free count == allocatable count (e.g., 8/8 free).
     """
-    # Reuse logic from get_free_nodes to avoid code duplication
     nodes, _ = get_free_nodes()
-    return [n['node'] for n in nodes if n['free'] > 0]
+    # STRICT FILTER: Only return nodes where free == alloc (completely empty)
+    return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
 
 def get_free_nodes(verbose=False):
     """
@@ -182,8 +182,6 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 
 def _exec_python_on_pod(python_code, pod, namespace, args=None):
     """Helper to execute python code inside a pod."""
-    # This helper was missing in your provided snippet but referenced by get_db_latest_status
-    # Adding a simple implementation here based on context
     cmd = ["kubectl", "exec", "-n", namespace, pod, "--", "python3", "-c", python_code]
     if args:
         cmd.extend([str(a) for a in args])
@@ -346,7 +344,9 @@ if __name__ == "__main__":
             print("No free nodes found.")
         else:
             for n in nodes:
-                # Optionally filter for only nodes with free > 0
+                # OPTIONAL: Filter logic for the TABLE VIEW
+                # We show nodes with ANY free GPUs here so you can see fragmentation.
+                # (Unlike get_free_node_list() which is strictly for empty nodes)
                 if n['free'] >= 0:
                     print(fmt.format(n['node'], n['cap'], n['alloc'], n['used'], n['free']))
             
@@ -362,7 +362,10 @@ if __name__ == "__main__":
         print("OPTION 1: Import in Python script")
         print("  import functions")
         print("  functions.exec_pod('pod123')")
-        print("  free_nodes, totals = functions.get_free_nodes()")
+        print("  # Returns strictly empty nodes for jobs:")
+        print("  empty_nodes = functions.get_free_node_list()")
+        print("  # Returns all nodes with status details:")
+        print("  all_nodes, totals = functions.get_free_nodes()")
         print("-" * 50)
         print("OPTION 2: Run directly from terminal")
         print("  python3 functions.py exec pod123")
