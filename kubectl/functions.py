@@ -213,13 +213,7 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 
 # --- Result Functions (Remote Execution) ---
 
-def _exec_python_on_pod(python_code, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, args=[]):
-    """Helper to execute python code inside a remote pod."""
-    cmd = [
-        "kubectl", "-n", namespace, "exec", "-i", pod, "--", "python3", "-c", python_code
-    ] + [str(arg) for arg in args]
-    
-    return run_command(cmd)
+
 
 def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
     """
