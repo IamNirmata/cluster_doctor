@@ -28,6 +28,14 @@ def run_command(command, shell=False, check=True):
 # --- Cluster Functions ---
 
 # Get free nodes list
+def get_free_node_list():
+    """
+    Returns a list of node names that have ALL GPUs free.
+    Strictly returns nodes where free count == allocatable count (e.g., 8/8 free).
+    """
+    nodes, _ = get_free_nodes()
+    # STRICT FILTER: Only return nodes where free == alloc (completely empty)
+    return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
 
 
 
@@ -43,14 +51,6 @@ def get_cordoned_nodes():
     cmd = 'kubectl get nodes -o wide | grep -E "NAME|SchedulingDisabled|Ready.*SchedulingDisabled"'
     return run_command(cmd, shell=True, check=False)
 
-def get_free_node_list():
-    """
-    Returns a list of node names that have ALL GPUs free.
-    Strictly returns nodes where free count == allocatable count (e.g., 8/8 free).
-    """
-    nodes, _ = get_free_nodes()
-    # STRICT FILTER: Only return nodes where free == alloc (completely empty)
-    return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
 
 def get_free_nodes(verbose=False):
     """
