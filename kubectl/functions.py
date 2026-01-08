@@ -27,7 +27,8 @@ def run_command(command, shell=False, check=True):
 
 # --- Cluster Functions ---
 
-# Get free nodes 
+# Get free nodes list
+
 
 
 
