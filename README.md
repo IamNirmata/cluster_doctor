@@ -46,7 +46,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 - **Output:** Saves to list `get_free_node_list[]`.
 
 ### 2. Get DB Latest Status
-- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod.
+- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod 
 - **Action:** Retrieves the latest test timestamp for every node in the database.
 - **Logic:**
     - If a node has no history, it is marked with a "very old" timestamp (highest priority).
