@@ -38,6 +38,35 @@ def get_free_node_list():
     return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
 
 #2 Get DB Latest Status
+def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """
+    Fetches status from the database inside the pod.
+    Equivalent to: kubectl/result/status.sh
+    """
+    code = textwrap.dedent(f"""
+    import sqlite3, datetime, sys
+    db_path = '{db_path}'
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute('SELECT node, test, latest_timestamp, result FROM latest_status ORDER BY node, test').fetchall()
+
+        print('node\\ttest\\tlatest_timestamp_num\\tlatest_timestamp\\tresult')
+        for r in rows:
+            ts_num = int(r['latest_timestamp']) if r['latest_timestamp'] is not None else ''
+            ts_iso = ''
+            if r['latest_timestamp'] is not None:
+                ts_iso = datetime.datetime.fromtimestamp(
+                    r['latest_timestamp'],
+                    tz=datetime.timezone.utc
+                ).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+
+            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts_num}}\\t{{ts_iso}}\\t{{r['result']}}")
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace)
 
 
 
