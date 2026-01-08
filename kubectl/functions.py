@@ -327,7 +327,7 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
         print(f"Error adding result: {e}")
         raise e
 
-def list_remote_files(target_dir="/data/continuous_validation", pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE):
+def list__files(target_dir="/data/continuous_validation", pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE):
     """
     Lists files in a remote directory.
     Equivalent to: kubectl/ls.sh
