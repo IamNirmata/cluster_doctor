@@ -364,7 +364,7 @@ if __name__ == "__main__":
         for node in nodes:
             print(node)
     elif args.command == "ls":
-        print(list_remote_files(target_dir=args.path))
+        print(list_pod_files(target_dir=args.path))
     else:
         print("No command specified. Showing sample usage:")
         print("-" * 50)
