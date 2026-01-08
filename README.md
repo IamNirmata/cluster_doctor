@@ -66,4 +66,45 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
       ...
   ]
 
-  
+  ```
+
+### 4. Batch Job Submission
+**Inputs:**
+- **Batch Size:** `N` jobs.
+- **Queue:** `job_priority_queue_list`.
+- **Template:** `/home/hari/b200/validation/cluster_doctor/ymls/specific-node-job.yml`.
+
+**Process (per batch):**
+1.  Read the YAML template.
+2.  Inject node name (`<node-name>`).
+3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
+4.  Submit to K8s cluster.
+
+### 5. Monitor Job Status
+- **Action:** Tracks the status of submitted batches.
+- **Timeout Logic:**
+    - If a job remains `Pending` > `X` minutes:
+        - Cancel the job.
+        - Update `job_submission_status` to `canceled` in the queue list.
+
+### 6. Job Execution (Inside the Job Pod)
+Once the job is scheduled on the specific node:
+1.  **Setup:** Git clones `cluster_doctor` to `/opt/cluster_doctor`.
+2.  **Execute:** Runs validation tests, piping output via `tee`.
+3.  **Log Archival:** Saves STDOUT/STDERR to: `/data/continuous_validation/<test-name>/<node-name>/<node-name>-<testname>-<timestamp>.log`
+4.  **DB Update:** Calls `add_result_local()` (from `/opt/cluster_doctor/kubectl/functions.py`) to update `validation.db` with the new timestamp and pass/fail status.
+
+### 7. Generate Daily Report
+- **Action:** Summarizes the run statistics.
+- **Content:**
+    - Summary of nodes tested.
+    - Summary of pass/fail results.
+    - List of nodes never tested.
+- **Output:** Saved to `./gitignored/reports/daily_report_<date>.txt`.
+
+## Requirements
+- **Python 3.x** with Jupyter Notebook support.
+- **Kubernetes Access:** `kubectl` configured with cluster admin rights.
+- **PVC Access:** `gcr-admin-pvc-access` pod running for DB file access.
+- **Volcano/Scheduler:** For specific node targeting.
+- **Database:** SQLite (`validation.db`).
