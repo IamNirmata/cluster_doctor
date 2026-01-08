@@ -37,6 +37,7 @@ def get_free_node_list():
     # STRICT FILTER: Only return nodes where free == alloc (completely empty)
     return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
 
+#
 
 
 
