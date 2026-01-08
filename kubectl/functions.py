@@ -138,7 +138,7 @@ def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=D
     """)
     return _exec_python_on_pod(code, pod, namespace)
 
-#3 Build Priority Queue
+#3 Build 
 
 
 
