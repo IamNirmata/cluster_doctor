@@ -78,7 +78,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 1.  Read the YAML template.
 2.  Inject node name (`<node-name>`).
 3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4.  Submit to K8s cluster using create_job
+4.  Submit to K8s cluster using create_job function from `kubectl/functions.py`.
 
 ### 5. Monitor Job Status
 - **Action:** Tracks the status of submitted batches.
