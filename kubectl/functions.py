@@ -371,7 +371,7 @@ if __name__ == "__main__":
         print("OPTION 1: Import in Python script")
         print("  import functions")
         print("  functions.exec_pod('pod123')")
-        print("  free_nodes = functions.get_free_node_list()")
+        print("  free_nodes = functions.get_free_nodes()")
         print("-" * 50)
         print("OPTION 2: Run directly from terminal")
         print("  python3 functions.py exec pod123")
