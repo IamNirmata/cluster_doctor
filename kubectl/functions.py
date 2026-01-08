@@ -27,7 +27,7 @@ def run_command(command, shell=False, check=True):
 
 # --- Cluster Functions ---
 
-# Get free nodes list
+#1 Get free nodes list
 def get_free_node_list():
     """
     Returns a list of node names that have ALL GPUs free.
