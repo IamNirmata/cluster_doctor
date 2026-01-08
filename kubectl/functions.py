@@ -4,6 +4,7 @@ import os
 import sys
 import textwrap
 import logging
+import datetime
 
 # Configuration variables
 DEFAULT_NAMESPACE = "gcr-admin"
@@ -25,79 +26,18 @@ def run_command(command, shell=False, check=True):
         print(f"Stderr: {e.stderr.decode('utf-8')}")
         raise e
 
-#flow
-"""Cluster Doctor Kubectl Functions
-
-## Workflow
-
-The orchestration is handled by `job-runner.ipynb` implementing the following logic:
-
-### 1. Get Free Node List
-- **Function:** `get_free_node_list()` from `kubectl/functions.py`.
-- **Action:** Queries the cluster manager for currently available nodes.
-- **Output:** Saves to list `get_free_node_list[]`.
-
-### 2. Get DB Latest Status
-- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod using `get_db_latest_status()` from `kubectl/functions.py`.
-- **Action:** Retrieves the latest test timestamp for every node in the database.
-- **Logic:**
-    - If a node has no history, it is marked with a "very old" timestamp (highest priority).
-    - Maps: `Node -> Test -> Latest Timestamp`.
-
-### 3. Build Priority Queue
-- **Function:** `build_priority_queue(free_nodes_list, db_latest_status, Z_days_threshold)`
-- **Logic:**
-    1.  **Filter:** Only considers nodes currently in the `free_nodes_list`.
-    2.  **Qualify:** Skips nodes where the latest test result is *newer* than `Z` days.
-    3.  **Sort:** Orders by timestamp (oldest = highest priority).
-- **Output:** `job_priority_queue_list`
-  ```python
-  [
-      [node1, 1, True],  # [nodename, priority_order, job_submission_status]
-      [node2, 2, False],
-      ...
-  ]
-
-  ```
-
-### 4. Batch Job Submission
-**Inputs:**
-- **Batch Size:** `N` jobs.
-- **Queue:** `job_priority_queue_list`.
-- **Template:** `/home/hari/b200/validation/cluster_doctor/ymls/specific-node-job.yml`.
-
-**Process (per batch):**
-1.  Read the YAML template.
-2.  Inject node name (`<node-name>`).
-3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4.  Submit to K8s cluster using create_job() function from `kubectl/functions.py`.
-
-### 5. Monitor Job Status
-- **Action:** Tracks the status of submitted batches.
-- **Timeout Logic:**
-    - If a job remains `Pending` > `X` minutes:
-        - Cancel the job using delete_job() from `kubectl/functions.py`.
-        - Update `job_submission_status` to `canceled` in the queue list.
-
-### 6. Job Execution (Inside the Job Pod)
-Once the job is scheduled on the specific node:
-1.  **Setup:** Git clones `cluster_doctor` to `/opt/cluster_doctor`.
-2.  **Execute:** Runs validation tests, piping output via `tee`.
-3.  **Log Archival:** Saves STDOUT/STDERR to: `/data/continuous_validation/<test-name>/<node-name>/<node-name>-<testname>-<timestamp>.log`
-4.  **DB Update:** Calls `add_result_local()` (from `/opt/cluster_doctor/kubectl/functions.py`) to update `validation.db` with the new timestamp and pass/fail status.
-
-### 7. Generate Daily Report
-- **Action:** Summarizes the run statistics.
-- **Content:**
-    - Summary of nodes tested.
-    - Summary of pass/fail results.
-    - List of nodes never tested.
-- **Output:** Saved to `./gitignored/reports/daily_report_<date>.txt`.
+def _exec_python_on_pod(python_code, pod, namespace, args=None):
+    """Helper to execute python code inside a pod."""
+    cmd = ["kubectl", "exec", "-n", namespace, pod, "--", "python3", "-c", python_code]
+    if args:
+        cmd.extend([str(a) for a in args])
+    return run_command(cmd)
 
 
-"""
+# ==========================================
+# FLOW STEP 1: Get Free Node List
+# ==========================================
 
-#1 Get free nodes list
 def get_free_node_list():
     """
     Returns a list of node names that have ALL GPUs free.
@@ -106,52 +46,6 @@ def get_free_node_list():
     nodes, _ = get_free_nodes()
     # STRICT FILTER: Only return nodes where free == alloc (completely empty)
     return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
-
-#2 Get DB Latest Status
-def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
-    """
-    Fetches status from the database inside the pod.
-    Equivalent to: kubectl/result/status.sh
-    """
-    code = textwrap.dedent(f"""
-    import sqlite3, datetime, sys
-    db_path = '{db_path}'
-    try:
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        rows = conn.execute('SELECT node, test, latest_timestamp, result FROM latest_status ORDER BY node, test').fetchall()
-
-        print('node\\ttest\\tlatest_timestamp_num\\tlatest_timestamp\\tresult')
-        for r in rows:
-            ts_num = int(r['latest_timestamp']) if r['latest_timestamp'] is not None else ''
-            ts_iso = ''
-            if r['latest_timestamp'] is not None:
-                ts_iso = datetime.datetime.fromtimestamp(
-                    r['latest_timestamp'],
-                    tz=datetime.timezone.utc
-                ).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
-
-            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts_num}}\\t{{ts_iso}}\\t{{r['result']}}")
-    except Exception as e:
-        print(f'Error: {{e}}', file=sys.stderr)
-        sys.exit(1)
-    """)
-    return _exec_python_on_pod(code, pod, namespace)
-
-#3 Build 
-
-
-
-
-
-def get_cordoned_nodes():
-    """
-    Returns a list of cordoned nodes.
-    Equivalent to: kubectl/cluster/cordoned_nodes.sh
-    """
-    cmd = 'kubectl get nodes -o wide | grep -E "NAME|SchedulingDisabled|Ready.*SchedulingDisabled"'
-    return run_command(cmd, shell=True, check=False)
-
 
 def get_free_nodes(verbose=False):
     """
@@ -198,7 +92,7 @@ def get_free_nodes(verbose=False):
         if not line.strip():
             continue
         
-        # Original script greps for 'hgx'. We can do that here.
+        # Filter for HGX nodes
         if 'hgx' not in line: 
             continue
             
@@ -207,7 +101,6 @@ def get_free_nodes(verbose=False):
             continue
             
         name = parts[0]
-        # Handle <none> or missing values
         cap_str = parts[1]
         cap = int(cap_str) if cap_str.isdigit() else 0
 
@@ -228,12 +121,135 @@ def get_free_nodes(verbose=False):
             
     return results, totals
 
-# --- Job Functions ---
+
+# ==========================================
+# FLOW STEP 2: Get DB Latest Status
+# ==========================================
+
+def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """
+    Fetches status from the database inside the pod.
+    Returns a string table of results.
+    """
+    code = textwrap.dedent(f"""
+    import sqlite3, datetime, sys
+    db_path = '{db_path}'
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        # Create table if not exists to avoid errors on fresh start
+        conn.execute("CREATE TABLE IF NOT EXISTS latest_status (node TEXT, test TEXT, latest_timestamp INTEGER, result TEXT, PRIMARY KEY (node, test))")
+        rows = conn.execute('SELECT node, test, latest_timestamp, result FROM latest_status ORDER BY node, test').fetchall()
+
+        print('node\\ttest\\tlatest_timestamp_num\\tlatest_timestamp\\tresult')
+        for r in rows:
+            ts_num = int(r['latest_timestamp']) if r['latest_timestamp'] is not None else ''
+            ts_iso = ''
+            if r['latest_timestamp'] is not None:
+                ts_iso = datetime.datetime.fromtimestamp(
+                    r['latest_timestamp'],
+                    tz=datetime.timezone.utc
+                ).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+
+            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts_num}}\\t{{ts_iso}}\\t{{r['result']}}")
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace)
+
+def parse_db_status_output(output_string):
+    """
+    Helper: Parses the string output from get_db_latest_status into a Dictionary.
+    Returns: { 'node_name': latest_timestamp_int, ... }
+    Used to bridge Step 2 and Step 3.
+    """
+    status_map = {}
+    lines = output_string.strip().split('\n')
+    # Skip header if present
+    if lines and 'node' in lines[0] and 'timestamp' in lines[0]:
+        lines = lines[1:]
+        
+    for line in lines:
+        parts = line.split('\t')
+        if len(parts) >= 3:
+            node = parts[0]
+            ts_str = parts[2] # latest_timestamp_num
+            
+            if ts_str and ts_str.isdigit():
+                ts = int(ts_str)
+                # If multiple tests exist for a node, we might want the oldest or newest. 
+                # For prioritization, we usually want the *most recent* activity to determine if it needs testing.
+                # If we want to find nodes that haven't been tested recently, we look at the most recent test.
+                current_max = status_map.get(node, 0)
+                if ts > current_max:
+                    status_map[node] = ts
+            else:
+                # No timestamp means never run (or 0)
+                if node not in status_map:
+                    status_map[node] = 0
+    return status_map
+
+
+# ==========================================
+# FLOW STEP 3: Build Priority Queue
+# ==========================================
+
+def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7):
+    """
+    Constructs the job priority queue based on node age.
+    
+    Args:
+        free_nodes_list (list): List of available node names.
+        db_latest_status_map (dict): Dict {node: timestamp} of last run times.
+        days_threshold (int): Nodes tested more recently than this will be skipped.
+    
+    Returns:
+        list: [[node_name, priority_rank, job_submitted_status], ...]
+    """
+    # Current time in UTC timestamp
+    now = datetime.datetime.now(datetime.timezone.utc).timestamp()
+    threshold_seconds = days_threshold * 86400
+    
+    candidate_list = []
+    
+    for node in free_nodes_list:
+        # Get last timestamp (0 if never tested)
+        last_ts = db_latest_status_map.get(node, 0)
+        
+        age = now - last_ts
+        
+        # LOGIC:
+        # 1. If last_ts is 0 (Never tested) -> High Priority
+        # 2. If age > threshold -> Add to queue
+        # 3. Else -> Skip (Tested recently)
+        
+        if last_ts == 0 or age > threshold_seconds:
+            candidate_list.append({
+                'node': node,
+                'ts': last_ts
+            })
+            
+    # SORT: Oldest timestamp first (Ascending). 
+    # 0 (Never tested) will be at the top.
+    candidate_list.sort(key=lambda x: x['ts'])
+    
+    # FORMAT OUTPUT
+    # [nodename, priority_order, job_submission_status]
+    priority_queue = []
+    for idx, item in enumerate(candidate_list):
+        priority_queue.append([item['node'], idx + 1, False])
+        
+    return priority_queue
+
+
+# ==========================================
+# FLOW STEP 4 & 5: Job Submission & Monitor
+# ==========================================
 
 def create_job(yaml_file):
     """
     Creates a Kubernetes job from a YAML file.
-    Equivalent to: kubectl/job/create.sh
     """
     if not os.path.exists(yaml_file):
         raise FileNotFoundError(f"File '{yaml_file}' does not exist")
@@ -242,14 +258,12 @@ def create_job(yaml_file):
 def delete_job(job_name, namespace=DEFAULT_NAMESPACE):
     """
     Deletes a specific vcjob.
-    Equivalent to: kubectl/job/delete-job.sh
     """
     return run_command(["kubectl", "delete", "vcjob", "-n", namespace, job_name])
 
 def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE):
     """
     Deletes all validation jobs (containing 'hari-gcr-cluster-validation').
-    Equivalent to: kubectl/job/delete_all_jobs.sh
     """
     cmd_list = f'kubectl get vcjob -n {namespace} --no-headers -o custom-columns=NAME:.metadata.name | grep "{JOB_GROUP_LABEL}"'
     try:
@@ -278,76 +292,14 @@ def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE):
             print(f"Failed to delete {job}: {e}")
     print("Deletion completed.")
 
-def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
-    """
-    Start interactive shell in pod (Wrapper).
-    Equivalent to: kubectl/job/exec.sh
-    NOTE: This requires an interactive terminal and cannot be fully automated in this script.
-    """
-    print(f"Starting interactive session in {pod_name}...")
-    subprocess.call(["kubectl", "exec", "-it", pod_name, "-n", namespace, "--", "/bin/bash"])
 
-# --- Result Functions (Remote Execution) ---
-
-def _exec_python_on_pod(python_code, pod, namespace, args=None):
-    """Helper to execute python code inside a pod."""
-    cmd = ["kubectl", "exec", "-n", namespace, pod, "--", "python3", "-c", python_code]
-    if args:
-        cmd.extend([str(a) for a in args])
-    return run_command(cmd)
-
-
-def get_node_status(node, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
-    """
-    Fetches status for a specific node.
-    Equivalent to: kubectl/result/node_status.sh
-    """
-    code = textwrap.dedent(f"""
-    import sqlite3, datetime, sys
-    db_path = '{db_path}'
-    node_filter = sys.argv[1]
-    try:
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        q = 'SELECT node, test, latest_timestamp, result FROM latest_status WHERE node = ? ORDER BY node, test'
-        rows = conn.execute(q, (node_filter,)).fetchall()
-        print('node\\ttest\\tlatest_timestamp\\tresult')
-        for r in rows:
-            ts = datetime.datetime.fromtimestamp(r['latest_timestamp'], tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
-            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts}}\\t{{r['result']}}")
-    except Exception as e:
-        print(f'Error: {{e}}', file=sys.stderr)
-        sys.exit(1)
-    """)
-    return _exec_python_on_pod(code, pod, namespace, args=[node])
-
-def get_history(limit=20, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
-    """
-    Fetches run history.
-    Equivalent to: kubectl/result/history.sh
-    """
-    code = textwrap.dedent(f"""
-    import sqlite3, datetime, sys
-    db_path = '{db_path}'
-    limit = int(sys.argv[1])
-    try:
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        rows = conn.execute('SELECT node, test, timestamp, result FROM runs ORDER BY timestamp DESC LIMIT ?', (limit,)).fetchall()
-        print('node\\ttest\\ttimestamp\\tresult')
-        for r in rows:
-            ts = datetime.datetime.fromtimestamp(r['timestamp'], tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
-            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts}}\\t{{r['result']}}")
-    except Exception as e:
-        print(f'Error: {{e}}', file=sys.stderr)
-        sys.exit(1)
-    """)
-    return _exec_python_on_pod(code, pod, namespace, args=[limit])
+# ==========================================
+# FLOW STEP 6: Job Execution (Inside Pod)
+# ==========================================
 
 def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH):
     """
     Adds a result to the database (Local Execution).
-    Equivalent to: kubectl/result/add.sh
     """
     import sqlite3, datetime
     
@@ -373,18 +325,81 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
         # Ensure tables exist just in case
         conn.execute("CREATE TABLE IF NOT EXISTS runs (node TEXT NOT NULL, test TEXT NOT NULL, timestamp INTEGER NOT NULL, result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete')));")
         conn.execute("INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
+        
+        # Also update latest_status table for quick lookup
+        conn.execute("CREATE TABLE IF NOT EXISTS latest_status (node TEXT, test TEXT, latest_timestamp INTEGER, result TEXT, PRIMARY KEY (node, test));")
+        conn.execute("INSERT OR REPLACE INTO latest_status(node, test, latest_timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
+        
         conn.commit()
         print(f'Added: {node} {test} {result} {timestamp}')
     except Exception as e:
         print(f"Error adding result: {e}")
         raise e
 
+
+# ==========================================
+# UTILITY FUNCTIONS (Unused in main flow)
+# ==========================================
+
+def get_cordoned_nodes():
+    """Returns a list of cordoned nodes."""
+    cmd = 'kubectl get nodes -o wide | grep -E "NAME|SchedulingDisabled|Ready.*SchedulingDisabled"'
+    return run_command(cmd, shell=True, check=False)
+
+def get_node_status(node, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """Fetches status for a specific node."""
+    code = textwrap.dedent(f"""
+    import sqlite3, datetime, sys
+    db_path = '{db_path}'
+    node_filter = sys.argv[1]
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        q = 'SELECT node, test, latest_timestamp, result FROM latest_status WHERE node = ? ORDER BY node, test'
+        rows = conn.execute(q, (node_filter,)).fetchall()
+        print('node\\ttest\\tlatest_timestamp\\tresult')
+        for r in rows:
+            ts = datetime.datetime.fromtimestamp(r['latest_timestamp'], tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts}}\\t{{r['result']}}")
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace, args=[node])
+
+def get_history(limit=20, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """Fetches run history."""
+    code = textwrap.dedent(f"""
+    import sqlite3, datetime, sys
+    db_path = '{db_path}'
+    limit = int(sys.argv[1])
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute('SELECT node, test, timestamp, result FROM runs ORDER BY timestamp DESC LIMIT ?', (limit,)).fetchall()
+        print('node\\ttest\\ttimestamp\\tresult')
+        for r in rows:
+            ts = datetime.datetime.fromtimestamp(r['timestamp'], tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts}}\\t{{r['result']}}")
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace, args=[limit])
+
 def list_pod_files(target_dir="/data/continuous_validation", pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE):
-    """
-    Lists files in a remote directory.
-    Equivalent to: kubectl/ls.sh
-    """
+    """Lists files in a remote directory."""
     return run_command(["kubectl", "-n", namespace, "exec", pod, "--", "ls", "-F", target_dir])
+
+def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
+    """Start interactive shell in pod."""
+    print(f"Starting interactive session in {pod_name}...")
+    subprocess.call(["kubectl", "exec", "-it", pod_name, "-n", namespace, "--", "/bin/bash"])
+
+
+# ==========================================
+# MAIN EXECUTION
+# ==========================================
 
 if __name__ == "__main__":
     import argparse
@@ -392,15 +407,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Cluster Doctor Kubectl Functions")
     subparsers = parser.add_subparsers(dest="command")
 
-    # Example: Exec into pod
     p_exec = subparsers.add_parser("exec", help="Exec into a pod")
     p_exec.add_argument("pod_name", help="Name of the pod to exec into")
     p_exec.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
 
-    # Example: Get Free Nodes
     p_free = subparsers.add_parser("freenodes", help="List free nodes")
 
-    # Example: List Remote Files
     p_ls = subparsers.add_parser("ls", help="List remote files")
     p_ls.add_argument("path", nargs="?", default="/data/continuous_validation", help="Remote path to list")
 
@@ -410,13 +422,8 @@ if __name__ == "__main__":
         exec_pod(args.pod_name, namespace=args.namespace)
     
     elif args.command == "freenodes":
-        # Get nodes and totals (get_free_nodes returns a tuple)
         nodes, totals = get_free_nodes()
-        
-        # Define table format
         fmt = "{:<30} {:<6} {:<6} {:<6} {:<6}"
-        
-        # Print Header
         print("\n" + fmt.format("NODE NAME", "CAP", "ALLOC", "USED", "FREE"))
         print("-" * 60)
         
@@ -424,9 +431,7 @@ if __name__ == "__main__":
             print("No free nodes found.")
         else:
             for n in nodes:
-                # OPTIONAL: Filter logic for the TABLE VIEW
-                # We show nodes with ANY free GPUs here so you can see fragmentation.
-                # (Unlike get_free_node_list() which is strictly for empty nodes)
+                # Show all HGX nodes in table, even partially used ones
                 if n['free'] >= 0:
                     print(fmt.format(n['node'], n['cap'], n['alloc'], n['used'], n['free']))
             
@@ -438,16 +443,5 @@ if __name__ == "__main__":
         
     else:
         print("No command specified. Showing sample usage:")
-        print("-" * 50)
-        print("OPTION 1: Import in Python script")
-        print("  import functions")
-        print("  functions.exec_pod('pod123')")
-        print("  # Returns strictly empty nodes for jobs:")
-        print("  empty_nodes = functions.get_free_node_list()")
-        print("  # Returns all nodes with status details:")
-        print("  all_nodes, totals = functions.get_free_nodes()")
-        print("-" * 50)
-        print("OPTION 2: Run directly from terminal")
-        print("  python3 functions.py exec pod123")
         print("  python3 functions.py freenodes")
-        print("  python3 functions.py ls /tmp")
+        print("  python3 functions.py ls")
