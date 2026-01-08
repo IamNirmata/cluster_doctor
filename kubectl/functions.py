@@ -40,11 +40,19 @@ def get_free_node_list():
     Returns a list of node names that have free GPUs (`free > 0`).
     Equivalent to: kubectl/cluster/freenode_list.sh
     """
+    # Reuse logic from get_free_nodes to avoid code duplication
+    nodes, _ = get_free_nodes()
+    return [n['node'] for n in nodes if n['free'] > 0]
+
+def get_free_nodes(verbose=False):
+    """
+    Returns details about free nodes (capacity, allocated, used, free).
+    Equivalent to: kubectl/cluster/freenodes.sh
+    """
     # 1. Get Pods JSON
     cmd_pods = ["kubectl", "get", "pods", "-A", "-o", "json"]
     pods_json = json.loads(run_command(cmd_pods))
     
-    # 2. Calculate Used GPUs per node
     node_usage = {}
     
     for pod in pods_json.get('items', []):
@@ -68,12 +76,14 @@ def get_free_node_list():
         usage = max(app_req, init_req)
         node_usage[node_name] = node_usage.get(node_name, 0) + usage
 
-    # 3. Get Nodes and calculate free
-    cmd_nodes = ["kubectl", "get", "nodes", "--no-headers", "-o", "custom-columns=NAME:.metadata.name,CAP:.status.capacity.nvidia\.com/gpu,ALLOC:.status.allocatable.nvidia\.com/gpu"]
-    # We use check=False because if no nodes match or grep fails elsewhere it could throw, though here we don't grep in bash
+    # 2. Get Nodes and calculate free
+    # NOTE: Used raw string r"" here to fix SyntaxWarning with backslashes
+    cmd_nodes = ["kubectl", "get", "nodes", "--no-headers", "-o", r"custom-columns=NAME:.metadata.name,CAP:.status.capacity.nvidia\.com/gpu,ALLOC:.status.allocatable.nvidia\.com/gpu"]
+    # We use check=False because if no nodes match or grep fails elsewhere it could throw
     nodes_output = run_command(cmd_nodes, check=False) 
     
-    free_nodes = []
+    results = []
+    totals = {'cap': 0, 'alloc': 0, 'used': 0, 'free': 0}
     
     for line in nodes_output.split('\n'):
         if not line.strip():
@@ -89,59 +99,16 @@ def get_free_node_list():
             
         name = parts[0]
         # Handle <none> or missing values
+        cap_str = parts[1]
+        cap = int(cap_str) if cap_str.isdigit() else 0
+
         alloc_str = parts[2]
         alloc = int(alloc_str) if alloc_str.isdigit() else 0
         
         used = node_usage.get(name, 0)
         free = alloc - used
         
-        if free > 0:
-            free_nodes.append(name)
-            
-    return free_nodes
-
-def get_free_nodes(verbose=False):
-    """
-    Returns details about free nodes (capacity, allocated, used, free).
-    Equivalent to: kubectl/cluster/freenodes.sh
-    """
-    # Reuse logic from get_free_node_list but return formatted info structure
-    cmd_pods = ["kubectl", "get", "pods", "-A", "-o", "json"]
-    pods_json = json.loads(run_command(cmd_pods))
-    
-    node_usage = {}
-    for pod in pods_json.get('items', []):
-        node_name = pod.get('spec', {}).get('nodeName')
-        if not node_name: continue
-        phase = pod.get('status', {}).get('phase')
-        if phase in ["Succeeded", "Failed"]: continue
-        
-        containers = pod.get('spec', {}).get('containers', [])
-        init_containers = pod.get('spec', {}).get('initContainers', [])
-        
-        app_req = sum(int(c.get('resources', {}).get('requests', {}).get('nvidia.com/gpu', 0)) for c in containers)
-        init_reqs = [int(c.get('resources', {}).get('requests', {}).get('nvidia.com/gpu', 0)) for c in init_containers]
-        init_req = max(init_reqs) if init_reqs else 0
-        
-        node_usage[node_name] = node_usage.get(node_name, 0) + max(app_req, init_req)
-
-    cmd_nodes = ["kubectl", "get", "nodes", "--no-headers", "-o", "custom-columns=NAME:.metadata.name,CAP:.status.capacity.nvidia\.com/gpu,ALLOC:.status.allocatable.nvidia\.com/gpu"]
-    nodes_output = run_command(cmd_nodes, check=False)
-    
-    results = []
-    totals = {'cap': 0, 'alloc': 0, 'used': 0, 'free': 0}
-    
-    for line in nodes_output.split('\n'):
-        if not line.strip() or 'hgx' not in line:
-            continue
-            
-        parts = line.split()
-        name = parts[0]
-        cap = int(parts[1]) if parts[1].isdigit() else 0
-        alloc = int(parts[2]) if parts[2].isdigit() else 0
-        used = node_usage.get(name, 0)
-        free = alloc - used
-        
+        # Add to results
         results.append({
             'node': name, 'cap': cap, 'alloc': alloc, 'used': used, 'free': free
         })
@@ -149,7 +116,7 @@ def get_free_nodes(verbose=False):
         totals['alloc'] += alloc
         totals['used'] += used
         totals['free'] += free
-        
+            
     return results, totals
 
 # --- Job Functions ---
@@ -213,7 +180,14 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 
 # --- Result Functions (Remote Execution) ---
 
-
+def _exec_python_on_pod(python_code, pod, namespace, args=None):
+    """Helper to execute python code inside a pod."""
+    # This helper was missing in your provided snippet but referenced by get_db_latest_status
+    # Adding a simple implementation here based on context
+    cmd = ["kubectl", "exec", "-n", namespace, pod, "--", "python3", "-c", python_code]
+    if args:
+        cmd.extend([str(a) for a in args])
+    return run_command(cmd)
 
 def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
     """
@@ -341,17 +315,14 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(dest="command")
 
     # Example: Exec into pod
-    # Usage: python3 functions.py exec pod123
     p_exec = subparsers.add_parser("exec", help="Exec into a pod")
     p_exec.add_argument("pod_name", help="Name of the pod to exec into")
     p_exec.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
 
     # Example: Get Free Nodes
-    # Usage: python3 functions.py freenodes
     p_free = subparsers.add_parser("freenodes", help="List free nodes")
 
     # Example: List Remote Files
-    # Usage: python3 functions.py ls /data/continuous_validation
     p_ls = subparsers.add_parser("ls", help="List remote files")
     p_ls.add_argument("path", nargs="?", default="/data/continuous_validation", help="Remote path to list")
 
@@ -359,19 +330,39 @@ if __name__ == "__main__":
 
     if args.command == "exec":
         exec_pod(args.pod_name, namespace=args.namespace)
+    
     elif args.command == "freenodes":
-        nodes = get_free_nodes()
-        for node in nodes:
-            print(node)
+        # Get nodes and totals (get_free_nodes returns a tuple)
+        nodes, totals = get_free_nodes()
+        
+        # Define table format
+        fmt = "{:<30} {:<6} {:<6} {:<6} {:<6}"
+        
+        # Print Header
+        print("\n" + fmt.format("NODE NAME", "CAP", "ALLOC", "USED", "FREE"))
+        print("-" * 60)
+        
+        if not nodes:
+            print("No free nodes found.")
+        else:
+            for n in nodes:
+                # Optionally filter for only nodes with free > 0
+                if n['free'] >= 0:
+                    print(fmt.format(n['node'], n['cap'], n['alloc'], n['used'], n['free']))
+            
+            print("-" * 60)
+            print(fmt.format("TOTAL", totals['cap'], totals['alloc'], totals['used'], totals['free']) + "\n")
+            
     elif args.command == "ls":
         print(list_pod_files(target_dir=args.path))
+        
     else:
         print("No command specified. Showing sample usage:")
         print("-" * 50)
         print("OPTION 1: Import in Python script")
         print("  import functions")
         print("  functions.exec_pod('pod123')")
-        print("  free_nodes = functions.get_free_nodes()")
+        print("  free_nodes, totals = functions.get_free_nodes()")
         print("-" * 50)
         print("OPTION 2: Run directly from terminal")
         print("  python3 functions.py exec pod123")
