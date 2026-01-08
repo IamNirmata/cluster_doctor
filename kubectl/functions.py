@@ -404,24 +404,36 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Cluster Doctor Kubectl Functions")
+    parser = argparse.ArgumentParser(description="Cluster Doctor Kubectl Functions CLI")
     subparsers = parser.add_subparsers(dest="command")
 
-    p_exec = subparsers.add_parser("exec", help="Exec into a pod")
-    p_exec.add_argument("pod_name", help="Name of the pod to exec into")
-    p_exec.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
+    # Command: Help
+    subparsers.add_parser("help", help="Show detailed usage examples")
 
-    p_free = subparsers.add_parser("freenodes", help="List free nodes")
+    # Command: Free Nodes
+    p_free = subparsers.add_parser("freenodes", help="List free nodes in table format")
 
+    # Command: LS
     p_ls = subparsers.add_parser("ls", help="List remote files")
     p_ls.add_argument("path", nargs="?", default="/data/continuous_validation", help="Remote path to list")
 
+    # Command: Exec
+    p_exec = subparsers.add_parser("exec", help="Exec into a pod")
+    p_exec.add_argument("pod_name", nargs="?", default=DEFAULT_POD, help="Name of the pod")
+    p_exec.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
+
+    # Command: Status
+    p_status = subparsers.add_parser("status", help="Get DB latest status table")
+
+    # Command: History
+    p_hist = subparsers.add_parser("history", help="Get DB run history")
+    p_hist.add_argument("limit", nargs="?", default="20", help="Number of rows")
+
     args = parser.parse_args()
 
-    if args.command == "exec":
-        exec_pod(args.pod_name, namespace=args.namespace)
-    
-    elif args.command == "freenodes":
+    # --- HANDLERS ---
+
+    if args.command == "freenodes":
         nodes, totals = get_free_nodes()
         fmt = "{:<30} {:<6} {:<6} {:<6} {:<6}"
         print("\n" + fmt.format("NODE NAME", "CAP", "ALLOC", "USED", "FREE"))
@@ -431,17 +443,56 @@ if __name__ == "__main__":
             print("No free nodes found.")
         else:
             for n in nodes:
-                # Show all HGX nodes in table, even partially used ones
+                # Show all HGX nodes in table
                 if n['free'] >= 0:
                     print(fmt.format(n['node'], n['cap'], n['alloc'], n['used'], n['free']))
-            
             print("-" * 60)
             print(fmt.format("TOTAL", totals['cap'], totals['alloc'], totals['used'], totals['free']) + "\n")
-            
+
     elif args.command == "ls":
         print(list_pod_files(target_dir=args.path))
         
-    else:
-        print("No command specified. Showing sample usage:")
-        print("  python3 functions.py freenodes")
-        print("  python3 functions.py ls")
+    elif args.command == "exec":
+        exec_pod(args.pod_name, namespace=args.namespace)
+
+    elif args.command == "status":
+        print(get_db_latest_status())
+        
+    elif args.command == "history":
+        print(get_history(limit=args.limit))
+        
+    elif args.command == "help" or args.command is None:
+        print("\n" + "="*60)
+        print(" CLUSTER DOCTOR FUNCTIONS - USAGE GUIDE")
+        print("="*60)
+        print("\n[CLI USAGE] (Run from terminal)")
+        print("  python3 functions.py freenodes      # List free nodes table")
+        print("  python3 functions.py status         # View latest DB status")
+        print("  python3 functions.py history 50     # View last 50 runs")
+        print("  python3 functions.py ls /tmp        # List remote files")
+        print("  python3 functions.py exec <pod>     # SSH into pod")
+
+        print("\n" + "="*60)
+        print("[PYTHON USAGE] (Import in Job Runner Notebook)")
+        print("="*60)
+        
+        print("\n1. GET FREE NODES (Strictly empty 8/8)")
+        print("   from kubectl import functions")
+        print("   free_nodes = functions.get_free_node_list()")
+        print("   # Output: ['node-01', 'node-05']")
+
+        print("\n2. GET DB STATUS & PARSE")
+        print("   db_text = functions.get_db_latest_status()")
+        print("   status_map = functions.parse_db_status_output(db_text)")
+        print("   # Output: {'node-01': 1704234000, ...}")
+
+        print("\n3. BUILD PRIORITY QUEUE")
+        print("   queue = functions.build_priority_queue(free_nodes, status_map, days_threshold=7)")
+        print("   # Output: [['node-01', 1, False], ...]")
+
+        print("\n4. SUBMIT JOB")
+        print("   functions.create_job('generated_job.yaml')")
+
+        print("\n5. ADD RESULT (Run inside job pod)")
+        print("   functions.add_result_local('node-01', 'dl_test', 'pass')")
+        print("\n" + "="*60 + "\n")
