@@ -1,104 +1,67 @@
 # cluster_doctor
-*Last updated:* Tuesday, December 23, 2025 — 4:23 PM
+*Last updated:* Thursday, January 08, 2026
 
-Continuous validation methods for largescale GPU clusters. This runs health checks on each nodes periodically and prioritized manner. 
-
+Continuous validation framework for large-scale GPU clusters. This system orchestrates health checks on free nodes in a prioritized manner, ensuring comprehensive coverage and automated result tracking via a Kubernetes-based workflow.
 
 ## Structure
-- `cluster_doctor/` - main code directory
-- `cluster_management/` - cluster management code (job submission, node status checking, etc)
-- `results_management/` - results fetching and metadata table of all test results
-- `tests/` - all test categories and test scripts
+- `cluster_doctor/` - Main repository root.
+- `job-runner.ipynb` - **Main Orchestrator**: Jupyter notebook that drives the end-to-end workflow (node discovery, queue building, submission, monitoring).
+- `kubectl/`
+    - `functions.py` - Core logic library (contains `get_free_node_list`, `add_result_local`, etc.).
+- `ymls/` - Kubernetes job templates.
+    - `specific-node-job.yml` - Template for single-node validation jobs.
+- `results_management/` - Results fetching and metadata handling.
+- `tests/` - Test scripts and categories.
+- `gitignored/reports/` - Generated daily reports.
 
-## Directory layout
-  All test metadata and logs are stored in a predefined directory structure in PVC or NFS mount accessible by all nodes at /data/continuous_validation/directory. Orchestrator and test scripts read/write data from/to this directory using 
+## Directory Layout & Data Persistence
+All test metadata and logs are stored in a predefined directory structure on a PVC/NFS mount accessible by all nodes (and the orchestrator via `gcr-admin-pvc-access` pod) at `/data/continuous_validation/`.
 
-- **Logs Directory**
-  - **Storage ( sample test category )**
-    - `Node_001/`
-      - `Storage_node001_timestamp1.log`
-      - `Storage_Node001_timestamp2.log`
-    - `Node_002/`
-      - `Storage_Node002_timestamp1.log`
-      - `Storage_Node002_timestamp2.log`
-  - **DL_test ( sample test category )**
-    - `Node_001/`
-      - `DL_test_node001_timestamp1.log`
-      - `DL_test_Node001_timestamp2.log`
-    - `Node_002/`
-      - `DL_test_Node002_timestamp1.log`
-      - `DL_test_Node002_timestamp2.log`
+### 1. Logs Directory
+Follows the structure: `/data/continuous_validation/<test-name>/<node-name>/`
 
-- **Test Results Metadata**
-  1) **Status metadata view** (SQLlite view)
+- **Storage (sample category)**
+  - `Node_001/`
+    - `Storage_node001_timestamp1.log`
+  - `Node_002/`
+    - `Storage_Node002_timestamp1.log`
 
-     | node | test        | timestamp        | result                              |
-     |-----:|-------------|-----------------:|-------------------------------------|
-     | 001  | DL unit test| 0897089098       | Pass                                |
-     | 002  | DL unit test| 0897089erer      | pass                                |
+### 2. Test Results Metadata
+**Database File:** `/data/continuous_validation/metadata/validation.db`
 
-  2) **History metadata table**
+The database tracks the latest status per node/per test.
 
-     | node | test        | timestamp   | result                              |
-     |-----:|-------------|------------:|-------------------------------------|
-     | 001  | DL unit test| 0897089098  | Pass                                |
-     | 001  | DL unit test| 089708sdfgd | fail                                |
-     | 002  | storage     | 0897082323  | pass                                |
-
-
+| node | test | timestamp | result |
+|-----:|------|----------:|--------|
+| 001 | DL unit test | 1736367000 | Pass |
+| 002 | DL unit test | 1736367000 | Fail |
 
 ## Workflow
 
-### 1) An orchestrator python script runs periodically (e.g., every hour)
+The orchestration is handled by `job-runner.ipynb` implementing the following logic:
 
-### 2) Get Cluster status
-- Get free nodes from cluster manager
-- Save the list into a file
-- Keep checking and updating the file every x minutes
+### 1. Get Free Node List
+- **Function:** `get_free_node_list()` from `kubectl/functions.py`.
+- **Action:** Queries the cluster manager for currently available nodes.
+- **Output:** Saves to list `get_free_node_list[]`.
 
-### 3) Fetch results metadata
-- [optionally] Create directory structure and result tables if not exist using results management module add function
-- fetch latest test results metadata from status metadata view
-- Save the metadata table into a file
+### 2. Get DB Latest Status
+- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod.
+- **Action:** Retrieves the latest test timestamp for every node in the database.
+- **Logic:**
+    - If a node has no history, it is marked with a "very old" timestamp (highest priority).
+    - Maps: `Node -> Test -> Latest Timestamp`.
 
-### 3) Build priority queue of nodes to test
-
-a) For each node in the free nodes list:
-  - Check the latest test result timestamp from the metadata table
-  - Check if the latest test result timestamp is older than the defined threshold (e.g., 7 days), if yes, add to priority queue
-
-b) Build the priority queue based on the following criteria:
-  - Qualification to be added to the queue:
-    - Nodes that have never been tested
-    - Nodes with test results older than the defined threshold
-  - Priority criteria:
-    - Nodes with shorter threshold delta have higher priority
-
-### 4) Job submission
-a) Thresholds:
-- Max concurrent jobs: **2**
-- Max queue time before cancellation: **30 mins**
-- Job pending timeout: **20 mins**
-- Frequency of checking node availability: **5 mins**
-
-b) Process:
-- While there are free slots for concurrent jobs and nodes in the priority queue:
-  - Submit jobs using orchestrator script
-  - Keep track of submitted jobs and their statuses
-  - Cancel jobs if
-    - Node becomes unavailable
-    - Job exceeds timeout
-    - Job waits more than pending timeout
-
-### 5) Fetch results
-- After job completion, test scripts save logs to predefined directory structure
-- Results management module fetches test results and updates metadata tables
-- Orchestrator script repeats the process periodically once the cuncurrent job slots are freed up
-
-## Requirements
-- Python 3.x
-- test libraries (e.g., pytest, unittest)
-- Cluster management tools (kubectl, volcano, etc)
-- Database (SQLite, PostgreSQL, etc)
-- Access to GPU cluster with job submission capabilities
-
+### 3. Build Priority Queue
+- **Function:** `build_priority_queue(free_nodes_list, db_latest_status, Z_days_threshold)`
+- **Logic:**
+    1.  **Filter:** Only considers nodes currently in the `free_nodes_list`.
+    2.  **Qualify:** Skips nodes where the latest test result is *newer* than `Z` days.
+    3.  **Sort:** Orders by timestamp (oldest = highest priority).
+- **Output:** `job_priority_queue_list`
+  ```python
+  [
+      [node1, 1, True],  # [nodename, priority_order, job_submission_status]
+      [node2, 2, False],
+      ...
+  ]
