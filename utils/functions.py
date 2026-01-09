@@ -247,7 +247,7 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
 # FLOW STEP 4 & 5: Job Submission & Monitor
 # ==========================================
 
-def s(yaml_file):
+def submit_job(yaml_file):
     """
     Creates a Kubernetes job from a YAML file.
     """
