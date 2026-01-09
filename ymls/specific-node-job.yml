@@ -80,7 +80,6 @@ spec:
                   chmod +x test1.sh
                   ./test1.sh
                   echo "Sleep infinity"
-                  sleep infinity
               resources:
                 requests:
                   nvidia.com/gpu: "8"
