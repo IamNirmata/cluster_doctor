@@ -459,7 +459,7 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Cluster Doctor Kubectl Functions CLI")
+    parser = argparse.ArgumentParser(description="Cluster evalu Kubectl Functions CLI")
     subparsers = parser.add_subparsers(dest="command")
 
     # Command: Help
