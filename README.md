@@ -99,7 +99,7 @@ Once the job is scheduled on the specific node:
 3.  **Log Archival:** Saves STDOUT/STDERR to: `/data/continuous_validation/<test-name>/<node-name>/<node-name>-<testname>-<timestamp>.log`
 4.  **DB Update:** Calls `add_result_local()` (from `/opt/cluster_doctor/utils/functions.py`) to update `validation.db` with the new timestamp and pass/fail status.
 
-### 7. Generate Daily Report
+### 6. Generate Daily Report
 - **Action:** Summarizes the run statistics.
 - **Content:**
     - Summary of nodes tested.
