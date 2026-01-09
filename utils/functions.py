@@ -523,7 +523,7 @@ if __name__ == "__main__":
         print("   # Output: {'node-01': 1704234000, ...}")
 
         print("\n3. BUILD PRIORITY QUEUE")
-        print("   queue = functions.build_priority_queue(free_nodes, status_map, days_threshold=7)")
+        print("   queue = functions.build_priority_queue(free_nodes, status_map, days_threshold=7, shuffle=False)")
         print("   # Output: [['node-01', 1, False], ...]")
 
         print("\n4. SUBMIT JOB")
