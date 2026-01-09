@@ -430,7 +430,7 @@ if __name__ == "__main__":
     p_hist.add_argument("limit", nargs="?", default="20", help="Number of rows")
 
     #delete_all_validation_jobs
-    
+    p_delete = subparsers.add_parser("delete-jobs", help="Delete all validation jobs")
 
     args = parser.parse_args()
 
