@@ -548,7 +548,7 @@ if __name__ == "__main__":
 
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
-        print(" CLUSTER  FUNCTIONS - USAGE GUIDE")
+        print(" CLUSTER VALIDATIONS FUNCTIONS - USAGE GUIDE")
         print("="*60)
         print("\n[CLI USAGE] (Run from terminal)")
         print("  python3 functions.py freenodes      # List free nodes table")
