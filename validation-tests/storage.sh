@@ -10,7 +10,7 @@ echo "Storage test directory set up at /data/storage_tests/output/$GCRNODE/$time
 
 cd /data/storage_tests/
 echo "Copying fio job files..."
-cp /workspace/cluster_dctor/validation-tests/fio_jobs/*.fio .
+cp /workspace/c-val/validation-tests/fio_jobs/*.fio .
 echo pwd: $(pwd)
 echo "Current directory contents:"
 ls -l
