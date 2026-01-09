@@ -379,9 +379,10 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
         conn.execute("CREATE TABLE IF NOT EXISTS runs (node TEXT NOT NULL, test TEXT NOT NULL, timestamp INTEGER NOT NULL, result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete')));")
         conn.execute("INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
         
-        # Also update latest_status table for quick lookup
-        conn.execute("CREATE TABLE IF NOT EXISTS latest_status (node TEXT, test TEXT, latest_timestamp INTEGER, result TEXT, PRIMARY KEY (node, test));")
-        conn.execute("INSERT OR REPLACE INTO latest_status(node, test, latest_timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
+        # latest_status is a VIEW in the new schema, so we do not insert into it.
+        # It is updated automatically by querying the runs table.
+        # conn.execute("CREATE TABLE IF NOT EXISTS latest_status (node TEXT, test TEXT, latest_timestamp INTEGER, result TEXT, PRIMARY KEY (node, test));")
+        # conn.execute("INSERT OR REPLACE INTO latest_status(node, test, latest_timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
         
         conn.commit()
         print(f'Added: {node} {test} {result} {timestamp}')
