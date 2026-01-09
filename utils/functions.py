@@ -261,7 +261,7 @@ def delete_job(job_name, namespace=DEFAULT_NAMESPACE):
     """
     return run_command(["kubectl", "delete", "vcjob", "-n", namespace, job_name])
 
-def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE):
+def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE, ):
     """
     Deletes all validation jobs (containing 'hari-gcr-cluster-validation').
     """
