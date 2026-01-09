@@ -429,7 +429,9 @@ if __name__ == "__main__":
     p_hist = subparsers.add_parser("history", help="Get DB run history")
     p_hist.add_argument("limit", nargs="?", default="20", help="Number of rows")
 
+    #delete_all_validation_jobs
     
+
     args = parser.parse_args()
 
     # --- HANDLERS ---
