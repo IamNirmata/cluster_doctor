@@ -81,7 +81,7 @@ spec:
                   ./test1.sh
                   bash db-update.sh
 
-                  echo "Sleep infinity"
+                  echo "Completed."
               resources:
                 requests:
                   nvidia.com/gpu: "8"
