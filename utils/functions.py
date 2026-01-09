@@ -429,6 +429,7 @@ if __name__ == "__main__":
     p_hist = subparsers.add_parser("history", help="Get DB run history")
     p_hist.add_argument("limit", nargs="?", default="20", help="Number of rows")
 
+    
     args = parser.parse_args()
 
     # --- HANDLERS ---
