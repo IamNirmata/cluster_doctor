@@ -37,7 +37,7 @@ The database tracks the latest status per node/per test.
 | 002 | DL unit test | 1736367000 | Fail |
 
 ## Assumptions
-- Random sampleing (represenative) is sufficient for cluster health monitoring.
+- Random sampling (represenative) is sufficient for cluster health monitoring.
 - The bad nodes are likely be freeier than good nodes ( crash -> node freed)
 
 ## Workflow
