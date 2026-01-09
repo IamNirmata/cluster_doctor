@@ -76,10 +76,10 @@ spec:
                 - |
                   echo "Sleeping."
                   git clone https://github.com/IamNirmata/cluster_doctor.git /workspace/cluster_doctor
-                  cd /workspace/cluster_doctor/tests
+                  cd /workspace/cluster_doctor/va
                   chmod +x test1.sh
                   ./test1.sh
-                  
+
                   echo "Sleep infinity"
               resources:
                 requests:
