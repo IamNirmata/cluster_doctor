@@ -82,7 +82,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 
 ### 5. Monitor Job Status
 - **Action:** Tracks the status of submitted batches using `get_job_status()` from `utils/functions.py` every `X` minutes.
-- **Updates:** Modifies `job_submission_status` in `job_priority_queue_list` based
+- **Updates:** Modifies `job_submission_status` in `job_priority_queue_list` based on job completion 
 - **Timeout Logic:**
     - If a job remains `Pending` > `X` minutes:
         - Cancel the job using delete_job() from `utils/functions.py`.
