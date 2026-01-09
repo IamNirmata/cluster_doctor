@@ -1,7 +1,7 @@
 mkdir -p /data/continuous_validation/storage/$GCRNODE
 apt-get update && apt-get install -y fio
 
-bash /workspace/cluster_doctor/validation-tests/storage.sh | tee /data/continuous_validation/storage/$GCRNODE/s-$GCRNODE-$GCRTIME.log
+bash /workspace/cluster_doctor/validation-tests/storage.sh | tee /data/continuous_validation/storage/$GCRNODE/sto-$GCRNODE-$GCRTIME.log
 export gcr_test_result="pass"
 
 
