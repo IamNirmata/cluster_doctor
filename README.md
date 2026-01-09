@@ -4,7 +4,7 @@
 Continuous validation framework for large-scale GPU clusters. This system orchestrates health checks on free nodes in a prioritized manner, ensuring comprehensive coverage and automated result tracking via a Kubernetes-based workflow.
 
 ## Structure
-- `cluster_doctor/` - Main repository root.
+- `cluster_/` - Main repository root.
 - `job-runner.ipynb` - **Main Orchestrator**: Jupyter notebook that drives the end-to-end workflow (node discovery, queue building, submission, monitoring).
 - `utils/`
     - `functions.py` - Core utility functions for Kubernetes interactions, database handling, and job management.
