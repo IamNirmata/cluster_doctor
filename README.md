@@ -78,7 +78,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
         - read yaml template
         - inject node name , job name , and timestamp as already described in job-runner.ipynb to temp yaml
         - submit to k8s cluster using create_job() from utils/functions.py
-      
+    
 
 
     monitor job status every X minutes
