@@ -1,4 +1,4 @@
-echo "test1.sh executed" | tee /data/continuous_validation/validation-tests/test1.log
+echo "test1.sh executed" | tee /data/continuous_validation/
 export gcr_test_result="pass"
 
 
