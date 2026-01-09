@@ -58,7 +58,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
     1.  **Filter:** Only considers nodes currently in the `free_nodes_list`.
     2.  **Qualify:** Skips nodes where the latest test result is *newer* than `Z` days.
     3.  **Sort:** Orders by timestamp (oldest = highest priority).
-- **Output:** `job_priority_queue_list`
+- **Output:** `job_priority_queue_list` and add to self.
   ```python
   [
       [node1, 1, True],  # [nodename, priority_order, job_submission_status]
