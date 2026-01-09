@@ -541,6 +541,9 @@ if __name__ == "__main__":
     elif args.command == "add-result":
         add_result_local(args.node, args.test, args.result, args.timestamp, args.db_path)
 
+    elif args.command == "init-db":
+        print(init_db(args.pod, args.namespace, args.db_path))
+
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
         print(" CLUSTER DOCTOR FUNCTIONS - USAGE GUIDE")
