@@ -82,10 +82,7 @@ run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monit
     3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
     4.  Inject timestamp as an environment variable `GCRTIME`.
     5.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
-        - read yaml template
-        - inject node name , job name , and timestamp as already described in job-runner.ipynb to temp yaml
-        - submit to k8s cluster using create_job() from utils/functions.py
-    - 
+  
 
 
     monitor job status every X minutes
