@@ -38,7 +38,7 @@ The database tracks the latest status per node/per test.
 
 ## Assumptions
 - Random sampleing
-- 
+- The 
 
 ## Workflow
 
