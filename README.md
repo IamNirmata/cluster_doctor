@@ -73,6 +73,10 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 ### 5. submit jobs and Monitor Job Status
 run_batch() function:
   while priority queue has unsubmitted jobs (false status):
+    submit next N jobs from queue
+    monitor job status every X minutes
+    update job status in queue
+    handle timeouts for pending jobs
 ### 4. Batch Job Submission
 **Inputs:**
 - **Batch Size:** `N` jobs.
