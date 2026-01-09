@@ -70,7 +70,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 
 
 
-### 5. subm Monitor Job Status
+### 5. submit jobs and Monitor Job Status
 run_batch() function:
   while priority queue has unsubmitted jobs (false status):
     - Submit next `N` jobs as per step 4.
