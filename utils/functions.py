@@ -5,6 +5,7 @@ import sys
 import textwrap
 import logging
 import datetime
+import random
 
 # Configuration variables
 DEFAULT_NAMESPACE = "gcr-admin"
