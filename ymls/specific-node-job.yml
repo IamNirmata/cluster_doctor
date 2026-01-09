@@ -58,6 +58,7 @@ spec:
                   valueFrom:
                     fieldRef:
                       fieldPath: spec.nodeName
+                
               volumeMounts:
                 - name: dshm
                   mountPath: /dev/shm
