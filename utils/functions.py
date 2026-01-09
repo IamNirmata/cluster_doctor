@@ -265,7 +265,7 @@ def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE, tag=J
     """
     Deletes all validation jobs (containing the specified tag).
     """
-    cmd_list = f'kubectl get vcjob -n {namespace} --no-headers -o custom-columns=NAME:.metadata.name | grep "{JOB_GROUP_LABEL}"'
+    cmd_list = f'kubectl get vcjob -n {namespace} --no-headers -o custom-columns=NAME:.metadata.name | grep "{tag}"'
     try:
         jobs = run_command(cmd_list, shell=True).split('\n')
         jobs = [j.strip() for j in jobs if j.strip()]
