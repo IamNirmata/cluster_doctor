@@ -374,7 +374,8 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
 
     try:
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
-        conn = sqlite3.connect(db_path)
+        # Use URI with nolock to avoid locking protocol errors on NFS/PVC
+        conn = sqlite3.connect(f"file:{db_path}?mode=rwc&nolock=1", uri=True)
         # Ensure tables exist just in case
         conn.execute("CREATE TABLE IF NOT EXISTS runs (node TEXT NOT NULL, test TEXT NOT NULL, timestamp INTEGER NOT NULL, result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete')));")
         conn.execute("INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
