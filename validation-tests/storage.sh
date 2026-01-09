@@ -9,6 +9,8 @@ mkdir -p /data/storage_tests/output/$GCRNODE/$timestamp
 echo "Storage test directory set up at /data/storage_tests/output/$GCRNODE/$timestamp"
 
 cd /data/storage_tests/
+echo "Copying fio job files..."
+cp /workspace/cluster_doctor/validation-tests/fio_jobs/*.fio .
 echo pwd: $(pwd)
 echo "Current directory contents:"
 ls -l
