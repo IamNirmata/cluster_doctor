@@ -78,7 +78,7 @@ spec:
                   git clone https://github.com/IamNirmata/c-val.git /workspace/c-val
                   cd /workspace/c-val/validation-tests/
                   chmod +x run-test.sh
-                  ./test1.sh
+                  ./run-test.sh
                   bash db-update.sh
                   echo "Completed."
               resources:
