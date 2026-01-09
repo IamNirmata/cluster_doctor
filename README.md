@@ -75,8 +75,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
   - While loop runs as long as priority queue has unsubmitted jobs (false status):
     - runs each batch:
       - read yaml template
-      - inject node name
-      - inject job name
+      - inject 
       - submit to k8s cluster using create_job() from utils/functions.py
 
 
