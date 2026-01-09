@@ -468,7 +468,7 @@ if __name__ == "__main__":
         print(get_history(limit=args.limit))
     
     elif args.command == "delete-jobs":
-        
+        delete_all_validation_jobs(confirm=args.confirm, namespace=args.namespace, tag=args.tag)
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
         print(" CLUSTER DOCTOR FUNCTIONS - USAGE GUIDE")
