@@ -38,7 +38,7 @@ The database tracks the latest status per node/per test.
 
 ## Assumptions
 - Random sampling (representative) is important and useful for continuous cluster health monitoring.
-- The bad nodes are more likely be freeier than good nodes ( crash -> node freed)
+- The bad nodes are more likely be free than good nodes ( crash -> node freed)
 
 ## Workflow
 
