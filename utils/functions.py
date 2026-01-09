@@ -445,6 +445,14 @@ if __name__ == "__main__":
     p_delete.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
     p_delete.add_argument("--tag", default=JOB_GROUP_LABEL, help="Tag to filter jobs for deletion")
 
+    # Command: add-result
+    p_add = subparsers.add_parser("add-result", help="Add a test result to the local DB")
+    p_add.add_argument("node", help="Node name")
+    p_add.add_argument("test", help="Test name")
+    p_add.add_argument("result", help="Result (pass/fail)")
+    p_add.add_argument("--timestamp", "-t", default=None, help="Timestamp (Unix or ISO)")
+    p_add.add_argument("--db-path", default=DEFAULT_DB_PATH, help="Path to DB")
+
     args = parser.parse_args()
 
     # --- HANDLERS ---
@@ -479,6 +487,10 @@ if __name__ == "__main__":
     
     elif args.command == "delete-jobs":
         delete_all_validation_jobs(confirm=args.confirm, namespace=args.namespace, tag=args.tag)
+
+    elif args.command == "add-result":
+        add_result_local(args.node, args.test, args.result, args.timestamp, args.db_path)
+
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
         print(" CLUSTER DOCTOR FUNCTIONS - USAGE GUIDE")
