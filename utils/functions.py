@@ -254,7 +254,17 @@ def submit_job(yaml_file):
     if not os.path.exists(yaml_file):
         raise FileNotFoundError(f"File '{yaml_file}' does not exist")
     return run_command(["kubectl", "create", "-f", yaml_file])
-
+def get_job_status(job_name, namespace=DEFAULT_NAMESPACE):
+    """
+    Returns the status of a specific vcjob.
+    Potential statuses: Pending, Running, Completed, Failed, Unknown
+    """
+    cmd = ["kubectl", "get", "vcjob", "-n", namespace, job_name, "-o", "jsonpath={.status.state.phase}"]
+    try:
+        status = run_command(cmd)
+        return status if status else "Unknown"
+    except Exception:
+        return "Unknown"
 def delete_job(job_name, namespace=DEFAULT_NAMESPACE):
     """
     Deletes a specific vcjob.
