@@ -75,7 +75,7 @@ spec:
               args:
                 - |
                   echo "test started."
-                  git clone https://github.com/IamNirmata/cluster_doctor.git /workspace/cluster_doctor
+                  git clone https://github.com/IamNirmata/c-val.git /workspace/c-val
                   cd /workspace/cluster_doctor/validation-tests/
                   chmod +x test1.sh
                   ./test1.sh
