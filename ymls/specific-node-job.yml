@@ -77,7 +77,7 @@ spec:
                   echo "test started."
                   git clone https://github.com/IamNirmata/c-val.git /workspace/c-val
                   cd /workspace/c-val/validation-tests/
-                  chmod +x r.sh
+                  chmod +x run-test.sh
                   ./test1.sh
                   bash db-update.sh
                   echo "Completed."
