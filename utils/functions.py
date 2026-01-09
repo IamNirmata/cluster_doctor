@@ -34,6 +34,43 @@ def _exec_python_on_pod(python_code, pod, namespace, args=None):
         cmd.extend([str(a) for a in args])
     return run_command(cmd)
 
+def init_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """
+    Initializes the database schema remotely on the pod.
+    """
+    code = textwrap.dedent(f"""
+    import sqlite3, os, sys, socket
+
+    print(f'Running initialization inside pod: {{socket.gethostname()}}')
+    db_path = '{db_path}'
+    print(f'Target DB path: {{db_path}}')
+
+    try:
+        db_dir = os.path.dirname(db_path)
+        if not os.path.exists(db_dir):
+            print(f'Creating directory: {{db_dir}}')
+            os.makedirs(db_dir, exist_ok=True)
+        else:
+            print(f'Directory {{db_dir}} already exists.')
+
+        conn = sqlite3.connect(db_path)
+        conn.execute('PRAGMA journal_mode=WAL;')
+        conn.execute('PRAGMA synchronous=NORMAL;')
+        # Table runs
+        conn.execute("CREATE TABLE IF NOT EXISTS runs (node TEXT NOT NULL, test TEXT NOT NULL, timestamp INTEGER NOT NULL, result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete')));")
+        # Index on runs
+        conn.execute('CREATE INDEX IF NOT EXISTS idx_runs_node_test_ts ON runs(node, test, timestamp);')
+        # View latest_status
+        conn.execute("CREATE VIEW IF NOT EXISTS latest_status AS SELECT r.node, r.test, r.timestamp AS latest_timestamp, r.result FROM runs r JOIN (SELECT node, test, MAX(timestamp) AS max_ts FROM runs GROUP BY node, test) x ON r.node=x.node AND r.test=x.test AND r.timestamp=x.max_ts;")
+        conn.commit()
+        print(f'Successfully initialized DB at {{db_path}}')
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace)
+
+
 
 # ==========================================
 # FLOW STEP 1: Get Free Node List
