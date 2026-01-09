@@ -10,7 +10,7 @@ import datetime
 DEFAULT_NAMESPACE = "gcr-admin"
 DEFAULT_POD = "gcr-admin-pvc-access"
 DEFAULT_DB_PATH = "/data/continuous_validation/metadata/validation.db"
-JOB_GROUP_LABEL = "hari-gcr-cluster-validation"
+JOB_GROUP_LABEL = "JOB_GROUP_LABEL"
 
 
 def run_command(command, shell=False, check=True):
