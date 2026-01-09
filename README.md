@@ -41,12 +41,12 @@ The database tracks the latest status per node/per test.
 The orchestration is handled by `job-runner.ipynb` implementing the following logic:
 
 ### 1. Get Free Node List
-- **Function:** `get_free_node_list()` from `kubectl/functions.py`.
+- **Function:** `get_free_node_list()` from `utils/functions.py`.
 - **Action:** Queries the cluster manager for currently available nodes.
 - **Output:** Saves to list `get_free_node_list[]`.
 
 ### 2. Get DB Latest Status
-- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod using `get_db_latest_status()` from `kubectl/functions.py`.
+- **Context:** Accesses `validation.db` via the `gcr-admin-pvc-access` pod using `get_db_latest_status()` from `utils/functions.py`.
 - **Action:** Retrieves the latest test timestamp for every node in the database.
 - **Logic:**
     - If a node has no history, it is marked with a "very old" timestamp (highest priority).
@@ -78,13 +78,13 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 1.  Read the YAML template.
 2.  Inject node name (`<node-name>`).
 3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4.  Submit to K8s cluster using create_job() function from `kubectl/functions.py`.
+4.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
 
 ### 5. Monitor Job Status
 - **Action:** Tracks the status of submitted batches.
 - **Timeout Logic:**
     - If a job remains `Pending` > `X` minutes:
-        - Cancel the job using delete_job() from `kubectl/functions.py`.
+        - Cancel the job using delete_job() from `utils/functions.py`.
         - Update `job_submission_status` to `canceled` in the queue list.
 
 ### 6. Job Execution (Inside the Job Pod)
@@ -92,7 +92,7 @@ Once the job is scheduled on the specific node:
 1.  **Setup:** Git clones `cluster_doctor` to `/opt/cluster_doctor`.
 2.  **Execute:** Runs validation tests, piping output via `tee`.
 3.  **Log Archival:** Saves STDOUT/STDERR to: `/data/continuous_validation/<test-name>/<node-name>/<node-name>-<testname>-<timestamp>.log`
-4.  **DB Update:** Calls `add_result_local()` (from `/opt/cluster_doctor/kubectl/functions.py`) to update `validation.db` with the new timestamp and pass/fail status.
+4.  **DB Update:** Calls `add_result_local()` (from `/opt/cluster_doctor/utils/functions.py`) to update `validation.db` with the new timestamp and pass/fail status.
 
 ### 7. Generate Daily Report
 - **Action:** Summarizes the run statistics.
