@@ -74,9 +74,6 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 - run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monitor_interval=X):
   - While loop runs as long as priority queue has unsubmitted jobs (false status):
     - runs each batch:
-        - 
-      submit next N jobs from queue 
-        - inputs: node name, job name, template path
 
 
     monitor job status every X minutes
