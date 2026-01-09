@@ -81,7 +81,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 4.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
 
 ### 5. Monitor Job Status
-- **Action:** Tracks the status of submitted batches using `get_job_status()` from `utils/functions.py` every `X` minutes in a the run_bac
+- **Action:** Tracks the status of submitted batches using `get_job_status()` from `utils/functions.py` every `X` minutes in a the run_batch
 - **Updates:** Modifies `job_submission_status` in `job_priority_queue_list` based on job completion status ( pending, running, succeeded, failed).
 - **Timeout Logic:**
     - If a job remains `Pending` > `X` minutes:
