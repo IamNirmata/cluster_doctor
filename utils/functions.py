@@ -432,7 +432,8 @@ if __name__ == "__main__":
     #delete_all_validation_jobs
     p_delete = subparsers.add_parser("delete-jobs", help="Delete all validation jobs")
     p_delete.add_argument("--confirm", action="store_true", help="Confirm deletion without prompt")
-    p_delete.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace
+    p_delete.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
+    p_delete.add_argument("--tag", default=JOB_GROUP_LABEL, help="Tag to filter
 
     args = parser.parse_args()
 
