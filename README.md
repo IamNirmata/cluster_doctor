@@ -70,46 +70,26 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 
 
 
-### 5. submit jobs and Monitor Job Status
-run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monitor_interval=X):
-- While loop runs as long as priority queue has unsubmitted jobs (false status):
+### 4. Batch Submission & Monitoring
+**Function:** `run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monitor_interval=X)`
 
-  - runs each batch by running N jobs at a time
-    - submit each job in the batch using submit_job() from utils/functions.py:
-    -  **Process (per batch):**
-    1.  Read the YAML template.
-    2.  Inject node name (`<node-name>`).
-    3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-    4.  Inject timestamp as an environment variable `GCRTIME`.
-    5.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
-  -  After submitting a batch of N jobs:
-  
+This function iterates through the `job_priority_queue_list` while there are unsubmitted jobs, processing them in batches of size `N`.
 
+#### A. Submission Logic
+For each node in the current batch, the system triggers `create_job()` from `utils/functions.py`:
+1.  **Read Template:** Loads `ymls/specific-node-job.yml`.
+2.  **Configure:**
+  -   Injects `<node-name>`.
+  -   Sets job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
+  -   Sets environment variable `GCRTIME`.
+3.  **Submit:** Pushes the job to the Kubernetes cluster.
 
-    monitor job status every X minutes
-    update job status in queue
-    handle timeouts for pending jobs
-### 4. Batch Job Submission
-**Inputs:**
-- **Batch Size:** `N` jobs.
-- **Queue:** `job_priority_queue_list`.
-- **Template:** `/home/hari/b200/validation/cluster_doctor/ymls/specific-node-job.yml`.
-
-**Process (per batch):**
-1.  Read the YAML template.
-2.  Inject node name (`<node-name>`).
-3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4.  Inject timestamp as an environment variable `GCRTIME`.
-5.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
-
-  
-    - Submit next `N` jobs as per step 4.
-- **Action:** Tracks the status of submitted batches using `get_job_status()` from `utils/functions.py` every `X` minutes in a the run_batch() function loop.
-- **Updates:** Modifies `job_submission_status` in `job_priority_queue_list` based on job completion status ( pending, running, succeeded, failed).
-- **Timeout Logic:**
-    - If a job remains `Pending` > `X` minutes:
-        - Cancel the job using delete_job() from `utils/functions.py`.
-        - Update `job_submission_status` to `timeout` in the queue list.
+#### B. Monitoring & Lifecycle
+Inside the loop, the orchestrator monitors the active batch every `X` minutes:
+-   **Status Check:** Uses `get_job_status()` to update the local queue with current states (Pending, Running, Succeeded, Failed).
+-   **Timeout Handling:**
+  -   **Condition:** If a job remains `Pending` for > `X` minutes.
+  -   **Action:** Cancels the job using `delete_job()` and marks the status as `timeout` in the queue.
 
 ### 6. Job Execution (Inside the Job Pod)
 Once the job is scheduled on the specific node:
