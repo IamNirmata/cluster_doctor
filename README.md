@@ -7,7 +7,7 @@ Continuous validation framework for large-scale GPU clusters. This system orches
 - `cluster_doctor/` - Main repository root.
 - `job-runner.ipynb` - **Main Orchestrator**: Jupyter notebook that drives the end-to-end workflow (node discovery, queue building, submission, monitoring).
 - `kubectl/`
-    - `functions.sh` - Core logic library (contains `get_free_node_list`, `add_result_local`, etc.).
+    - `.sh` - Core logic library (contains `get_free_node_list`, `add_result_local`, etc.).
 - `ymls/` - Kubernetes job templates.
     - `specific-node-job.yml` - Template for single-node validation jobs.
 - `results_management/` - Results fetching and metadata handling.
