@@ -22,7 +22,7 @@ spec:
           schedulerName: volcano
           nodeSelector:
             # kubernetes.io/hostname: "nodename-placeholder"
-            kubernetes.io/hostname: "nodeplaceholder"
+            kubernetes.io/hostname: "nodename-placeholder"
           restartPolicy: Never
           volumes:
             - name: dshm
