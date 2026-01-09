@@ -1,7 +1,7 @@
 apiVersion: batch.volcano.sh/v1alpha1
 kind: Job
 metadata:
-  generateName: jobname-placeholder
+  generajobname-placeholderteName: 
   namespace: gcr-admin
 spec:
   queue: gcr-admin
