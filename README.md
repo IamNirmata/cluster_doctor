@@ -83,6 +83,7 @@ For each node in the current batch, the system triggers `create_job()` from `uti
   -   Sets job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
   -   Sets environment variable `GCRTIME`.
 3.  **Submit:** Pushes the job to the Kubernetes cluster using create_job() function from `utils/functions.py`.
+4.  **Update Queue:** Marks job_submission_status as `True` for the node in
 
 #### B. Monitoring & Lifecycle
 Inside the loop, the orchestrator monitors the active batch every `X` minutes:
