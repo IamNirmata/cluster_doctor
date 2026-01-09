@@ -76,7 +76,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 This function iterates through the `job_priority_queue_list` while there are unsubmitted jobs (False status for job_submission_status), processing them in batches of size `N`.
 
 #### A. Submission Logic
-For each node in the current batch, the system triggers `s()` from `utils/functions.py`:
+For each node in the current batch, the system triggers `sub()` from `utils/functions.py`:
 1.  **Read Template:** Loads `ymls/specific-node-job.yml`.
 2.  **Configure:**
   -   Injects `<node-name>`.
