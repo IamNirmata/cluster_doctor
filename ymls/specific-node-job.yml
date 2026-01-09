@@ -79,6 +79,7 @@ spec:
                   cd /workspace/cluster_doctor/tests
                   chmod +x test1.sh
                   ./test1.sh
+                  
                   echo "Sleep infinity"
               resources:
                 requests:
