@@ -39,7 +39,7 @@ The database tracks the latest status per node/per test.
 ## Assumptions
 - Random sampling (representative) is important and useful for continuous cluster health monitoring.
 - The bad nodes are more likely be free than good nodes ( crash -> node freed)
-- We may not afford to do online 
+- We may not afford to do online validation 9
 ## Workflow
 
 The orchestration is handled by `job-runner.ipynb` implementing the following logic:
