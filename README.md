@@ -73,7 +73,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 ### 4. Batch Submission & Monitoring
 **Function:** `run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monitor_interval=X)`
 
-This function iterates through the `job_priority_queue_list` while there are unsubmitted jobs , processing them in batches of size `N`.
+This function iterates through the `job_priority_queue_list` while there are unsubmitted jobs (), processing them in batches of size `N`.
 
 #### A. Submission Logic
 For each node in the current batch, the system triggers `create_job()` from `utils/functions.py`:
