@@ -74,7 +74,7 @@ spec:
               command: ["/bin/bash", "-lc"]
               args:
                 - |
-                  echo "."
+                  echo "test s."
                   git clone https://github.com/IamNirmata/cluster_doctor.git /workspace/cluster_doctor
                   cd /workspace/cluster_doctor/validation-tests/
                   chmod +x test1.sh
