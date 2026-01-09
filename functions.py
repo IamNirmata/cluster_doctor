@@ -25,7 +25,6 @@ def run_command(command, shell=False, check=True):
         print(f"Error executing command: {command}")
         print(f"Stderr: {e.stderr.decode('utf-8')}")
         raise e
-        raise e
 
 def _exec_python_on_pod(python_code, pod, namespace, args=None):
     """Helper to execute python code inside a pod."""
