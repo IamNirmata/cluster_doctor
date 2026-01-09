@@ -196,7 +196,7 @@ def parse_db_status_output(output_string):
 # FLOW STEP 3: Build Priority Queue
 # ==========================================
 
-def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7):
+def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7, shuffle=False):
     """
     Constructs the job priority queue based on node age.
     
@@ -204,6 +204,7 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
         free_nodes_list (list): List of available node names.
         db_latest_status_map (dict): Dict {node: timestamp} of last run times.
         days_threshold (int): Nodes tested more recently than this will be skipped.
+        shuffle (bool): If True, randomize the order of the queue instead of sorting by age.
     
     Returns:
         list: [[node_name, priority_rank, job_submitted_status], ...]
@@ -231,9 +232,13 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
                 'ts': last_ts
             })
             
-    # SORT: Oldest timestamp first (Ascending). 
-    # 0 (Never tested) will be at the top.
-    candidate_list.sort(key=lambda x: x['ts'])
+    if shuffle:
+        # RANDOMIZE: Use random shuffle
+        random.shuffle(candidate_list)
+    else:
+        # SORT: Oldest timestamp first (Ascending). 
+        # 0 (Never tested) will be at the top.
+        candidate_list.sort(key=lambda x: x['ts'])
     
     # FORMAT OUTPUT
     # [nodename, priority_order, job_submission_status]
