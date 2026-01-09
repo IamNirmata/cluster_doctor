@@ -36,7 +36,8 @@ The database tracks the latest status per node/per test.
 | 001 | DL unit test | 1736367000 | Pass |
 | 002 | DL unit test | 1736367000 | Fail |
 
-## Assump
+## Assumptions
+- Ransom 
 
 ## Workflow
 
