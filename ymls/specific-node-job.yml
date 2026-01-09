@@ -79,7 +79,7 @@ spec:
                   cd /workspace/cluster_doctor/validation-tests/
                   chmod +x test1.sh
                   ./test1.sh
-                  bash db-
+                  bash db-update.sh
 
                   echo "Sleep infinity"
               resources:
