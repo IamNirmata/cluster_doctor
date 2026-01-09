@@ -77,11 +77,11 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
     - runs each batch by running N jobs at a time
       - submit each job in the batch using submit_job() from utils/functions.py:
       **Process (per batch):**
-1.  Read the YAML template.
-2.  Inject node name (`<node-name>`).
-3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4.  Inject timestamp as an environment variable `GCRTIME`.
-5.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
+    1.  Read the YAML template.
+    2.  Inject node name (`<node-name>`).
+    3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
+    4.  Inject timestamp as an environment variable `GCRTIME`.
+    5.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
         - read yaml template
         - inject node name , job name , and timestamp as already described in job-runner.ipynb to temp yaml
         - submit to k8s cluster using create_job() from utils/functions.py
