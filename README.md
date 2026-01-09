@@ -76,6 +76,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
     - runs each batch:
       - read yaml template
       - inject node name and other params by replacing placeholders
+      - generate job name with timestamp
       - submit to k8s cluster using create_job() from utils/functions.py
 
 
