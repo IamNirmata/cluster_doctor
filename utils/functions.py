@@ -466,6 +466,8 @@ if __name__ == "__main__":
         
     elif args.command == "history":
         print(get_history(limit=args.limit))
+    
+    elif args.command == "delete-jobs":
         
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
