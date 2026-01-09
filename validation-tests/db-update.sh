@@ -1,5 +1,5 @@
 
-python /work/cluster_doctor/utils/functions.py add-result \
+python /workspace/cluster_doctor/utils/functions.py add-result \
     "$GCRNODE" \
     "test1" \
     "pass" \
