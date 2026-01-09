@@ -83,6 +83,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 ### 5. Monitor Job Status
 run_batch() function:
   while priority queue has unsubmitted jobs (false status):
+    - Submit next `N` jobs as per step 4.
 - **Action:** Tracks the status of submitted batches using `get_job_status()` from `utils/functions.py` every `X` minutes in a the run_batch() function loop.
 - **Updates:** Modifies `job_submission_status` in `job_priority_queue_list` based on job completion status ( pending, running, succeeded, failed).
 - **Timeout Logic:**
