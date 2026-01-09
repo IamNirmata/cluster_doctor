@@ -249,7 +249,7 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
 
 def submit_job(yaml_file):
     """
-    submit  a Kubernetes job from a YAML file.
+    submit a Kubernetes job from a YAML file.
     """
     if not os.path.exists(yaml_file):
         raise FileNotFoundError(f"File '{yaml_file}' does not exist")
