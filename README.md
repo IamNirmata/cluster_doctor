@@ -38,7 +38,7 @@ The database tracks the latest status per node/per test.
 
 ## Assumptions
 - Random sampleing
-- The bad nodes are likely be freeier than good nodes ( crash -> node freed -> test -> bad node detected -> node cordoned -> node busy -> good node )
+- The bad nodes are likely be freeier than good nodes ( crash -> node freed -)
 
 ## Workflow
 
