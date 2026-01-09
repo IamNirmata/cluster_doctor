@@ -72,7 +72,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 
 ### 5. submit jobs and Monitor Job Status
 - run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monitor_interval=X):
-  - while priority queue has unsubmitted jobs (false status):
+  - a while priority queue has unsubmitted jobs (false status):
   - Runs each batch:
         - 
       submit next N jobs from queue 
