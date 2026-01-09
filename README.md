@@ -76,7 +76,7 @@ run_batch(node_name, job_name, template_path, dry_run=False, batch_size=N, monit
 
   - runs each batch by running N jobs at a time
     - submit each job in the batch using submit_job() from utils/functions.py:
-      **Process (per batch):**
+    -  **Process (per batch):**
     1.  Read the YAML template.
     2.  Inject node name (`<node-name>`).
     3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
