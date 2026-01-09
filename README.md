@@ -86,7 +86,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 - **Timeout Logic:**
     - If a job remains `Pending` > `X` minutes:
         - Cancel the job using delete_job() from `utils/functions.py`.
-        - Update `job_submission_status` to `canceled` in the queue list.
+        - Update `job_submission_status` to `time` in the queue list.
 
 ### 6. Job Execution (Inside the Job Pod)
 Once the job is scheduled on the specific node:
