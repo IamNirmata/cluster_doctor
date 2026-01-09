@@ -68,17 +68,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 
   ```
 
-### 4. Batch Job Submission
-**Inputs:**
-- **Batch Size:** `N` jobs.
-- **Queue:** `job_priority_queue_list`.
-- **Template:** `/home/hari/b200/validation/cluster_doctor/ymls/specific-node-job.yml`.
 
-**Process (per batch):**
-1.  Read the YAML template.
-2.  Inject node name (`<node-name>`).
-3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
 
 ### 5. Monitor Job Status
 run_batch() function:
