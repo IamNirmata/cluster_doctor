@@ -83,6 +83,7 @@ run_batch() function:
 2.  Inject node name (`<node-name>`).
 3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
 4.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
+
   while priority queue has unsubmitted jobs (false status):
     - Submit next `N` jobs as per step 4.
 - **Action:** Tracks the status of submitted batches using `get_job_status()` from `utils/functions.py` every `X` minutes in a the run_batch() function loop.
