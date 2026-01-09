@@ -500,7 +500,6 @@ if __name__ == "__main__":
 
         print("\n4. SUBMIT JOB")
         print("   functions.create_job('generated_job.yaml')")
-    
 
         print("\n5. ADD RESULT (Run inside job pod)")
         print("   functions.add_result_local('node-01', 'dl_test', 'pass')")
