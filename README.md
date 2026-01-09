@@ -37,8 +37,8 @@ The database tracks the latest status per node/per test.
 | 002 | DL unit test | 1736367000 | Fail |
 
 ## Assumptions
-- Random sampleing
-- The bad nodes are likely be freeier than good nodes ( crash -> node freed -)
+- Random sampleing ()
+- The bad nodes are likely be freeier than good nodes ( crash -> node freed)
 
 ## Workflow
 
