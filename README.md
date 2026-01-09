@@ -37,7 +37,8 @@ The database tracks the latest status per node/per test.
 | 002 | DL unit test | 1736367000 | Fail |
 
 ## Assumptions
-- Ransom 
+- Random sampleing
+- 
 
 ## Workflow
 
