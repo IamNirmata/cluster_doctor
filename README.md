@@ -92,7 +92,7 @@ Inside the loop, the orchestrator monitors the active batch every `X` minutes:
   -   **Condition:** If a job remains `Pending` for > `X` minutes.
   -   **Action:** Cancels the job using `delete_job()` and marks the status as `timeout` in the queue.
 
-### 6. Job Execution (Inside the Job Pod)
+### 5. Job Execution (Inside the Job Pod)
 Once the job is scheduled on the specific node:
 1.  **Setup:** Git clones `cluster_doctor` to `/opt/cluster_doctor`.
 2.  **Execute:** Runs validation tests, piping output via `tee`.
