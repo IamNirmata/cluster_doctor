@@ -456,7 +456,7 @@ if __name__ == "__main__":
     p_add.add_argument("node", help="Node name")
     p_add.add_argument("test", help="Test name")
     p_add.add_argument("result", help="Result (pass/fail)")
-    p_add.add_argument("--timestamp", "-t", default=None, help="Timestamp (Unix or ISO)")
+    p_add.add_argument("timestamp", nargs="?", default=None, help="Timestamp (Unix or ISO)")
     p_add.add_argument("--db-path", default=DEFAULT_DB_PATH, help="Path to DB")
 
     args = parser.parse_args()
