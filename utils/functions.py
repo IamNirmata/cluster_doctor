@@ -429,7 +429,7 @@ if __name__ == "__main__":
     p_hist = subparsers.add_parser("history", help="Get DB run history")
     p_hist.add_argument("limit", nargs="?", default="20", help="Number of rows")
 
-    #c Command: delete-all
+    #c Command: delete-jobs
     p_delete = subparsers.add_parser("delete-jobs", help="Delete all validation jobs")
     p_delete.add_argument("--confirm", action="store_true", help="Confirm deletion without prompt")
     p_delete.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
