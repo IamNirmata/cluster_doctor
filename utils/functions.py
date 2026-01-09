@@ -496,11 +496,18 @@ if __name__ == "__main__":
     p_add.add_argument("timestamp", nargs="?", default=None, help="Timestamp (Unix or ISO)")
     p_add.add_argument("--db-path", default=DEFAULT_DB_PATH, help="Path to DB")
 
+    # Command: init-db
+    p_init = subparsers.add_parser("init-db", help="Initialize remote DB schema")
+    p_init.add_argument("--pod", default=DEFAULT_POD, help="Pod to run init on")
+    p_init.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
+    p_init.add_argument("--db-path", default=DEFAULT_DB_PATH, help="Db path")
+
     args = parser.parse_args()
 
     # --- HANDLERS ---
 
     if args.command == "freenodes":
+
         nodes, totals = get_free_nodes()
         fmt = "{:<30} {:<6} {:<6} {:<6} {:<6}"
         print("\n" + fmt.format("NODE NAME", "CAP", "ALLOC", "USED", "FREE"))
