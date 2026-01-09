@@ -38,7 +38,7 @@ The database tracks the latest status per node/per test.
 
 ## Assumptions
 - Random sampleing
-- The bad nodes are likely be free
+- The bad nodes are likely be freeier than good nodes ( crash 0-)
 
 ## Workflow
 
