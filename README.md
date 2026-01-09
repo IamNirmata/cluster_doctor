@@ -12,7 +12,7 @@ Continuous validation framework for large-scale GPU clusters. This system orches
 - `ymls/` - Kubernetes job templates.
     - `specific-node-job.yml` - Template for single-node validation jobs.
 - `results_management/` - Results fetching and metadata handling.
-- `tests/` - Test scripts and categories.
+- `validation-tests/` - Test scripts and categories.
 - `gitignored/reports/` - Generated daily reports.
 
 ## Directory Layout & Data Persistence
