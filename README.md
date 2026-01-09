@@ -95,7 +95,7 @@ The orchestration is handled by `job-runner.ipynb` implementing the following lo
 1.  Read the YAML template.
 2.  Inject node name (`<node-name>`).
 3.  Inject job name: `hari-gcr-ceval-<node-name>-<timestamp>`.
-4. Inject timestamp as an environment variable `GCRTIME`.
+4.  Inject timestamp as an environment variable `GCRTIME`.
 4.  Submit to K8s cluster using create_job() function from `utils/functions.py`.
 
   
