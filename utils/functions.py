@@ -263,7 +263,7 @@ def delete_job(job_name, namespace=DEFAULT_NAMESPACE):
 
 def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE, tag=JOB_GROUP_LABEL):
     """
-    Deletes all validation jobs (containing 'hari-gcr-cluster-validation').
+    Deletes all validation jobs (containing ).
     """
     cmd_list = f'kubectl get vcjob -n {namespace} --no-headers -o custom-columns=NAME:.metadata.name | grep "{JOB_GROUP_LABEL}"'
     try:
