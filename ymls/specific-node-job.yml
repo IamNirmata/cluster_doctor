@@ -59,6 +59,7 @@ spec:
                     fieldRef:
                       fieldPath: spec.nodeName
                 - name: GCRTIME
+                  value: "
               volumeMounts:
                 - name: dshm
                   mountPath: /dev/shm
