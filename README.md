@@ -1,4 +1,4 @@
-# cluster_doctor
+# cluster_
 *Last updated:* Thursday, January 08, 2026
 
 Continuous validation framework for large-scale GPU clusters. This system orchestrates health checks on free nodes in a prioritized manner, ensuring comprehensive coverage and automated result tracking via a Kubernetes-based workflow.
