@@ -350,46 +350,80 @@ def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE, tag=J
 # FLOW STEP 6: Job Execution (Inside Pod)
 # ==========================================
 
+
 def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH):
     """
     Adds a result to the database (Local Execution).
+    NFS/PVC-safe: uses DELETE journaling + busy_timeout to reduce locking issues.
     """
-    import sqlite3, datetime
-    
+    import os
+    import sqlite3
+    import datetime
+
+    # --- Timestamp normalization ---
     if timestamp is None:
         timestamp = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
     else:
-        # Handle if timestamp is string (ISO) or already int
         if isinstance(timestamp, str):
-             if timestamp.isdigit():
-                 timestamp = int(timestamp)
-             else:
-                 # Minimal parsing attempt
-                 if timestamp.endswith('Z'): 
-                    timestamp = timestamp[:-1] + '+00:00'
-                 d = datetime.datetime.fromisoformat(timestamp)
-                 # Ensure UTC
-                 if d.tzinfo is None: d = d.replace(tzinfo=datetime.timezone.utc)
-                 timestamp = int(d.timestamp())
+            ts = timestamp.strip()
+            if ts.isdigit():
+                timestamp = int(ts)
+            else:
+                # Minimal parsing attempt
+                if ts.endswith('Z'):
+                    ts = ts[:-1] + '+00:00'
+                d = datetime.datetime.fromisoformat(ts)
+                if d.tzinfo is None:
+                    d = d.replace(tzinfo=datetime.timezone.utc)
+                timestamp = int(d.timestamp())
+        else:
+            # e.g. float or numpy types
+            timestamp = int(timestamp)
 
+    # --- DB path normalization ---
+    db_path = os.path.abspath(str(db_path).strip())
+    db_dir = os.path.dirname(db_path) or "."
+    os.makedirs(db_dir, exist_ok=True)
+
+    conn = None
     try:
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
-        # Use URI with nolock to avoid locking protocol errors on NFS/PVC
-        conn = sqlite3.connect(f"file:{db_path}?mode=rwc&nolock=1", uri=True)
-        # Ensure tables exist just in case
-        conn.execute("CREATE TABLE IF NOT EXISTS runs (node TEXT NOT NULL, test TEXT NOT NULL, timestamp INTEGER NOT NULL, result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete')));")
-        conn.execute("INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
-        
-        # latest_status is a VIEW in the new schema, so we do not insert into it.
-        # It is updated automatically by querying the runs table.
-        # conn.execute("CREATE TABLE IF NOT EXISTS latest_status (node TEXT, test TEXT, latest_timestamp INTEGER, result TEXT, PRIMARY KEY (node, test));")
-        # conn.execute("INSERT OR REPLACE INTO latest_status(node, test, latest_timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
-        
+        # Explicitly open read-write-create; add a connect timeout for lock waits
+        conn = sqlite3.connect(f"file:{db_path}?mode=rwc", uri=True, timeout=30)
+
+        # NFS/PVC friendly pragmas
+        conn.execute("PRAGMA busy_timeout=30000;")   # 30s wait on locks
+        conn.execute("PRAGMA journal_mode=DELETE;")  # avoid WAL on NFS
+        conn.execute("PRAGMA synchronous=FULL;")
+
+        # Ensure tables exist
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS runs (
+              node TEXT NOT NULL,
+              test TEXT NOT NULL,
+              timestamp INTEGER NOT NULL,
+              result TEXT NOT NULL CHECK (result IN ('pass','fail','incomplete'))
+            );
+        """)
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_runs_node_test_ts ON runs(node, test, timestamp);")
+
+        conn.execute(
+            "INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)",
+            (node, test, int(timestamp), result),
+        )
+
         conn.commit()
-        print(f'Added: {node} {test} {result} {timestamp}')
+        print(f"Added: {node} {test} {result} {timestamp}")
+
     except Exception as e:
-        print(f"Error adding result: {e}")
-        raise e
+        print(f"Error adding result: {e} (db_path={db_path!r})")
+        raise
+    finally:
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
 
 
 # ==========================================
