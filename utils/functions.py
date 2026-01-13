@@ -601,5 +601,7 @@ if __name__ == "__main__":
         print("  python3 functions.py status         # View Main DB status")
         print("  python3 functions.py storage        # View Storage DB results")
         print("  python3 functions.py create-test storage # Init Storage DB")
+        print("  python3 functions.py init-db       # Initialize Main DB")
+        print("  python3 functions.py ls [path]     # List files in pod")
         
         print("\n" + "="*60 + "\n")
