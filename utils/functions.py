@@ -269,6 +269,8 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
                 'node': node,
                 'ts': last_ts
             })
+        else:
+            
             
     if shuffle:
         # RANDOMIZE: Use random shuffle
