@@ -606,4 +606,5 @@ if __name__ == "__main__":
         print("  python3 functions.py exec [pod]    # Exec into a pod")
         print("  python3 functions.py delete-jobs   # Delete all validation jobs")
         print("  python3 functions.py add-result NODE TEST RESULT [TIMESTAMP] [--db-path PATH]  # Add result to local DB")
+        
         print("\n" + "="*60 + "\n")
