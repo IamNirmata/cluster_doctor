@@ -16,6 +16,7 @@ fi
 # Define paths
 JOB_DIR="/workspace/c-val/validation-tests/storage/fio_jobs"
 OUTPUT_DIR="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME"
+SUMMARY_FILE="$OUTPUT_DIR/summary.txt"
 
 echo "================================================================================"
 echo " STORAGE VALIDATION SUITE"
@@ -66,35 +67,46 @@ echo "Storage tests completed."
 echo "Results saved in $OUTPUT_DIR"
 
 # --- SUMMARY REPORTING ---
-echo ""
-echo "================================================================================"
-echo " PERFORMANCE SUMMARY REPORT"
-echo "================================================================================"
-printf "%-35s | %-15s | %-15s\n" "Test Filename" "IOPS" "Bandwidth (GB/s)"
-echo "--------------------------------------------------------------------------------"
+echo "Generating summary report..."
 
-# Check if jq is installed
+# Check if jq is installed before trying to generate the file
 if ! command -v jq &> /dev/null; then
     echo "Error: 'jq' is not installed. Cannot generate summary table."
     echo "Raw JSON files are available in $OUTPUT_DIR"
     exit 0
 fi
 
-# Parse all JSON files in the output directory
-for file in "$OUTPUT_DIR"/*.json; do
-    [ -e "$file" ] || continue
-    
-    filename=$(basename "$file")
-    
-    # Extract IOPS and Bandwidth (KB/s) sum for read+write
-    vals=$(jq -r '.jobs[0] | "\(.read.iops + .write.iops) \(.read.bw + .write.bw)"' "$file")
-    
-    read -r iops bw_kb <<< "$vals"
-    
-    # Convert to readable formats (GB/s for bandwidth, 2 decimal places)
-    bw_gb=$(awk "BEGIN {printf \"%.2f\", $bw_kb / 1024 / 1024}")
-    iops_fixed=$(awk "BEGIN {printf \"%.2f\", $iops}")
-    
-    printf "%-35s | %-15s | %-15s\n" "$filename" "$iops_fixed" "$bw_gb"
-done
-echo "================================================================================"
+# We wrap the entire block in curly braces and redirect to the file
+{
+    echo "================================================================================"
+    echo " PERFORMANCE SUMMARY REPORT"
+    echo " Node: $GCRNODE"
+    echo " Date: $GCRTIME"
+    echo "================================================================================"
+    printf "%-35s | %-15s | %-15s\n" "Test Filename" "IOPS" "Bandwidth (GB/s)"
+    echo "--------------------------------------------------------------------------------"
+
+    # Parse all JSON files in the output directory
+    for file in "$OUTPUT_DIR"/*.json; do
+        [ -e "$file" ] || continue
+        
+        filename=$(basename "$file")
+        
+        # Extract IOPS and Bandwidth (KB/s) sum for read+write
+        vals=$(jq -r '.jobs[0] | "\(.read.iops + .write.iops) \(.read.bw + .write.bw)"' "$file")
+        
+        read -r iops bw_kb <<< "$vals"
+        
+        # Convert to readable formats (GB/s for bandwidth, 2 decimal places)
+        bw_gb=$(awk "BEGIN {printf \"%.2f\", $bw_kb / 1024 / 1024}")
+        iops_fixed=$(awk "BEGIN {printf \"%.2f\", $iops}")
+        
+        printf "%-35s | %-15s | %-15s\n" "$filename" "$iops_fixed" "$bw_gb"
+    done
+    echo "================================================================================"
+
+} > "$SUMMARY_FILE"
+
+echo "Summary report generated at: $SUMMARY_FILE"
+# Optional: print the file to console as well so you see it immediately
+cat "$SUMMARY_FILE"
