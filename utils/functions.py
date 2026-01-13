@@ -825,10 +825,24 @@ if __name__ == "__main__":
             print(init_storage_db(args.pod, args.namespace, args.db_path))
     
 
+    elif args.command == "storage":
+        print("Fetching storage data from cluster...")
+        # 1. Fetch data string
+        data = get_storage_status_csv(args.pod, args.namespace, args.db_path)
+        
+        if "latest_timestamp" in data and "," in data:
+            # 2. Create filename
+            filename = f"storage_report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            
+            # 3. Save to CURRENT DIRECTORY ("w" mode without path)
+            with open(filename, "w") as f:
+                f.write(data)
+            
+            # 4. Print the absolute path so you can see it
+            print(f"✅ Storage report saved to: {os.path.abspath(filename)}")
 
 
 
-    
     elif args.command == "storage":
 
         print(get_storage_status_csv(args.pod, args.namespace, args.db_path))
