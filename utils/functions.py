@@ -264,6 +264,94 @@ def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=D
 def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_STORAGE_DB_PATH):
     code = textwrap.dedent(f"""
     import sqlite3, sys, datetime, os
+    
+    # Try to import pandas for pretty printing
+    try:
+        import pandas as pd
+        HAS_PANDAS = True
+    except ImportError:
+        HAS_PANDAS = False
+
+    db_path = '{db_path}'
+    try:
+        if not os.path.exists(db_path):
+            print(f"Storage DB not found at {{db_path}}. Run 'create-test storage' first.")
+            sys.exit(0)
+
+        conn = sqlite3.connect(db_path)
+        
+        # Check if view exists
+        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='view' AND name='latest_node_performance_stats';")
+        if not cursor.fetchone():
+            print("View 'latest_node_performance_stats' not found.")
+            sys.exit(0)
+
+        if HAS_PANDAS:
+            # Use Pandas for clean formatting
+            df = pd.read_sql_query('SELECT * FROM latest_node_performance_stats ORDER BY latest_timestamp DESC', conn)
+            if df.empty:
+                print("No results found in storage DB.")
+                sys.exit(0)
+                
+            # Format timestamp columns
+            for col in df.columns:
+                if 'timestamp' in col:
+                    # Convert integer timestamp to string
+                    df[col] = pd.to_datetime(df[col], unit='s', utc=True).dt.strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Formatting options
+            pd.set_option('display.max_rows', None)
+            pd.set_option('display.max_columns', None)
+            pd.set_option('display.width', 1000)
+            pd.set_option('display.max_colwidth', None)
+            
+            # Print without index
+            print(df.to_string(index=False))
+            
+        else:
+            # Fallback for when Pandas is missing (Align columns manually)
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute('SELECT * FROM latest_node_performance_stats ORDER BY latest_timestamp DESC').fetchall()
+
+            if rows:
+                headers = list(rows[0].keys())
+                data = []
+                # Pre-process data to strings
+                for r in rows:
+                    row_data = []
+                    for k in headers:
+                        val = r[k]
+                        if 'timestamp' in k and isinstance(val, int):
+                             val = datetime.datetime.fromtimestamp(val, tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                        row_data.append(str(val))
+                    data.append(row_data)
+                
+                # Calculate widths
+                widths = [len(h) for h in headers]
+                for row in data:
+                    for i, val in enumerate(row):
+                        widths[i] = max(widths[i], len(val))
+                
+                # Print Header
+                header_line = "  ".join(h.ljust(w) for h, w in zip(headers, widths))
+                print(header_line)
+                print("-" * len(header_line))
+                
+                # Print Rows
+                for row in data:
+                    print("  ".join(val.ljust(w) for val, w in zip(row, widths)))
+            else:
+                print("No results found in storage DB.")
+
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace)
+
+def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_STORAGE_DB_PATH):
+    code = textwrap.dedent(f"""
+    import sqlite3, sys, datetime, os
     db_path = '{db_path}'
     try:
         if not os.path.exists(db_path):
