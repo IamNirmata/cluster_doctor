@@ -11,7 +11,8 @@ import random
 DEFAULT_NAMESPACE = "gcr-admin"
 DEFAULT_POD = "gcr-admin-pvc-access"
 DEFAULT_DB_PATH = "/data/continuous_validation/metadata/validation.db"
-DEFAULT_STORAGE_DB_PATH = "/data/continuous_validation/test_storage.db"
+# UPDATED PATH below
+DEFAULT_STORAGE_DB_PATH = "/data/continuous_validation/metadata/test-storage.db"
 JOB_GROUP_LABEL = "hari-gcr-ceval"
 
 
@@ -271,7 +272,7 @@ def get_free_nodes(verbose=False):
 def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
     """Fetches status from the standard validation database."""
     code = textwrap.dedent(f"""
-    import sqlite3, datetime, sys,os
+    import sqlite3, datetime, sys
     db_path = '{db_path}'
     try:
         conn = sqlite3.connect(db_path)
@@ -298,7 +299,7 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
     Prints the output in tab-separated format for the CLI.
     """
     code = textwrap.dedent(f"""
-    import sqlite3, sys, datetime,os
+    import sqlite3, sys, datetime, os
     db_path = '{db_path}'
     try:
         if not os.path.exists(db_path):
