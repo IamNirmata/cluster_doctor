@@ -603,5 +603,6 @@ if __name__ == "__main__":
         print("  python3 functions.py create-test storage # Init Storage DB")
         print("  python3 functions.py init-db       # Initialize Main DB")
         print("  python3 functions.py ls [path]     # List files in pod")
-        
+        print("  python3 functions.py exec [pod]    # Exec into a pod")
+        print("  python3 functions.py delete-jobs   # Delete all validation jobs")
         print("\n" + "="*60 + "\n")
