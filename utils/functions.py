@@ -490,7 +490,8 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 
 
 # ==========================================
-# test d
+# test db update
+
 
 
 # ==========================================
