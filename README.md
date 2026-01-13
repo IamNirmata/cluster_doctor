@@ -1,7 +1,7 @@
 # Continuous Validation Framework for GPU Clusters
 *Last updated:* January 13, 2026
 
-This is a continuous validation framework designed for large-scale GPU clusters. It orchestrates health checks on currently free nodes in a prioritized manner, ensuring comprehensive coverage and automated result tracking via a Kubernetes-based workflow.
+This is a continuous validation framework designed for large-scale GPU clusters. It orchestrates health checks on currently free nodes in a prioritized manner, ensuring comprehensive coverage and automated result tracking 
 
 ## Assumptions & Design Philosophy
 This framework operates based on several key assumptions about cluster management and failure modes:
