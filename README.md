@@ -6,7 +6,7 @@ This is a continuous validation framework designed for large-scale GPU clusters.
 ## Assumptions & Design Philosophy
 This framework operates based on several key assumptions about cluster management and failure modes:
 
-- **Targeted Random Sampling**: While random sampling provides a representative statistical view of cluster health, it may miss specific failing nodes. This system prioritizes complete coverage of all nodes over time rather than just statistical sampling.
+- **Targeted Random Sampling**: [needs improvemnt While random sampling provides a representative statistical view of cluster health, it may miss specific failing nodes. This system prioritizes complete coverage of all nodes over time rather than just statistical sampling.
 - **Node Availability Heuristic**: "Bad" nodes are statistically more likely to be free than "good" nodes. This is based on the observation that jobs scheduled on faulty nodes tend to crash or fail quickly, releasing the resource back to the pool. Prioritizing free nodes naturally targets potential problem areas.
 - **Cost-Benefit Balance**: Performing full online validation (pre-flight or post-flight) for every user job is  expensive in terms of time and compute resources. An out-of-band continuous validation loop balances deep validation coverage with cluster utilization.
 - **Application-Level Validation**: Standard infrastructure monitoring (e.g., Kubernetes Node Problem Detector) often misses subtle ecosystem instabilities. This framework validates the stack at the level user workloads operate, running Deep Learning unit tests, NCCL tests, and storage benchmarks.
