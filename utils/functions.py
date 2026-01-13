@@ -248,7 +248,7 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
     """
     # Current time in UTC timestamp
     now = datetime.datetime.now(datetime.timezone.utc).timestamp()
-    prin
+    print(f"Building priority queue at {datetime.datetime.fromtimestamp(now, tz=datetime.timezone.utc).isoformat()} with threshold {days_threshold} days")
     threshold_seconds = days_threshold * 86400
     
     candidate_list = []
