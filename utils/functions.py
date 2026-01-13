@@ -607,4 +607,5 @@ if __name__ == "__main__":
         print("  python3 functions.py delete-jobs   # Delete all validation jobs")
         print("  python3 functions.py add-result NODE TEST RESULT [TIMESTAMP] [--db-path PATH]  # Add result to local DB")
         print("python3 functions.py create-test storage --pod POD --namespace NAMESPACE --db-path PATH  # Initialize Storage DB remotely")
+        
         print("\n" + "="*60 + "\n")
