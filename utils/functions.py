@@ -489,6 +489,9 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
     subprocess.call(["kubectl", "exec", "-it", pod_name, "-n", namespace, "--", "/bin/bash"])
 
 
+
+
+
 # ==========================================
 # MAIN EXECUTION
 # ==========================================
