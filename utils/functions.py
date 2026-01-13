@@ -832,7 +832,7 @@ if __name__ == "__main__":
         
         if "latest_timestamp" in data and "," in data:
             # 2. Create filename
-            filename = f"s.csv"
+            filename = f"storage.csv"
             
             # 3. Save to CURRENT DIRECTORY ("w" mode without path)
             with open(filename, "w") as f:
