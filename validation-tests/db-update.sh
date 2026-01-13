@@ -5,3 +5,5 @@ python /workspace/c-val/utils/functions.py add-result \
     "pass" \
     "$GCRTIME" \
     --db-path /data/continuous_validation/metadata/validation.db
+
+
