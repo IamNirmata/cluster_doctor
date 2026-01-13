@@ -41,7 +41,6 @@ The database tracks the latest status per node/per test.
 - The bad nodes are more likely be free than good nodes ( jobs with bad nodes crash more often, freeing up the node).
 - We may not afford to do online validation ( pre-flight or post-flight ) for all nodes due to time/resource constraints, too costly.
 - Lambda's online validation ( Node Problem Detector for example) is not at application level ( DL unit test, loop back NCCL test, storage test etc).
-- 
 
 ## Workflow
 
