@@ -100,18 +100,12 @@ def init_storage_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAUL
                 node TEXT NOT NULL,
                 timestamp INTEGER NOT NULL,
                 
-                iodepth_read_1file_iops REAL,
-                iodepth_read_1file_bw REAL,
-                iodepth_write_1file_iops REAL,
-                iodepth_write_1file_bw REAL,
-                numjobs_read_nfiles_iops REAL,
-                numjobs_read_nfiles_bw REAL,
-                numjobs_write_nfiles_iops REAL,
-                numjobs_write_nfiles_bw REAL,
-                randread_iops REAL,
-                randread_bw REAL,
-                randwrite_iops REAL,
-                randwrite_bw REAL,
+                iodepth_read_1file_iops REAL, iodepth_read_1file_bw REAL,
+                iodepth_write_1file_iops REAL, iodepth_write_1file_bw REAL,
+                numjobs_read_nfiles_iops REAL, numjobs_read_nfiles_bw REAL,
+                numjobs_write_nfiles_iops REAL, numjobs_write_nfiles_bw REAL,
+                randread_iops REAL, randread_bw REAL,
+                randwrite_iops REAL, randwrite_bw REAL,
 
                 PRIMARY KEY (node, timestamp)
             );
@@ -137,37 +131,31 @@ def init_storage_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAUL
                 node,
                 timestamp AS latest_timestamp,
                 
-                -- Seq Read Stats & Pct
                 iodepth_read_1file_iops,
                 ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_read_1file_iops), 2) as iodepth_read_1file_iops_pct,
                 iodepth_read_1file_bw,
                 ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_read_1file_bw), 2) as iodepth_read_1file_bw_pct,
 
-                -- Seq Write Stats & Pct
                 iodepth_write_1file_iops,
                 ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_write_1file_iops), 2) as iodepth_write_1file_iops_pct,
                 iodepth_write_1file_bw,
                 ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_write_1file_bw), 2) as iodepth_write_1file_bw_pct,
 
-                -- Agg Read Stats & Pct
                 numjobs_read_nfiles_iops,
                 ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_read_nfiles_iops), 2) as numjobs_read_nfiles_iops_pct,
                 numjobs_read_nfiles_bw,
                 ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_read_nfiles_bw), 2) as numjobs_read_nfiles_bw_pct,
 
-                -- Agg Write Stats & Pct
                 numjobs_write_nfiles_iops,
                 ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_write_nfiles_iops), 2) as numjobs_write_nfiles_iops_pct,
                 numjobs_write_nfiles_bw,
                 ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_write_nfiles_bw), 2) as numjobs_write_nfiles_bw_pct,
 
-                -- Rand Read Stats & Pct
                 randread_iops,
                 ROUND(PERCENT_RANK() OVER (ORDER BY randread_iops), 2) as randread_iops_pct,
                 randread_bw,
                 ROUND(PERCENT_RANK() OVER (ORDER BY randread_bw), 2) as randread_bw_pct,
 
-                -- Rand Write Stats & Pct
                 randwrite_iops,
                 ROUND(PERCENT_RANK() OVER (ORDER BY randwrite_iops), 2) as randwrite_iops_pct,
                 randwrite_bw,
@@ -412,7 +400,7 @@ def parse_timestamp(timestamp_str):
     if isinstance(timestamp_str, (int, float)):
         return int(timestamp_str)
         
-    ts = timestamp_str.strip()
+    ts = str(timestamp_str).strip()
     if ts.isdigit():
         return int(ts)
         
@@ -575,6 +563,52 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
 # ==========================================
 # UTILITY FUNCTIONS
 # ==========================================
+
+def get_cordoned_nodes():
+    """Returns a list of cordoned nodes."""
+    cmd = 'kubectl get nodes -o wide | grep -E "NAME|SchedulingDisabled|Ready.*SchedulingDisabled"'
+    return run_command(cmd, shell=True, check=False)
+
+def get_node_status(node, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """Fetches status for a specific node."""
+    code = textwrap.dedent(f"""
+    import sqlite3, datetime, sys
+    db_path = '{db_path}'
+    node_filter = sys.argv[1]
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        q = 'SELECT node, test, latest_timestamp, result FROM latest_status WHERE node = ? ORDER BY node, test'
+        rows = conn.execute(q, (node_filter,)).fetchall()
+        print('node\\ttest\\tlatest_timestamp\\tresult')
+        for r in rows:
+            ts = datetime.datetime.fromtimestamp(r['latest_timestamp'], tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts}}\\t{{r['result']}}")
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace, args=[node])
+
+def get_history(limit=20, pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
+    """Fetches run history."""
+    code = textwrap.dedent(f"""
+    import sqlite3, datetime, sys
+    db_path = '{db_path}'
+    limit = int(sys.argv[1])
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute('SELECT node, test, timestamp, result FROM runs ORDER BY timestamp DESC LIMIT ?', (limit,)).fetchall()
+        print('node\\ttest\\ttimestamp\\tresult')
+        for r in rows:
+            ts = datetime.datetime.fromtimestamp(r['timestamp'], tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+            print(f"{{r['node']}}\\t{{r['test']}}\\t{{ts}}\\t{{r['result']}}")
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace, args=[limit])
 
 def list_pod_files(target_dir="/data/continuous_validation", pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE):
     return run_command(["kubectl", "-n", namespace, "exec", pod, "--", "ls", "-F", target_dir])

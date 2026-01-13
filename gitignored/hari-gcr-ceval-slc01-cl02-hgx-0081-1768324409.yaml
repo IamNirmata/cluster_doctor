@@ -1,7 +1,7 @@
 apiVersion: batch.volcano.sh/v1alpha1
 kind: Job
 metadata:
-  generateName: jobname-placeholder
+  name: hari-gcr-ceval-slc01-cl02-hgx-0081-1768324409
   namespace: gcr-admin
 spec:
   queue: gcr-admin
@@ -21,8 +21,8 @@ spec:
         spec:
           schedulerName: volcano
           nodeSelector:
-            # kubernetes.io/hostname: "nodename-placeholder"
-            kubernetes.io/hostname: "nodename-placeholder"
+            # kubernetes.io/hostname: "slc01-cl02-hgx-0081"
+            kubernetes.io/hostname: "slc01-cl02-hgx-0081"
           restartPolicy: Never
           volumes:
             - name: dshm
@@ -59,7 +59,7 @@ spec:
                     fieldRef:
                       fieldPath: spec.nodeName
                 - name: GCRTIME
-                  value: "time-placeholder"
+                  value: "1768324409"
                 - name: GCRRESULT1
                   value: fail
                 - name: GCRRESULT2
