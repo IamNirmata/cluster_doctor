@@ -100,27 +100,16 @@ def init_storage_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAUL
                 node TEXT NOT NULL,
                 timestamp INTEGER NOT NULL,
                 
-                -- Test 1: Sequential Read (QD128)
                 iodepth_read_1file_iops REAL,
                 iodepth_read_1file_bw REAL,
-                
-                -- Test 2: Sequential Write (QD128)
                 iodepth_write_1file_iops REAL,
                 iodepth_write_1file_bw REAL,
-                
-                -- Test 3: Aggregate Read (Numjobs)
                 numjobs_read_nfiles_iops REAL,
                 numjobs_read_nfiles_bw REAL,
-                
-                -- Test 4: Aggregate Write (Numjobs)
                 numjobs_write_nfiles_iops REAL,
                 numjobs_write_nfiles_bw REAL,
-                
-                -- Test 5: Random Read (4k)
                 randread_iops REAL,
                 randread_bw REAL,
-                
-                -- Test 6: Random Write (4k)
                 randwrite_iops REAL,
                 randwrite_bw REAL,
 
@@ -203,17 +192,10 @@ def init_storage_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAUL
 # ==========================================
 
 def get_free_node_list():
-    """
-    Returns a list of node names that have ALL GPUs free.
-    Strictly returns nodes where free count == allocatable count.
-    """
     nodes, _ = get_free_nodes()
     return [n['node'] for n in nodes if n['free'] == n['alloc'] and n['alloc'] > 0]
 
 def get_free_nodes(verbose=False):
-    """
-    Returns details about free nodes (capacity, allocated, used, free).
-    """
     cmd_pods = ["kubectl", "get", "pods", "-A", "-o", "json"]
     pods_json = json.loads(run_command(cmd_pods))
     
@@ -269,7 +251,6 @@ def get_free_nodes(verbose=False):
 # ==========================================
 
 def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
-    """Fetches status from the standard validation database."""
     code = textwrap.dedent(f"""
     import sqlite3, datetime, sys
     db_path = '{db_path}'
@@ -293,10 +274,6 @@ def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=D
     return _exec_python_on_pod(code, pod, namespace)
 
 def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_STORAGE_DB_PATH):
-    """
-    Fetches the latest VIEW from the storage database.
-    Prints the output in tab-separated format for the CLI.
-    """
     code = textwrap.dedent(f"""
     import sqlite3, sys, datetime, os
     db_path = '{db_path}'
@@ -308,7 +285,6 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         
-        # Check if view exists
         cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='view' AND name='latest_node_performance_stats';")
         if not cursor.fetchone():
             print("View 'latest_node_performance_stats' not found.")
@@ -317,7 +293,6 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
         rows = conn.execute('SELECT * FROM latest_node_performance_stats ORDER BY latest_timestamp DESC').fetchall()
 
         if rows:
-            # Dynamically print headers
             headers = rows[0].keys()
             print('\\t'.join(headers))
             
@@ -325,7 +300,6 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
                 vals = []
                 for k in headers:
                     val = r[k]
-                    # Format timestamp if column name suggests it
                     if 'timestamp' in k and isinstance(val, int):
                          val = datetime.datetime.fromtimestamp(val, tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
                     vals.append(str(val))
@@ -340,7 +314,6 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
     return _exec_python_on_pod(code, pod, namespace)
 
 def parse_db_status_output(output_string):
-    """Helper: Parses string output from get_db_latest_status into a Dictionary."""
     status_map = {}
     lines = output_string.strip().split('\n')
     if lines and 'node' in lines[0] and 'timestamp' in lines[0]:
@@ -431,21 +404,43 @@ def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE, tag=J
 # FLOW STEP 6: Job Execution (Inside Pod)
 # ==========================================
 
+def parse_timestamp(timestamp_str):
+    """Parses timestamp string from Bash (%Y%m%d_%H%M%S) or ISO format."""
+    if timestamp_str is None:
+        return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        
+    if isinstance(timestamp_str, (int, float)):
+        return int(timestamp_str)
+        
+    ts = timestamp_str.strip()
+    if ts.isdigit():
+        return int(ts)
+        
+    # Try ISO Format
+    try:
+        if ts.endswith('Z'): ts = ts[:-1] + '+00:00'
+        d = datetime.datetime.fromisoformat(ts)
+        if d.tzinfo is None: d = d.replace(tzinfo=datetime.timezone.utc)
+        return int(d.timestamp())
+    except ValueError:
+        pass
+
+    # Try Bash Format (YYYYMMDD_HHMMSS)
+    try:
+        d = datetime.datetime.strptime(ts, "%Y%m%d_%H%M%S")
+        if d.tzinfo is None: d = d.replace(tzinfo=datetime.timezone.utc)
+        return int(d.timestamp())
+    except ValueError:
+        pass
+        
+    # Fallback to now if parsing fails
+    print(f"Warning: Could not parse timestamp '{timestamp_str}'. Using current time.")
+    return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+
 def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH):
-    import os, sqlite3, datetime
-    if timestamp is None:
-        timestamp = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-    else:
-        if isinstance(timestamp, str):
-            ts = timestamp.strip()
-            if ts.isdigit(): timestamp = int(ts)
-            else:
-                if ts.endswith('Z'): ts = ts[:-1] + '+00:00'
-                d = datetime.datetime.fromisoformat(ts)
-                if d.tzinfo is None: d = d.replace(tzinfo=datetime.timezone.utc)
-                timestamp = int(d.timestamp())
-        else:
-            timestamp = int(timestamp)
+    import os, sqlite3
+    
+    timestamp = parse_timestamp(timestamp)
 
     db_path = os.path.abspath(str(db_path).strip())
     db_dir = os.path.dirname(db_path) or "."
@@ -466,7 +461,7 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
             );
         """)
         conn.execute("CREATE INDEX IF NOT EXISTS idx_runs_node_test_ts ON runs(node, test, timestamp);")
-        conn.execute("INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)", (node, test, int(timestamp), result))
+        conn.execute("INSERT INTO runs(node, test, timestamp, result) VALUES (?,?,?,?)", (node, test, timestamp, result))
         conn.commit()
         print(f"Added: {node} {test} {result} {timestamp}")
     except Exception as e:
@@ -476,32 +471,14 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
         if conn: conn.close()
 
 def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORAGE_DB_PATH):
-    """
-    Parses JSON files in results_dir and inserts row into storage_performance DB.
-    """
-    import os, sqlite3, datetime, json
+    import os, sqlite3, json
     
-    # --- Timestamp normalization ---
-    if timestamp is None:
-        timestamp = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-    else:
-        if isinstance(timestamp, str):
-            ts = timestamp.strip()
-            if ts.isdigit(): timestamp = int(ts)
-            else:
-                if ts.endswith('Z'): ts = ts[:-1] + '+00:00'
-                d = datetime.datetime.fromisoformat(ts)
-                if d.tzinfo is None: d = d.replace(tzinfo=datetime.timezone.utc)
-                timestamp = int(d.timestamp())
-        else:
-            timestamp = int(timestamp)
+    timestamp = parse_timestamp(timestamp)
 
     db_path = os.path.abspath(str(db_path).strip())
     db_dir = os.path.dirname(db_path) or "."
     os.makedirs(db_dir, exist_ok=True)
 
-    # Dictionary to hold the values to insert
-    # Initialize with 0.0 or None
     metrics = {
         'iodepth_read_1file_iops': 0.0, 'iodepth_read_1file_bw': 0.0,
         'iodepth_write_1file_iops': 0.0, 'iodepth_write_1file_bw': 0.0,
@@ -511,8 +488,6 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
         'randwrite_iops': 0.0, 'randwrite_bw': 0.0,
     }
 
-    # Map filename prefixes to DB column prefixes
-    # Filename example: iodepth_read_1file.json
     file_map = {
         'iodepth_read_1file.json': 'iodepth_read_1file',
         'iodepth_write_1file.json': 'iodepth_write_1file',
@@ -527,7 +502,6 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
         print(f"Error: Results directory {results_dir} not found.")
         sys.exit(1)
 
-    # Parse JSON files
     for fname, prefix in file_map.items():
         fpath = os.path.join(results_dir, fname)
         if os.path.exists(fpath):
@@ -535,33 +509,15 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
                 with open(fpath, 'r') as f:
                     data = json.load(f)
                     job = data['jobs'][0]
-                    
-                    # Extract IOPS/BW (Sum read + write logic from bash script)
                     read_iops = job.get('read', {}).get('iops', 0)
                     write_iops = job.get('write', {}).get('iops', 0)
-                    read_bw = job.get('read', {}).get('bw', 0) # KB/s
-                    write_bw = job.get('write', {}).get('bw', 0) # KB/s
+                    read_bw = job.get('read', {}).get('bw', 0)
+                    write_bw = job.get('write', {}).get('bw', 0)
                     
-                    total_iops = read_iops + write_iops
-                    total_bw_kb = read_bw + write_bw
-                    
-                    # Convert KB/s to GB/s to match Schema/View logic? 
-                    # WAIT: The view logic (parse_fio_results) did conversions for display.
-                    # Usually best to store RAW (KB/s) or standardized (Bytes/s) in DB.
-                    # User's python view: ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_read_1file_bw), 2)
-                    # It doesn't matter for ranking, but for raw value display it does.
-                    # Let's store raw FIO output (KB/s) to be safe, or convert to GBs if strict.
-                    # The bash script output GB/s in summary. 
-                    # Let's store KB/s as 'REAL' and handle conversion in view/select if needed.
-                    # OR match the 'REAL' expectation. I will store raw KB/s as FIO gives it.
-                    
-                    metrics[f'{prefix}_iops'] = total_iops
-                    metrics[f'{prefix}_bw'] = total_bw_kb
-                    
+                    metrics[f'{prefix}_iops'] = read_iops + write_iops
+                    metrics[f'{prefix}_bw'] = read_bw + write_bw
             except Exception as e:
                 print(f"Warning: Failed to parse {fname}: {e}")
-        else:
-            print(f"Warning: File {fname} not found in results dir.")
 
     conn = None
     try:
@@ -570,8 +526,6 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
         conn.execute("PRAGMA journal_mode=DELETE;")
         conn.execute("PRAGMA synchronous=FULL;")
         
-        # Ensure table exists (Same schema as init_storage_db)
-        # We repeat CREATE IF NOT EXISTS just in case
         conn.execute('''
             CREATE TABLE IF NOT EXISTS storage_performance (
                 node TEXT NOT NULL,
@@ -586,7 +540,6 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
             );
         ''')
         
-        # Prepare INSERT OR REPLACE
         sql = '''
             INSERT OR REPLACE INTO storage_performance (
                 node, timestamp,
@@ -600,7 +553,7 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
         '''
         
         vals = (
-            node, int(timestamp),
+            node, timestamp,
             metrics['iodepth_read_1file_iops'], metrics['iodepth_read_1file_bw'],
             metrics['iodepth_write_1file_iops'], metrics['iodepth_write_1file_bw'],
             metrics['numjobs_read_nfiles_iops'], metrics['numjobs_read_nfiles_bw'],
@@ -608,7 +561,6 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
             metrics['randread_iops'], metrics['randread_bw'],
             metrics['randwrite_iops'], metrics['randwrite_bw']
         )
-        
         conn.execute(sql, vals)
         conn.commit()
         print(f"Successfully added storage results for {node} at {timestamp}")
@@ -753,11 +705,5 @@ if __name__ == "__main__":
         print("  python3 functions.py status         # View Main DB status")
         print("  python3 functions.py storage        # View Storage DB results")
         print("  python3 functions.py create-test storage # Init Storage DB")
-        print("  python3 functions.py init-db       # Initialize Main DB")
-        print("  python3 functions.py ls [path]     # List files in pod")
-        print("  python3 functions.py exec [pod]    # Exec into a pod")
-        print("  python3 functions.py delete-jobs   # Delete all validation jobs")
-        print("  python3 functions.py add-result NODE TEST RESULT [TIMESTAMP] [--db-path PATH]  # Add result to local DB")
-        print("  python3 functions.py create-test storage --pod POD --namespace NAMESPACE --db-path PATH  # Initialize Storage DB remotely")
         print("  python3 functions.py add-storage-result <node> <time> <dir> # Add results")
         print("\n" + "="*60 + "\n")
