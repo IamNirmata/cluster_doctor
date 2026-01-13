@@ -842,11 +842,6 @@ if __name__ == "__main__":
             print(f"✅ Storage report saved to: {os.path.abspath(filename)}")
 
 
-
-    # elif args.command == "storage":
-
-    #     print(get_storage_status_csv(args.pod, args.namespace, args.db_path))
-
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
         print(" CLUSTER VALIDATIONS FUNCTIONS - USAGE GUIDE")
