@@ -1,13 +1,13 @@
 
 ============================================================
- DAILY VALIDATION SUMMARY REPORT - 2026-01-13 09:22:58
+ DAILY VALIDATION SUMMARY REPORT - 2026-01-13 09:25:14
 ============================================================
 
 [1] JOB EXECUTION STATS
-  • Total Candidates Queued : 6
-  • Jobs Successfully Run   : 6
+  • Total Candidates Queued : 0
+  • Jobs Successfully Run   : 0
   • Jobs Pending/Skipped    : 0
 
 [2] BUSY NODES ANALYSIS (SKIPPED)
-  • Total Busy Nodes (in DB): 41
+  • Total Busy Nodes (in DB): 44
   • Busy & Overdue (> 7 days): 0
