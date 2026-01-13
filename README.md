@@ -39,7 +39,7 @@ The database tracks the latest status per node/per test.
 ## Assumptions
 - Random sampling (representative) is important and useful for continuous cluster health monitoring.
 - The bad nodes are more likely be free than good nodes ( jobs with bad nodes crash more often, freeing up the node).
-- We may not afford to do online validation ( cost comparison)
+- We may not afford to do online validation ( 
 - Lambda's online validation is not at application level ( NPD )
 
 
