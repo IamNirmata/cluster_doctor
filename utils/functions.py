@@ -349,46 +349,6 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
     """)
     return _exec_python_on_pod(code, pod, namespace)
 
-def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_STORAGE_DB_PATH):
-    code = textwrap.dedent(f"""
-    import sqlite3, sys, datetime, os
-    db_path = '{db_path}'
-    try:
-        if not os.path.exists(db_path):
-            print(f"Storage DB not found at {{db_path}}. Run 'create-test storage' first.")
-            sys.exit(0)
-
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        
-        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='view' AND name='latest_node_performance_stats';")
-        if not cursor.fetchone():
-            print("View 'latest_node_performance_stats' not found.")
-            sys.exit(0)
-
-        rows = conn.execute('SELECT * FROM latest_node_performance_stats ORDER BY latest_timestamp DESC').fetchall()
-
-        if rows:
-            headers = rows[0].keys()
-            print('\\t'.join(headers))
-            
-            for r in rows:
-                vals = []
-                for k in headers:
-                    val = r[k]
-                    if 'timestamp' in k and isinstance(val, int):
-                         val = datetime.datetime.fromtimestamp(val, tz=datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
-                    vals.append(str(val))
-                print('\\t'.join(vals))
-        else:
-            print("No results found in storage DB.")
-
-    except Exception as e:
-        print(f'Error: {{e}}', file=sys.stderr)
-        sys.exit(1)
-    """)
-    return _exec_python_on_pod(code, pod, namespace)
-
 def parse_db_status_output(output_string):
     status_map = {}
     lines = output_string.strip().split('\n')
