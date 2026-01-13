@@ -271,7 +271,7 @@ def get_free_nodes(verbose=False):
 def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_DB_PATH):
     """Fetches status from the standard validation database."""
     code = textwrap.dedent(f"""
-    import sqlite3, datetime, sys
+    import sqlite3, datetime, sys,os
     db_path = '{db_path}'
     try:
         conn = sqlite3.connect(db_path)
