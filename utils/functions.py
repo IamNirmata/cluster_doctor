@@ -832,7 +832,7 @@ if __name__ == "__main__":
         
         if "latest_timestamp" in data and "," in data:
             # 2. Create filename
-            filename = f"storage_report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            filename = f"s.csv"
             
             # 3. Save to CURRENT DIRECTORY ("w" mode without path)
             with open(filename, "w") as f:
