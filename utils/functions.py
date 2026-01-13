@@ -298,7 +298,7 @@ def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEF
     Prints the output in tab-separated format for the CLI.
     """
     code = textwrap.dedent(f"""
-    import sqlite3, sys, datetime
+    import sqlite3, sys, datetime,os
     db_path = '{db_path}'
     try:
         if not os.path.exists(db_path):
