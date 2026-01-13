@@ -778,7 +778,7 @@ if __name__ == "__main__":
             print(init_storage_db(args.pod, args.namespace, args.db_path))
     
     elif args.command == "storage":
-        print(get_storage_status(args.pod, args.namespace, args.db_path))
+        print(get_storage_status_csv(args.pod, args.namespace, args.db_path))
 
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
