@@ -270,7 +270,7 @@ def build_priority_queue(free_nodes_list, db_latest_status_map, days_threshold=7
                 'ts': last_ts
             })
         else:
-            
+            print(f"  Skipping node {node}: Last tested at {datetime.datetime.fromtimestamp(last_ts, tz=datetime.timezone.utc).isoformat()} (Age: {age/86400:.2f} days)")
             
     if shuffle:
         # RANDOMIZE: Use random shuffle
