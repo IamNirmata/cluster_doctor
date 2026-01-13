@@ -824,8 +824,13 @@ if __name__ == "__main__":
         if args.type == "storage":
             print(init_storage_db(args.pod, args.namespace, args.db_path))
     
+
+
+
+
+    
     elif args.command == "storage":
-        
+
         print(get_storage_status_csv(args.pod, args.namespace, args.db_path))
 
     elif args.command == "help" or args.command is None:
