@@ -261,7 +261,7 @@ def get_db_latest_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=D
     """)
     return _exec_python_on_pod(code, pod, namespace)
 
-def get_storage_status(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_STORAGE_DB_PATH):
+
     code = textwrap.dedent(f"""
     import sqlite3, sys, datetime, os
     
