@@ -11,7 +11,6 @@ import random
 DEFAULT_NAMESPACE = "gcr-admin"
 DEFAULT_POD = "gcr-admin-pvc-access"
 DEFAULT_DB_PATH = "/data/continuous_validation/metadata/validation.db"
-# UPDATED PATH below
 DEFAULT_STORAGE_DB_PATH = "/data/continuous_validation/metadata/test-storage.db"
 JOB_GROUP_LABEL = "hari-gcr-ceval"
 
@@ -476,6 +475,150 @@ def add_result_local(node, test, result, timestamp=None, db_path=DEFAULT_DB_PATH
     finally:
         if conn: conn.close()
 
+def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORAGE_DB_PATH):
+    """
+    Parses JSON files in results_dir and inserts row into storage_performance DB.
+    """
+    import os, sqlite3, datetime, json
+    
+    # --- Timestamp normalization ---
+    if timestamp is None:
+        timestamp = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+    else:
+        if isinstance(timestamp, str):
+            ts = timestamp.strip()
+            if ts.isdigit(): timestamp = int(ts)
+            else:
+                if ts.endswith('Z'): ts = ts[:-1] + '+00:00'
+                d = datetime.datetime.fromisoformat(ts)
+                if d.tzinfo is None: d = d.replace(tzinfo=datetime.timezone.utc)
+                timestamp = int(d.timestamp())
+        else:
+            timestamp = int(timestamp)
+
+    db_path = os.path.abspath(str(db_path).strip())
+    db_dir = os.path.dirname(db_path) or "."
+    os.makedirs(db_dir, exist_ok=True)
+
+    # Dictionary to hold the values to insert
+    # Initialize with 0.0 or None
+    metrics = {
+        'iodepth_read_1file_iops': 0.0, 'iodepth_read_1file_bw': 0.0,
+        'iodepth_write_1file_iops': 0.0, 'iodepth_write_1file_bw': 0.0,
+        'numjobs_read_nfiles_iops': 0.0, 'numjobs_read_nfiles_bw': 0.0,
+        'numjobs_write_nfiles_iops': 0.0, 'numjobs_write_nfiles_bw': 0.0,
+        'randread_iops': 0.0, 'randread_bw': 0.0,
+        'randwrite_iops': 0.0, 'randwrite_bw': 0.0,
+    }
+
+    # Map filename prefixes to DB column prefixes
+    # Filename example: iodepth_read_1file.json
+    file_map = {
+        'iodepth_read_1file.json': 'iodepth_read_1file',
+        'iodepth_write_1file.json': 'iodepth_write_1file',
+        'numjobs_read_nfiles.json': 'numjobs_read_nfiles',
+        'numjobs_write_nfiles.json': 'numjobs_write_nfiles',
+        'randread.json': 'randread',
+        'randwrite.json': 'randwrite'
+    }
+
+    print(f"Parsing storage results from: {results_dir}")
+    if not os.path.exists(results_dir):
+        print(f"Error: Results directory {results_dir} not found.")
+        sys.exit(1)
+
+    # Parse JSON files
+    for fname, prefix in file_map.items():
+        fpath = os.path.join(results_dir, fname)
+        if os.path.exists(fpath):
+            try:
+                with open(fpath, 'r') as f:
+                    data = json.load(f)
+                    job = data['jobs'][0]
+                    
+                    # Extract IOPS/BW (Sum read + write logic from bash script)
+                    read_iops = job.get('read', {}).get('iops', 0)
+                    write_iops = job.get('write', {}).get('iops', 0)
+                    read_bw = job.get('read', {}).get('bw', 0) # KB/s
+                    write_bw = job.get('write', {}).get('bw', 0) # KB/s
+                    
+                    total_iops = read_iops + write_iops
+                    total_bw_kb = read_bw + write_bw
+                    
+                    # Convert KB/s to GB/s to match Schema/View logic? 
+                    # WAIT: The view logic (parse_fio_results) did conversions for display.
+                    # Usually best to store RAW (KB/s) or standardized (Bytes/s) in DB.
+                    # User's python view: ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_read_1file_bw), 2)
+                    # It doesn't matter for ranking, but for raw value display it does.
+                    # Let's store raw FIO output (KB/s) to be safe, or convert to GBs if strict.
+                    # The bash script output GB/s in summary. 
+                    # Let's store KB/s as 'REAL' and handle conversion in view/select if needed.
+                    # OR match the 'REAL' expectation. I will store raw KB/s as FIO gives it.
+                    
+                    metrics[f'{prefix}_iops'] = total_iops
+                    metrics[f'{prefix}_bw'] = total_bw_kb
+                    
+            except Exception as e:
+                print(f"Warning: Failed to parse {fname}: {e}")
+        else:
+            print(f"Warning: File {fname} not found in results dir.")
+
+    conn = None
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=rwc", uri=True, timeout=30)
+        conn.execute("PRAGMA busy_timeout=30000;")
+        conn.execute("PRAGMA journal_mode=DELETE;")
+        conn.execute("PRAGMA synchronous=FULL;")
+        
+        # Ensure table exists (Same schema as init_storage_db)
+        # We repeat CREATE IF NOT EXISTS just in case
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS storage_performance (
+                node TEXT NOT NULL,
+                timestamp INTEGER NOT NULL,
+                iodepth_read_1file_iops REAL, iodepth_read_1file_bw REAL,
+                iodepth_write_1file_iops REAL, iodepth_write_1file_bw REAL,
+                numjobs_read_nfiles_iops REAL, numjobs_read_nfiles_bw REAL,
+                numjobs_write_nfiles_iops REAL, numjobs_write_nfiles_bw REAL,
+                randread_iops REAL, randread_bw REAL,
+                randwrite_iops REAL, randwrite_bw REAL,
+                PRIMARY KEY (node, timestamp)
+            );
+        ''')
+        
+        # Prepare INSERT OR REPLACE
+        sql = '''
+            INSERT OR REPLACE INTO storage_performance (
+                node, timestamp,
+                iodepth_read_1file_iops, iodepth_read_1file_bw,
+                iodepth_write_1file_iops, iodepth_write_1file_bw,
+                numjobs_read_nfiles_iops, numjobs_read_nfiles_bw,
+                numjobs_write_nfiles_iops, numjobs_write_nfiles_bw,
+                randread_iops, randread_bw,
+                randwrite_iops, randwrite_bw
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        '''
+        
+        vals = (
+            node, int(timestamp),
+            metrics['iodepth_read_1file_iops'], metrics['iodepth_read_1file_bw'],
+            metrics['iodepth_write_1file_iops'], metrics['iodepth_write_1file_bw'],
+            metrics['numjobs_read_nfiles_iops'], metrics['numjobs_read_nfiles_bw'],
+            metrics['numjobs_write_nfiles_iops'], metrics['numjobs_write_nfiles_bw'],
+            metrics['randread_iops'], metrics['randread_bw'],
+            metrics['randwrite_iops'], metrics['randwrite_bw']
+        )
+        
+        conn.execute(sql, vals)
+        conn.commit()
+        print(f"Successfully added storage results for {node} at {timestamp}")
+
+    except Exception as e:
+        print(f"Error adding storage result: {e}")
+        raise
+    finally:
+        if conn: conn.close()
+
 
 # ==========================================
 # UTILITY FUNCTIONS
@@ -535,6 +678,13 @@ if __name__ == "__main__":
     p_add.add_argument("timestamp", nargs="?", default=None)
     p_add.add_argument("--db-path", default=DEFAULT_DB_PATH)
 
+    # Command: add-storage-result (Local) - NEW
+    p_add_store = subparsers.add_parser("add-storage-result", help="Parse and add storage results to local DB")
+    p_add_store.add_argument("node")
+    p_add_store.add_argument("timestamp")
+    p_add_store.add_argument("results_dir")
+    p_add_store.add_argument("--db-path", default=DEFAULT_STORAGE_DB_PATH)
+
     # Command: init-db (General)
     p_init = subparsers.add_parser("init-db", help="Initialize Main DB")
     p_init.add_argument("--pod", default=DEFAULT_POD)
@@ -582,6 +732,8 @@ if __name__ == "__main__":
         delete_all_validation_jobs(confirm=args.confirm, namespace=args.namespace, tag=args.tag)
     elif args.command == "add-result":
         add_result_local(args.node, args.test, args.result, args.timestamp, args.db_path)
+    elif args.command == "add-storage-result":
+        add_storage_result_local(args.node, args.timestamp, args.results_dir, args.db_path)
     elif args.command == "init-db":
         print(init_db(args.pod, args.namespace, args.db_path))
 
@@ -601,11 +753,5 @@ if __name__ == "__main__":
         print("  python3 functions.py status         # View Main DB status")
         print("  python3 functions.py storage        # View Storage DB results")
         print("  python3 functions.py create-test storage # Init Storage DB")
-        print("  python3 functions.py init-db       # Initialize Main DB")
-        print("  python3 functions.py ls [path]     # List files in pod")
-        print("  python3 functions.py exec [pod]    # Exec into a pod")
-        print("  python3 functions.py delete-jobs   # Delete all validation jobs")
-        print("  python3 functions.py add-result NODE TEST RESULT [TIMESTAMP] [--db-path PATH]  # Add result to local DB")
-        print("  python3 functions.py create-test storage --pod POD --namespace NAMESPACE --db-path PATH  # Initialize Storage DB remotely")
-
+        print("  python3 functions.py add-storage-result <node> <time> <dir> # Add results")
         print("\n" + "="*60 + "\n")
