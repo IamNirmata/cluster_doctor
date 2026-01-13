@@ -491,7 +491,138 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
 
 # ==========================================
 # test db update script
+# ==========================================
 
+import textwrap
+
+def init_storage_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path="/data/continuous_validation/test_storage.db"):
+    """
+    Initializes the storage performance database and percentile ranking view remotely.
+    """
+    code = textwrap.dedent(f"""
+    import sqlite3, os, sys, socket
+
+    print(f'Running initialization inside pod: {{socket.gethostname()}}')
+    db_path = '{db_path}'
+    print(f'Target DB path: {{db_path}}')
+
+    try:
+        db_dir = os.path.dirname(db_path)
+        if not os.path.exists(db_dir):
+            print(f'Creating directory: {{db_dir}}')
+            os.makedirs(db_dir, exist_ok=True)
+        else:
+            print(f'Directory {{db_dir}} already exists.')
+
+        conn = sqlite3.connect(db_path)
+        conn.execute('PRAGMA journal_mode=WAL;')
+        conn.execute('PRAGMA synchronous=NORMAL;')
+
+        # 1. Create Main Performance Table
+        # Stores 12 metrics (6 tests * 2 metrics each) per node run
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS storage_performance (
+                node TEXT NOT NULL,
+                timestamp INTEGER NOT NULL,
+                
+                -- Test 1: Sequential Read (QD128)
+                iodepth_read_1file_iops REAL,
+                iodepth_read_1file_bw REAL,
+                
+                -- Test 2: Sequential Write (QD128)
+                iodepth_write_1file_iops REAL,
+                iodepth_write_1file_bw REAL,
+                
+                -- Test 3: Aggregate Read (Numjobs)
+                numjobs_read_nfiles_iops REAL,
+                numjobs_read_nfiles_bw REAL,
+                
+                -- Test 4: Aggregate Write (Numjobs)
+                numjobs_write_nfiles_iops REAL,
+                numjobs_write_nfiles_bw REAL,
+                
+                -- Test 5: Random Read (4k)
+                randread_iops REAL,
+                randread_bw REAL,
+                
+                -- Test 6: Random Write (4k)
+                randwrite_iops REAL,
+                randwrite_bw REAL,
+
+                PRIMARY KEY (node, timestamp)
+            );
+        ''')
+
+        # 2. Create Index for fast lookups
+        conn.execute('CREATE INDEX IF NOT EXISTS idx_perf_node_ts ON storage_performance(node, timestamp);')
+
+        # 3. Create View with Percentile Rankings (Compare node vs peers)
+        # We use a CTE to find the latest timestamp for each node, then join back to get data, 
+        # then apply PERCENT_RANK() window function.
+        conn.execute('''
+            CREATE VIEW IF NOT EXISTS latest_node_performance_stats AS
+            WITH latest_runs AS (
+                SELECT node, MAX(timestamp) as max_ts
+                FROM storage_performance
+                GROUP BY node
+            ),
+            current_stats AS (
+                SELECT sp.*
+                FROM storage_performance sp
+                JOIN latest_runs lr ON sp.node = lr.node AND sp.timestamp = lr.max_ts
+            )
+            SELECT
+                node,
+                timestamp AS latest_timestamp,
+                
+                -- Seq Read Stats & Pct
+                iodepth_read_1file_iops,
+                ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_read_1file_iops), 2) as iodepth_read_1file_iops_pct,
+                iodepth_read_1file_bw,
+                ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_read_1file_bw), 2) as iodepth_read_1file_bw_pct,
+
+                -- Seq Write Stats & Pct
+                iodepth_write_1file_iops,
+                ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_write_1file_iops), 2) as iodepth_write_1file_iops_pct,
+                iodepth_write_1file_bw,
+                ROUND(PERCENT_RANK() OVER (ORDER BY iodepth_write_1file_bw), 2) as iodepth_write_1file_bw_pct,
+
+                -- Agg Read Stats & Pct
+                numjobs_read_nfiles_iops,
+                ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_read_nfiles_iops), 2) as numjobs_read_nfiles_iops_pct,
+                numjobs_read_nfiles_bw,
+                ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_read_nfiles_bw), 2) as numjobs_read_nfiles_bw_pct,
+
+                -- Agg Write Stats & Pct
+                numjobs_write_nfiles_iops,
+                ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_write_nfiles_iops), 2) as numjobs_write_nfiles_iops_pct,
+                numjobs_write_nfiles_bw,
+                ROUND(PERCENT_RANK() OVER (ORDER BY numjobs_write_nfiles_bw), 2) as numjobs_write_nfiles_bw_pct,
+
+                -- Rand Read Stats & Pct
+                randread_iops,
+                ROUND(PERCENT_RANK() OVER (ORDER BY randread_iops), 2) as randread_iops_pct,
+                randread_bw,
+                ROUND(PERCENT_RANK() OVER (ORDER BY randread_bw), 2) as randread_bw_pct,
+
+                -- Rand Write Stats & Pct
+                randwrite_iops,
+                ROUND(PERCENT_RANK() OVER (ORDER BY randwrite_iops), 2) as randwrite_iops_pct,
+                randwrite_bw,
+                ROUND(PERCENT_RANK() OVER (ORDER BY randwrite_bw), 2) as randwrite_bw_pct
+
+            FROM current_stats;
+        ''')
+
+        conn.commit()
+        print(f'Successfully initialized Storage DB at {{db_path}}')
+        
+    except Exception as e:
+        print(f'Error initializing DB: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    
+    return _exec_python_on_pod(code, pod, namespace)
 
 
 # ==========================================
