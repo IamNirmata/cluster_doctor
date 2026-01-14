@@ -418,6 +418,12 @@ def delete_all_validation_jobs(confirm=False, namespace=DEFAULT_NAMESPACE, tag=J
         except Exception:
             print(f"Failed to delete {job}")
 
+def delete_job(job_name, namespace=DEFAULT_NAMESPACE):
+    """
+    Deletes a specific vcjob.
+    """
+    # Using check=False to avoid crashing if the job is already gone
+    return run_command(["kubectl", "delete", "vcjob", "-n", namespace, job_name], check=False)
 
 # ==========================================
 # FLOW STEP 6: Job Execution (Inside Pod)
@@ -687,6 +693,12 @@ if __name__ == "__main__":
     p_delete.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE, help="Namespace")
     p_delete.add_argument("--tag", default=JOB_GROUP_LABEL, help="Tag filter")
 
+    # delete-job (Single)
+    p_del_one = subparsers.add_parser("delete-job", help="Delete a single job")
+    p_del_one.add_argument("job_name")
+    p_del_one.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE)
+
+
     # Command: add-result (Local)
     p_add = subparsers.add_parser("add-result", help="Add result to local DB")
     p_add.add_argument("node")
@@ -753,6 +765,8 @@ if __name__ == "__main__":
         add_storage_result_local(args.node, args.timestamp, args.results_dir, args.db_path)
     elif args.command == "init-db":
         print(init_db(args.pod, args.namespace, args.db_path))
+    elif args.command == "delete-job":
+        print(delete_job(args.job_name, namespace=args.namespace))
 
     # New Handlers
     elif args.command == "create-test":
