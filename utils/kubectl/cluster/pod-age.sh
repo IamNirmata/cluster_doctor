@@ -168,22 +168,24 @@ echo
 # ---- Top N oldest ----
 echo "Top ${TOP_N} oldest GPU pods:"
 echo -e "AGE\tNAMESPACE\tPOD\tNODE\tPHASE\tGPU\tCREATED"
-sort -t$'\t' -k1,1nr "$tmp_tsv" | head -n "$TOP_N" | awk -F'\t' '
-  function human(sec,  d,h,m,s) {
-    d=int(sec/86400); sec%=86400;
-    h=int(sec/3600);  sec%=3600;
-    m=int(sec/60);    s=sec%60;
-    out="";
-    if (d>0) out=out d "d ";
-    if (h>0 || d>0) out=out h "h ";
-    if (m>0 || h>0 || d>0) out=out m "m ";
-    out=out s "s";
-    return out;
-  }
-  {
-    age=$1+0;
-    printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-      human(age), $2, $3, $4, $5, $6, $7
-    );
-  }
-'
+
+sort -t$'\t' -k1,1nr "$tmp_tsv" \
+  | head -n "$TOP_N" \
+  | awk -F'\t' '
+      function human(sec,  d,h,m,s,out) {
+        d=int(sec/86400); sec%=86400;
+        h=int(sec/3600);  sec%=3600;
+        m=int(sec/60);    s=sec%60;
+        out="";
+        if (d>0) out=out d "d ";
+        if (h>0 || d>0) out=out h "h ";
+        if (m>0 || h>0 || d>0) out=out m "m ";
+        out=out s "s";
+        return out;
+      }
+      {
+        age=$1+0;
+        printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", human(age), $2, $3, $4, $5, $6, $7;
+      }
+    '
+
