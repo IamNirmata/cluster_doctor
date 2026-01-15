@@ -99,7 +99,7 @@ The orchestration logic in `job-runner.ipynb` follows these steps:
     3.  **Sort:** Order by timestamp ascending (oldest tested -> highest priority).
 - **Output:** A priority queue of nodes requiring validation.
 
-### 4. Batch Execution 
+### 4. Batch Execution and Monitoring
 - **Function:** `run_batch()`
 - **Logic:** Submits jobs in strictly controlled batches (e.g., 5 jobs at a time) to avoid swamping the scheduler.
     - **Job Creation:** Hydrates `specific-node-job.yml` with the target node name and test parameters.
