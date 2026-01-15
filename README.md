@@ -100,4 +100,8 @@ Once scheduled, the validation pod:
 3.  Streams logs to the shared PVC.
 4.  Updates the `validation.db` directly with the `Pass`/`Fail` outcome.
 
+## Future Works / Next Steps
+
+1.  **Automate Test Result Classification**: Currently, the results are quantitative. Future iterations will include automated classification logic to interpret these metrics and deterministically categorize results as "Good" vs "Bad" or "Pass" vs "Fail".
+
 
