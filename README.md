@@ -106,7 +106,7 @@ The orchestration logic in `job-runner.ipynb` follows these steps:
     - **Monitoring:** Polls job status every `X` minutes.
     - **Timeouts:** Automatically cancels jobs that stick in `Pending` state for too long to free up the slot.
 
-### 5. In-Pod Execution 
+### 5. In-Pod Execution and 
 Once scheduled, the validation pod:
 1.  Clones the latest test scripts.
 2.  Runs the specified validation suite (storage, NCCL loop-back, DL unit tests).
