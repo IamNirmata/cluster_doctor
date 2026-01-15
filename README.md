@@ -51,7 +51,7 @@ The validation suite consists of three core tests, each targeting a specific lay
 ### 1. DL Unit Test
 This test provides a lightweight, reproducible framework for benchmarking and verifying the numerical consistency of deep learning layers across GPU hardware. It validates that the GPUs are not only functioning but mathematically correct. By running these primitives, we catch silent data corruption or driver/hardware incompatibilities early, ensuring the training platform is stable for long-running jobs.
 
-### 2. Single NCCL Loop-Back AllReduce
+### 2. Single node NCCL Loop-Back AllReduce
 Unlike standard NCCL tests that verify interconnects between multiple nodes, the loop-back AllReduce test forces communication through the InfiniBand (IB) interface even within a single node. This technique bypasses NVLink for specific operations, validating strict adherence to the network path data will travel in a distributed setting. It ensures that the node's HCAs (Host Channel Adapters) and PCIe fabric are correctly initiating and handling IB traffic without requiring a multi-node reservation.
 
 ### 3. Storage I/O Validation (FIO)
