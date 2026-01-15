@@ -96,7 +96,7 @@ The orchestration logic in `job-runner.ipynb` follows these steps:
 ### 5. In-Pod Execution
 Once scheduled, the validation pod:
 1.  Clones the latest test scripts.
-2.  Runs the specified validation suite (storage, nccl ).
+2.  Runs the specified validation suite (storage, NCCL loop-back).
 3.  Streams logs to the shared PVC.
 4.  Updates the `validation.db` directly with the `Pass`/`Fail` outcome.
 
