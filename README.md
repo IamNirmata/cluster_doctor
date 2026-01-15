@@ -45,6 +45,19 @@ Before running the orchestrator, ensure the following are in place:
 - `validation-tests/` - Test scripts and validation logic run inside the pods.
 - `gitignored/reports/` - Generated daily summaries and reports.
 
+## Validation Tests & Rationale
+The validation suite consists of three core tests, each targeting a specific layer of the stack imperative for distributed deep learning operations.
+
+### 1. DL Unit Test
+This test provides a lightweight, reproducible framework for benchmarking and verifying the numerical consistency of deep learning layers across GPU hardware. It validates that the GPUs are not only functioning but mathematically correct. By running these primitives, we catch silent data corruption or driver/hardware incompatibilities early, ensuring the training platform is stable for long-running jobs.
+
+### 2. NCCL Loop-Back AllReduce
+Unlike standard NCCL tests that verify interconnects between multiple nodes, the loop-back AllReduce test forces communication through the InfiniBand (IB) interface even within a single node. This technique bypasses NVLink for specific operations, validating strict adherence to the network path data will travel in a distributed setting. It ensures that the node's HCAs (Host Channel Adapters) and PCIe fabric are correctly initiating and handling IB traffic without requiring a multi-node reservation.
+
+### 3. Storage I/O Validation (FIO)
+Storage performance is critical for data loading and checkpointing. We utilize `fio` to run a suite of I/O patterns (Random Read/Write, Sequential Read/Write) against the cluster's shared PVC or NFS mount.
+- **Why validate shared storage?** In distributed training, all nodes often slam the same file system simultaneously to read datasets or write checkpoints. A degraded network mount on a specific node can cause "straggler" behavior, slowing down the entire cluster training job. This test ensures every node processes I/O operations within acceptable latency and throughput limits.
+
 ## Directory Layout & Data Persistence
 All test metadata and logs are centralized on the shared PVC to ensure persistence across pod restarts.
 
