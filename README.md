@@ -100,8 +100,4 @@ Once scheduled, the validation pod:
 3.  Streams logs to the shared PVC.
 4.  Updates the `validation.db` directly with the `Pass`/`Fail` outcome.
 
-### 6. Reporting
-The system generates a daily text summary in `./gitignored/reports/daily_report_<date>.txt` highlighting:
-- Total nodes tested today.
-- Nodes that failed validation.
-- Nodes that have never been successfully validated.
+
