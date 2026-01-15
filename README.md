@@ -116,6 +116,7 @@ Once scheduled, the validation pod:
 ## Future Works / Next Steps
 
 1.  **Automate Test Result Classification**: Currently, the results are quantitative. Future iterations will include automated classification logic to interpret these metrics and deterministically categorize results as "Good" vs "Bad" or "Pass" vs "Fail".
+2.  **Peer Comparison Report**: Node test results will be compared amongst their peers to isolate underperforming or "bad" nodes. This relative analysis identifies outliers effectively, similar to the heatmap analysis used in NCCL pairwise allreduce tests.
 
 
 
