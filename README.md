@@ -99,14 +99,14 @@ The orchestration logic in `job-runner.ipynb` follows these steps:
     3.  **Sort:** Order by timestamp ascending (oldest tested -> highest priority).
 - **Output:** A priority queue of nodes requiring validation.
 
-### 4. Batch Execution
+### 4. Batch Execution 
 - **Function:** `run_batch()`
 - **Logic:** Submits jobs in strictly controlled batches (e.g., 5 jobs at a time) to avoid swamping the scheduler.
     - **Job Creation:** Hydrates `specific-node-job.yml` with the target node name and test parameters.
     - **Monitoring:** Polls job status every `X` minutes.
     - **Timeouts:** Automatically cancels jobs that stick in `Pending` state for too long to free up the slot.
 
-### 5. In-Pod Execution and Monitoring
+### 5. In-Pod Execution 
 Once scheduled, the validation pod:
 1.  Clones the latest test scripts.
 2.  Runs the specified validation suite (storage, NCCL loop-back, DL unit tests).
