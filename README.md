@@ -45,7 +45,7 @@ Before running the orchestrator, ensure the following are in place:
 - `validation-tests/` - Test scripts and validation logic run inside the pods.
 - `gitignored/reports/` - Generated daily summaries and reports.
 
-## Validation Tests & Rationale
+## Validation Tests
 The validation suite consists of three core tests, each targeting a specific layer of the stack imperative for distributed deep learning operations.
 
 ### 1. DL Unit Test
