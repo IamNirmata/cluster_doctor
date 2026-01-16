@@ -13,7 +13,7 @@ python /workspace/c-val/utils/functions.py add-result \
     "$GCRTIME" \
     --db-path /data/continuous_validation/metadata/validation.db
 
-
+#storage DB update
 python3 /workspace/c-val/utils/functions.py add-storage-result \
     "$GCRNODE" \
     "$GCRTIME" \
