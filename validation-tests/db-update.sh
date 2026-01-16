@@ -21,3 +21,4 @@ python3 /workspace/c-val/utils/functions.py add-storage-result \
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
     "$GCRTIME" \
+    "$NCCl_OUTPUT_DIR" \
