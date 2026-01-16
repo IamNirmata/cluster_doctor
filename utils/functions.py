@@ -12,6 +12,7 @@ DEFAULT_NAMESPACE = "gcr-admin"
 DEFAULT_POD = "gcr-admin-pvc-access"
 DEFAULT_DB_PATH = "/data/continuous_validation/metadata/validation.db"
 DEFAULT_STORAGE_DB_PATH = "/data/continuous_validation/metadata/test-storage.db"
+DEFAULT_NCCL_DB_PATH = "/data/continuous_validation/metadata/test-nccl.db"
 JOB_GROUP_LABEL = "hari-gcr-ceval"
 
 
