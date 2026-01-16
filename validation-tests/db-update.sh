@@ -1,7 +1,7 @@
 # main db update
 echo "Updating main db with all test results"
 STORAGE_OUTPUT_DIR="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME"
-echo "Output dir: $OUTPUT_DIR"
+echo "Output dir: $STORAGE_OUTPUT_DIR"
 
 python /workspace/c-val/utils/functions.py add-result \
     "$GCRNODE" \
@@ -13,7 +13,7 @@ python /workspace/c-val/utils/functions.py add-result \
 python3 /workspace/c-val/utils/functions.py add-storage-result \
     "$GCRNODE" \
     "$GCRTIME" \
-    "$OUTPUT_DIR" \
+    "$STORAGE_OUTPUT_DIR" \
     --db-path /data/continuous_validation/metadata/test-storage.db
 
 echo "DB update complete"
