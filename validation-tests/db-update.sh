@@ -20,6 +20,8 @@ python3 /workspace/c-val/utils/functions.py add-storage-result \
     "$STORAGE_OUTPUT_DIR" \
     --db-path /data/continuous_validation/metadata/test-storage.db
 
+#nccl DB update
+
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
     "$GCRTIME" \
