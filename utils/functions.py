@@ -729,6 +729,43 @@ def add_storage_result_local(node, timestamp, results_dir, db_path=DEFAULT_STORA
     finally:
         if conn: conn.close()
 
+def add_nccl_result_local(node, timestamp, busbw, latency, db_path=DEFAULT_NCCL_DB_PATH):
+    import os, sqlite3
+    
+    timestamp = parse_timestamp(timestamp)
+    db_path = os.path.abspath(str(db_path).strip())
+    db_dir = os.path.dirname(db_path) or "."
+    os.makedirs(db_dir, exist_ok=True)
+
+    conn = None
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=rwc", uri=True, timeout=30)
+        conn.execute("PRAGMA busy_timeout=30000;")
+        conn.execute("PRAGMA journal_mode=DELETE;")
+        conn.execute("PRAGMA synchronous=FULL;")
+        
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS nccl_performance (
+                node TEXT NOT NULL,
+                timestamp INTEGER NOT NULL,
+                busbw REAL,
+                latency REAL,
+                PRIMARY KEY (node, timestamp)
+            );
+        ''')
+        
+        sql = 'INSERT OR REPLACE INTO nccl_performance (node, timestamp, busbw, latency) VALUES (?, ?, ?, ?)'
+        conn.execute(sql, (node, timestamp, float(busbw), float(latency)))
+        conn.commit()
+        print(f"Successfully added NCCL results for {node} at {timestamp}: BusBW={busbw}, Latency={latency}")
+
+    except Exception as e:
+        print(f"Error adding NCCL result: {e}")
+        raise
+    finally:
+        if conn: conn.close()
+
+
 
 # ==========================================
 # UTILITY FUNCTIONS
