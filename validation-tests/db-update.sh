@@ -18,4 +18,4 @@ python3 /workspace/c-val/utils/functions.py add-storage-result \
     "$STORAGE_OUTPUT_DIR" \
     --db-path /data/continuous_validation/metadata/test-storage.db
 
-echo "DB update complete"
+python3 /workspace/c-val/utils/functions.py add-nccl-result \
