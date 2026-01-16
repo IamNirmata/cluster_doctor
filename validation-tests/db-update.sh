@@ -33,6 +33,12 @@ NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
 export GCR_LATENCY=$(grep "Latency:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
 export GCR_ALGBW=$(grep "AlgBW:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
 export GCR_BUSBW=$(grep "BusBW:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
+echo "----------------------------------------"
+echo "Captured Metrics:"
+echo "GCR_LATENCY : $GCR_LATENCY"
+echo "GCR_ALGBW   : $GCR_ALGBW"
+echo "GCR_BUSBW   : $GCR_BUSBW"
+echo "----------------------------------------"
 
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
