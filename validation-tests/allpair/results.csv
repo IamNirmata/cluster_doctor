@@ -1,0 +1,4 @@
+pair 1, pair 1 gcrnode, pair 2, pair 2 gcrnode, latency, busbw
+mpi-allpair-allreduce-hari9sxsq-client-0.mpi-allpair-allreduce-hari9sxsq, msr01-gpu-65, mpi-allpair-allreduce-hari9sxsq-client-1.mpi-allpair-allreduce-hari9sxsq, msr01-gpu-74, 0.04498656, 666.86585170
+mpi-allpair-allreduce-hari9sxsq-server-0.mpi-allpair-allreduce-hari9sxsq, msr01-gpu-49, mpi-allpair-allreduce-hari9sxsq-client-1.mpi-allpair-allreduce-hari9sxsq, msr01-gpu-74, 0.04498794, 666.84540760
+mpi-allpair-allreduce-hari9sxsq-server-0.mpi-allpair-allreduce-hari9sxsq, msr01-gpu-49, mpi-allpair-allreduce-hari9sxsq-client-0.mpi-allpair-allreduce-hari9sxsq, msr01-gpu-65, 0.04498216, 666.93108133

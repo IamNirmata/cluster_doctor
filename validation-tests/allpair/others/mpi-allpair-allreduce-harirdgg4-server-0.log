@@ -1,0 +1,451 @@
+Cloning into '/opt/Cluster-Validation-Runbook'...
+Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1649 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2714 kB]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [33.1 kB]
+Get:9 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1174 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [35.9 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1942 kB]
+Get:15 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2008 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2847 kB]
+Get:17 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.4 kB]
+Get:18 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [33.9 kB]
+Fetched 34.7 MB in 3s (12.5 MB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+ca-certificates is already the newest version (20240203).
+ibverbs-utils is already the newest version (50.0-2ubuntu0.2).
+The following additional packages will be installed:
+  libibmad5 libibnetdisc5t64 libpci3 libwrap0 openssh-sftp-server pci.ids ucf
+Suggested packages:
+  keychain libpam-ssh monkeysphere ssh-askpass molly-guard ufw
+Recommended packages:
+  xauth default-logind | logind | libpam-systemd ncurses-term ssh-import-id
+The following NEW packages will be installed:
+  infiniband-diags libibmad5 libibnetdisc5t64 libpci3 libwrap0 openssh-server
+  openssh-sftp-server pci.ids perftest rdmacm-utils ucf
+The following packages will be upgraded:
+  openssh-client
+1 upgraded, 11 newly installed, 0 to remove and 80 not upgraded.
+Need to get 2603 kB of archives.
+After this operation, 8127 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 openssh-client amd64 1:9.6p1-3ubuntu13.14 [906 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 openssh-sftp-server amd64 1:9.6p1-3ubuntu13.14 [37.3 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble/main amd64 ucf all 3.0043+nmu1 [56.5 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble/main amd64 libwrap0 amd64 7.6.q-33 [47.9 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 openssh-server amd64 1:9.6p1-3ubuntu13.14 [510 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 pci.ids all 0.0~2024.03.31-1ubuntu0.1 [275 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble/main amd64 libpci3 amd64 1:3.10.0-2build1 [36.5 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libibmad5 amd64 50.0-2ubuntu0.2 [42.6 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libibnetdisc5t64 amd64 50.0-2ubuntu0.2 [33.3 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 infiniband-diags amd64 50.0-2ubuntu0.2 [239 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/universe amd64 perftest amd64 24.01.0+0.38-1build2 [345 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 rdmacm-utils amd64 50.0-2ubuntu0.2 [74.5 kB]
+Preconfiguring packages ...
+Fetched 2603 kB in 1s (2477 kB/s)
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 25144 files and directories currently installed.)
+Preparing to unpack .../00-openssh-client_1%3a9.6p1-3ubuntu13.14_amd64.deb ...
+Unpacking openssh-client (1:9.6p1-3ubuntu13.14) over (1:9.6p1-3ubuntu13.12) ...
+Selecting previously unselected package openssh-sftp-server.
+Preparing to unpack .../01-openssh-sftp-server_1%3a9.6p1-3ubuntu13.14_amd64.deb ...
+Unpacking openssh-sftp-server (1:9.6p1-3ubuntu13.14) ...
+Selecting previously unselected package ucf.
+Preparing to unpack .../02-ucf_3.0043+nmu1_all.deb ...
+Moving old data out of the way
+Unpacking ucf (3.0043+nmu1) ...
+Selecting previously unselected package libwrap0:amd64.
+Preparing to unpack .../03-libwrap0_7.6.q-33_amd64.deb ...
+Unpacking libwrap0:amd64 (7.6.q-33) ...
+Selecting previously unselected package openssh-server.
+Preparing to unpack .../04-openssh-server_1%3a9.6p1-3ubuntu13.14_amd64.deb ...
+Unpacking openssh-server (1:9.6p1-3ubuntu13.14) ...
+Selecting previously unselected package pci.ids.
+Preparing to unpack .../05-pci.ids_0.0~2024.03.31-1ubuntu0.1_all.deb ...
+Unpacking pci.ids (0.0~2024.03.31-1ubuntu0.1) ...
+Selecting previously unselected package libpci3:amd64.
+Preparing to unpack .../06-libpci3_1%3a3.10.0-2build1_amd64.deb ...
+Unpacking libpci3:amd64 (1:3.10.0-2build1) ...
+Selecting previously unselected package libibmad5:amd64.
+Preparing to unpack .../07-libibmad5_50.0-2ubuntu0.2_amd64.deb ...
+Unpacking libibmad5:amd64 (50.0-2ubuntu0.2) ...
+Selecting previously unselected package libibnetdisc5t64:amd64.
+Preparing to unpack .../08-libibnetdisc5t64_50.0-2ubuntu0.2_amd64.deb ...
+Unpacking libibnetdisc5t64:amd64 (50.0-2ubuntu0.2) ...
+Selecting previously unselected package infiniband-diags.
+Preparing to unpack .../09-infiniband-diags_50.0-2ubuntu0.2_amd64.deb ...
+Unpacking infiniband-diags (50.0-2ubuntu0.2) ...
+Selecting previously unselected package perftest.
+Preparing to unpack .../10-perftest_24.01.0+0.38-1build2_amd64.deb ...
+Unpacking perftest (24.01.0+0.38-1build2) ...
+Selecting previously unselected package rdmacm-utils.
+Preparing to unpack .../11-rdmacm-utils_50.0-2ubuntu0.2_amd64.deb ...
+Unpacking rdmacm-utils (50.0-2ubuntu0.2) ...
+Setting up pci.ids (0.0~2024.03.31-1ubuntu0.1) ...
+Setting up openssh-client (1:9.6p1-3ubuntu13.14) ...
+Setting up libibmad5:amd64 (50.0-2ubuntu0.2) ...
+Setting up libwrap0:amd64 (7.6.q-33) ...
+Setting up libibnetdisc5t64:amd64 (50.0-2ubuntu0.2) ...
+Setting up ucf (3.0043+nmu1) ...
+Setting up libpci3:amd64 (1:3.10.0-2build1) ...
+Setting up rdmacm-utils (50.0-2ubuntu0.2) ...
+Setting up openssh-sftp-server (1:9.6p1-3ubuntu13.14) ...
+Setting up openssh-server (1:9.6p1-3ubuntu13.14) ...
+
+Creating config file /etc/ssh/sshd_config with new version
+Creating SSH2 RSA key; this may take some time ...
+3072 SHA256:WHdnjhgi4/l/UA1dj5QEO67qiEPoWZIKp59elaOP4KI root@mpi-allpair-allreduce-harirdgg4-server-0 (RSA)
+Creating SSH2 ECDSA key; this may take some time ...
+256 SHA256:7xMbYt2LR7J6tP800tNmfy4lpowWY83qyuaaZbLGIDE root@mpi-allpair-allreduce-harirdgg4-server-0 (ECDSA)
+Creating SSH2 ED25519 key; this may take some time ...
+256 SHA256:E+FHtswB4tXHg4N5dnQqmoSV6/fegA3DxmhEOeFxLdo root@mpi-allpair-allreduce-harirdgg4-server-0 (ED25519)
+invoke-rc.d: could not determine current runlevel
+invoke-rc.d: policy-rc.d denied execution of start.
+Setting up infiniband-diags (50.0-2ubuntu0.2) ...
+Setting up perftest (24.01.0+0.38-1build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.4) ...
+Cluster-Validation-Runbook already present at /opt; skipping clone.
+#########################Hostfile#########################
+mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 slots=8
+mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 slots=8
+mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4 slots=8
+##########################################################
+Server listening on 0.0.0.0 port 22.
+Server listening on :: port 22.
+Waiting for SSH on mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 ...
+Waiting for SSH on mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4 ...
+Generating node_map.csv...
+Mapped mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 to msr01-gpu-65
+Warning: Permanently added 'mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4' (ED25519) to the list of known hosts.
+Mapped mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 to msr01-gpu-49
+Warning: Permanently added 'mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4' (ED25519) to the list of known hosts.
+Mapped mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4 to msr01-gpu-74
+node_map.csv generated:
+pod_name,gcrnode
+mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4,msr01-gpu-65
+mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4,msr01-gpu-49
+mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4,msr01-gpu-74
+Starting automatic allpair run via /opt/Cluster-Validation-Runbook/allpair/allpair.sh
++++ dirname /opt/Cluster-Validation-Runbook/allpair/allpair.sh
+++ cd /opt/Cluster-Validation-Runbook/allpair
+++ pwd
++ SCRIPT_DIR=/opt/Cluster-Validation-Runbook/allpair
++ DEFAULT_HOSTFILE=/opt/Cluster-Validation-Runbook/allpair/test_files/hostfile
++ DEFAULT_GEN_SCRIPT=/opt/Cluster-Validation-Runbook/allpair/generate_permutations.py
++ DEFAULT_LOGDIR=/opt/Cluster-Validation-Runbook/allpair/logs
++ DEFAULT_NET_IFACE=eth0
++ HOSTFILE=/opt/hostfile
++ GEN_SCRIPT=/opt/Cluster-Validation-Runbook/allpair/generate_permutations.py
++ NPERNODE=8
++ NP_TOTAL=16
++ LOGDIR=/data/allpair-logs
++ MASTER_PORT_BASE=45566
++ EXTRA_MPI_ARGS=
++ NET_IFACE=eth0
++ export NCCL_DEBUG=INFO
++ NCCL_DEBUG=INFO
++ export LOCAL_WORLD=8
++ LOCAL_WORLD=8
++ export NCCL_SOCKET_IFNAME=eth0
++ NCCL_SOCKET_IFNAME=eth0
++ [[ -n '' ]]
++ APP_CMD=(python "$SCRIPT_DIR/npairs.py")
++ mkdir -p /data/allpair-logs
++ trap cleanup EXIT INT TERM
++ [[ ! -f /opt/hostfile ]]
++ mapfile -t NODES
+++ awk '{print $1}' /opt/hostfile
+++ sed '/^\s*$/d'
++ N=3
++ ((  N < 2  ))
++ echo 'Loaded 3 nodes from /opt/hostfile'
+Loaded 3 nodes from /opt/hostfile
+  mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4
+  mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4
+  mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4
++ printf '  %s\n' mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4
++ [[ ! -x /opt/Cluster-Validation-Runbook/allpair/generate_permutations.py ]]
++ [[ ! -f /opt/Cluster-Validation-Runbook/allpair/generate_permutations.py ]]
++ mapfile -t combinations
+++ python3 /opt/Cluster-Validation-Runbook/allpair/generate_permutations.py --nitems 3 --format text
+++ sed 's/^[[:space:]]*//; s/^"//; s/"$//'
++ ((  3 == 0  ))
++ echo 'Schedule has 3 rounds; ~1 pairs per round.'
++ for combo in "${combinations[@]}"
++ echo '  1 2'
++ for combo in "${combinations[@]}"
++ echo '  0 2'
++ for combo in "${combinations[@]}"
+Schedule has 3 rounds; ~1 pairs per round.
+  1 2
++ echo '  0 1'
+  0 2
+  0 1
++ round_idx=0
++ for combo in "${combinations[@]}"
++ echo
++ echo '=== Round 0 ==='
++ IFS='|'
++ read -r -a pairs
+
+=== Round 0 ===
++ job_idx=0
++ pids=()
++ round_logs=()
++ for pair in "${pairs[@]}"
+++ echo '1 2'
+++ xargs
++ pair='1 2'
++ idx=($pair)
++ ((  2 != 2  ))
++ i=1
++ j=2
++ node1=mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4
++ node2=mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4
+  Pair: 1(mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4) & 2(mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4)
++ echo '  Pair: 1(mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4) & 2(mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4)'
++ [[ -z mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 ]]
++ [[ -z mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4 ]]
+    Master port: 45566
++ master_port=45566
++ echo '    Master port: 45566'
++ log_file=/data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
++ [[ -f /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log ]]
+Launching Job0: mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 & mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4  -> /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
++ echo 'Launching Job0: mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 & mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4  -> /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log'
++ extras=()
++ [[ -n '' ]]
++ mp_cmd=(mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include "${NET_IFACE}" --mca oob_tcp_if_include "${NET_IFACE}" -np "$NP_TOTAL" -H "${node1}:${NPERNODE},${node2}:${NPERNODE}" -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x "MASTER_ADDR=${node1}" -x "MASTER_PORT=${master_port}" "${extras[@]}" "${APP_CMD[@]}")
++ echo '    Log file: /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log'
++ :
+    Log file: /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
++ pid=628
++ pids+=("$pid")
++ round_logs+=("$log_file")
+    Running: mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py
++ echo '    Running: mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py'
++ (( job_idx++ ))
++ true
++ fail=0
++ for pid in "${pids[@]}"
++ mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py
++ wait 628
+Round 0: all jobs completed.
+Round 0 logs:
++ ((  fail != 0  ))
++ echo 'Round 0: all jobs completed.'
++ ((  1 > 0  ))
++ echo 'Round 0 logs:'
+  /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
+
+=== Round 1 ===
++ for lf in "${round_logs[@]}"
++ echo '  /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log'
++ (( round_idx++ ))
++ true
++ for combo in "${combinations[@]}"
++ echo
++ echo '=== Round 1 ==='
++ IFS='|'
++ read -r -a pairs
++ job_idx=0
++ pids=()
++ round_logs=()
++ for pair in "${pairs[@]}"
+++ echo '0 2'
+++ xargs
++ pair='0 2'
++ idx=($pair)
++ ((  2 != 2  ))
++ i=0
++ j=2
+  Pair: 0(mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4) & 2(mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4)
++ node1=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4
++ node2=mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4
+    Master port: 45566
++ echo '  Pair: 0(mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4) & 2(mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4)'
++ [[ -z mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 ]]
++ [[ -z mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4 ]]
++ master_port=45566
++ echo '    Master port: 45566'
++ log_file=/data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
++ [[ -f /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log ]]
++ echo 'Launching Job0: mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 & mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4  -> /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log'
++ extras=()
++ [[ -n '' ]]
++ mp_cmd=(mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include "${NET_IFACE}" --mca oob_tcp_if_include "${NET_IFACE}" -np "$NP_TOTAL" -H "${node1}:${NPERNODE},${node2}:${NPERNODE}" -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x "MASTER_ADDR=${node1}" -x "MASTER_PORT=${master_port}" "${extras[@]}" "${APP_CMD[@]}")
+Launching Job0: mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 & mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4  -> /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
++ echo '    Log file: /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log'
++ :
+    Log file: /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
++ pid=638
++ pids+=("$pid")
++ round_logs+=("$log_file")
++ echo '    Running: mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py'
++ (( job_idx++ ))
++ true
++ fail=0
++ for pid in "${pids[@]}"
++ wait 638
+    Running: mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py
++ mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py
+Round 1: all jobs completed.
+Round 1 logs:
+  /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log
+
+=== Round 2 ===
++ ((  fail != 0  ))
++ echo 'Round 1: all jobs completed.'
++ ((  1 > 0  ))
++ echo 'Round 1 logs:'
++ for lf in "${round_logs[@]}"
++ echo '  /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log'
++ (( round_idx++ ))
++ for combo in "${combinations[@]}"
++ echo
++ echo '=== Round 2 ==='
++ IFS='|'
++ read -r -a pairs
++ job_idx=0
++ pids=()
++ round_logs=()
++ for pair in "${pairs[@]}"
+++ echo '0 1'
+++ xargs
++ pair='0 1'
++ idx=($pair)
++ ((  2 != 2  ))
++ i=0
++ j=1
++ node1=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4
+  Pair: 0(mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4) & 1(mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4)
++ node2=mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4
+    Master port: 45566
++ echo '  Pair: 0(mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4) & 1(mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4)'
++ [[ -z mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 ]]
++ [[ -z mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 ]]
++ master_port=45566
++ echo '    Master port: 45566'
++ log_file=/data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log
++ [[ -f /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log ]]
++ echo 'Launching Job0: mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 & mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4  -> /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log'
++ extras=()
++ [[ -n '' ]]
++ mp_cmd=(mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include "${NET_IFACE}" --mca oob_tcp_if_include "${NET_IFACE}" -np "$NP_TOTAL" -H "${node1}:${NPERNODE},${node2}:${NPERNODE}" -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x "MASTER_ADDR=${node1}" -x "MASTER_PORT=${master_port}" "${extras[@]}" "${APP_CMD[@]}")
+Launching Job0: mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 & mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4  -> /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log
++ echo '    Log file: /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log'
++ :
+    Log file: /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log
++ pid=1353
++ pids+=("$pid")
++ round_logs+=("$log_file")
++ echo '    Running: mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py'
+    Running: mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py
++ (( job_idx++ ))
++ true
++ fail=0
++ for pid in "${pids[@]}"
++ wait 1353
++ mpirun --tag-output --display-map --allow-run-as-root --bind-to none --mca btl_tcp_if_include eth0 --mca oob_tcp_if_include eth0 -np 16 -H mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4:8,mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4:8 -x LOCAL_WORLD -x NCCL_DEBUG -x NCCL_SOCKET_IFNAME -x MASTER_ADDR=mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4 -x MASTER_PORT=45566 python /opt/Cluster-Validation-Runbook/allpair/npairs.py
++ ((  fail != 0  ))
++ echo 'Round 2: all jobs completed.'
++ ((  1 > 0  ))
++ echo 'Round 2 logs:'
+Round 2: all jobs completed.
+Round 2 logs:
+  /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log
++ for lf in "${round_logs[@]}"
++ echo '  /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log'
++ (( round_idx++ ))
++ echo
++ echo 'All rounds complete. Logs in: /data/allpair-logs'
++ cleanup
+
+All rounds complete. Logs in: /data/allpair-logs
++ pkill -P 598
++ true
+=== AllReduce log summary (/data/allpair-logs) ===
+--- /data/allpair-logs/round0_job0_mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log ---
+[1,9]<stdout>:latency: 0.04503000354660409 busbw: 666.222465848827
+[1,15]<stdout>:latency: 0.04502865173188703 busbw: 666.2424666549699
+[1,8]<stdout>:latency: 0.045030796833868535 busbw: 666.2107293077349
+[1,3]<stdout>:latency: 0.04506089370365122 busbw: 665.7657568289451
+[1,8]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:661:661 [0] NCCL INFO comm 0x171e83e0 rank 8 nranks 16 cudaDev 0 busId 63000 - Destroy COMPLETE
+[1,0]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:661:661 [0] NCCL INFO comm 0x467a6960 rank 0 nranks 16 cudaDev 0 busId 63000 - Destroy COMPLETE
+[1,6]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:667:667 [6] NCCL INFO comm 0xfd46040 rank 6 nranks 16 cudaDev 6 busId 8d000 - Destroy COMPLETE
+[1,3]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:664:664 [3] NCCL INFO comm 0x372f84c0 rank 3 nranks 16 cudaDev 3 busId 79000 - Destroy COMPLETE
+[1,15]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:668:668 [7] NCCL INFO comm 0x166c7510 rank 15 nranks 16 cudaDev 7 busId 95000 - Destroy COMPLETE
+[1,7]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:668:668 [7] NCCL INFO comm 0x3cca2500 rank 7 nranks 16 cudaDev 7 busId 95000 - Destroy COMPLETE
+[1,5]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:666:666 [5] NCCL INFO comm 0x250cc2e0 rank 5 nranks 16 cudaDev 5 busId 87000 - Destroy COMPLETE
+[1,9]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:662:662 [1] NCCL INFO comm 0x3d42f360 rank 9 nranks 16 cudaDev 1 busId 6b000 - Destroy COMPLETE
+[1,10]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:663:663 [2] NCCL INFO comm 0x143a2270 rank 10 nranks 16 cudaDev 2 busId 71000 - Destroy COMPLETE
+[1,12]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:665:665 [4] NCCL INFO comm 0xcee7200 rank 12 nranks 16 cudaDev 4 busId 7f000 - Destroy COMPLETE
+[1,14]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:667:667 [6] NCCL INFO comm 0x109a0ea0 rank 14 nranks 16 cudaDev 6 busId 8d000 - Destroy COMPLETE
+[1,4]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:665:665 [4] NCCL INFO comm 0x35412400 rank 4 nranks 16 cudaDev 4 busId 7f000 - Destroy COMPLETE
+[1,2]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:663:663 [2] NCCL INFO comm 0x14c91000 rank 2 nranks 16 cudaDev 2 busId 71000 - Destroy COMPLETE
+[1,13]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:666:666 [5] NCCL INFO comm 0x24982100 rank 13 nranks 16 cudaDev 5 busId 87000 - Destroy COMPLETE
+[1,1]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:662:662 [1] NCCL INFO comm 0x15a97400 rank 1 nranks 16 cudaDev 1 busId 6b000 - Destroy COMPLETE
+[1,11]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:664:664 [3] NCCL INFO comm 0x1defb640 rank 11 nranks 16 cudaDev 3 busId 79000 - Destroy COMPLETE
+--- /data/allpair-logs/round1_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4.log ---
+[1,0]<stdout>:latency: 0.04500810369583113 busbw: 666.5466335294358
+[1,12]<stdout>:latency: 0.04499388652454529 busbw: 666.7572489794641
+[1,13]<stdout>:latency: 0.044990790874830315 busbw: 666.8031260767017
+[1,11]<stdout>:latency: 0.045002780322517665 busbw: 666.6254792482043
+[1,0]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:643:643 [0] NCCL INFO comm 0x3775ff40 rank 0 nranks 16 cudaDev 0 busId 63000 - Destroy COMPLETE
+[1,8]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1395:1395 [0] NCCL INFO comm 0x3b6ea690 rank 8 nranks 16 cudaDev 0 busId 63000 - Destroy COMPLETE
+[1,2]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:645:645 [2] NCCL INFO comm 0x2bf5af90 rank 2 nranks 16 cudaDev 2 busId 71000 - Destroy COMPLETE
+[1,3]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:646:646 [3] NCCL INFO comm 0x2f7408f0 rank 3 nranks 16 cudaDev 3 busId 79000 - Destroy COMPLETE
+[1,13]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1400:1400 [5] NCCL INFO comm 0x38beb3c0 rank 13 nranks 16 cudaDev 5 busId 87000 - Destroy COMPLETE
+[1,4]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:647:647 [4] NCCL INFO comm 0x32f4abc0 rank 4 nranks 16 cudaDev 4 busId 7f000 - Destroy COMPLETE
+[1,6]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:649:649 [6] NCCL INFO comm 0x172b7bf0 rank 6 nranks 16 cudaDev 6 busId 8d000 - Destroy COMPLETE
+[1,1]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:644:644 [1] NCCL INFO comm 0x1193d990 rank 1 nranks 16 cudaDev 1 busId 6b000 - Destroy COMPLETE
+[1,5]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:648:648 [5] NCCL INFO comm 0x1a519a90 rank 5 nranks 16 cudaDev 5 busId 87000 - Destroy COMPLETE
+[1,15]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1402:1402 [7] NCCL INFO comm 0x293484e0 rank 15 nranks 16 cudaDev 7 busId 95000 - Destroy COMPLETE
+[1,7]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:650:650 [7] NCCL INFO comm 0x47b5d920 rank 7 nranks 16 cudaDev 7 busId 95000 - Destroy COMPLETE
+[1,9]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1396:1396 [1] NCCL INFO comm 0x3e176410 rank 9 nranks 16 cudaDev 1 busId 6b000 - Destroy COMPLETE
+[1,12]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1399:1399 [4] NCCL INFO comm 0x19cb4340 rank 12 nranks 16 cudaDev 4 busId 7f000 - Destroy COMPLETE
+[1,10]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1397:1397 [2] NCCL INFO comm 0x337ba640 rank 10 nranks 16 cudaDev 2 busId 71000 - Destroy COMPLETE
+[1,14]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1401:1401 [6] NCCL INFO comm 0x3ef7e210 rank 14 nranks 16 cudaDev 6 busId 8d000 - Destroy COMPLETE
+[1,11]<stdout>:mpi-allpair-allreduce-harirdgg4-client-1:1398:1398 [3] NCCL INFO comm 0x3f4241b0 rank 11 nranks 16 cudaDev 3 busId 79000 - Destroy COMPLETE
+--- /data/allpair-logs/round2_job0_mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4--mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4.log ---
+[1,15]<stdout>:latency: 0.044953636858346205 busbw: 667.3542364221444
+[1,11]<stdout>:latency: 0.04495502200110683 busbw: 667.3336740723066
+[1,13]<stdout>:latency: 0.04495423129161021 busbw: 667.3454119456578
+[1,12]<stdout>:latency: 0.0449573858641088 busbw: 667.2985856134964
+[1,0]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1358:1358 [0] NCCL INFO comm 0x20ec9250 rank 0 nranks 16 cudaDev 0 busId 63000 - Destroy COMPLETE
+[1,8]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1397:1397 [0] NCCL INFO comm 0xc733820 rank 8 nranks 16 cudaDev 0 busId 63000 - Destroy COMPLETE
+[1,12]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1401:1401 [4] NCCL INFO comm 0x232a8eb0 rank 12 nranks 16 cudaDev 4 busId 7f000 - Destroy COMPLETE
+[1,14]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1403:1403 [6] NCCL INFO comm 0x358860a0 rank 14 nranks 16 cudaDev 6 busId 8d000 - Destroy COMPLETE
+[1,10]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1399:1399 [2] NCCL INFO comm 0x1c4d4e70 rank 10 nranks 16 cudaDev 2 busId 71000 - Destroy COMPLETE
+[1,1]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1359:1359 [1] NCCL INFO comm 0x290d59c0 rank 1 nranks 16 cudaDev 1 busId 6b000 - Destroy COMPLETE
+[1,9]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1398:1398 [1] NCCL INFO comm 0x3ac57d50 rank 9 nranks 16 cudaDev 1 busId 6b000 - Destroy COMPLETE
+[1,13]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1402:1402 [5] NCCL INFO comm 0x2074ad90 rank 13 nranks 16 cudaDev 5 busId 87000 - Destroy COMPLETE
+[1,4]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1362:1362 [4] NCCL INFO comm 0x2b283810 rank 4 nranks 16 cudaDev 4 busId 7f000 - Destroy COMPLETE
+[1,15]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1404:1404 [7] NCCL INFO comm 0x3855b080 rank 15 nranks 16 cudaDev 7 busId 95000 - Destroy COMPLETE
+[1,3]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1361:1361 [3] NCCL INFO comm 0xca795d0 rank 3 nranks 16 cudaDev 3 busId 79000 - Destroy COMPLETE
+[1,7]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1365:1365 [7] NCCL INFO comm 0x1a2ee8b0 rank 7 nranks 16 cudaDev 7 busId 95000 - Destroy COMPLETE
+[1,11]<stdout>:mpi-allpair-allreduce-harirdgg4-client-0:1400:1400 [3] NCCL INFO comm 0x89f3e60 rank 11 nranks 16 cudaDev 3 busId 79000 - Destroy COMPLETE
+[1,2]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1360:1360 [2] NCCL INFO comm 0x1492f930 rank 2 nranks 16 cudaDev 2 busId 71000 - Destroy COMPLETE
+[1,6]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1364:1364 [6] NCCL INFO comm 0x3e9e46c0 rank 6 nranks 16 cudaDev 6 busId 8d000 - Destroy COMPLETE
+[1,5]<stdout>:mpi-allpair-allreduce-harirdgg4-server-0:1363:1363 [5] NCCL INFO comm 0x3d706fc0 rank 5 nranks 16 cudaDev 5 busId 87000 - Destroy COMPLETE
+=== End of log summary ===
+CSV report generated at /data/allpair-logs/results.csv
+####################################################Final Results: ########################################################
+pair 1, pair 1 gcrnode, pair 2, pair 2 gcrnode, latency, busbw
+mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4, msr01-gpu-49, mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4, msr01-gpu-74, 0.04503184, 666.19529208
+mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4, msr01-gpu-65, mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4, msr01-gpu-74, 0.04499724, 666.70749869
+mpi-allpair-allreduce-harirdgg4-server-0.mpi-allpair-allreduce-harirdgg4, msr01-gpu-65, mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4, msr01-gpu-49, 0.04495925, 667.27092623
+###########################################################################################################################
+Warning: Permanently added 'mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4' (ED25519) to the list of known hosts.
+Warning: Permanently added 'mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4' (ED25519) to the list of known hosts.
+Connection to mpi-allpair-allreduce-harirdgg4-client-1.mpi-allpair-allreduce-harirdgg4 closed by remote host.
+Connection to mpi-allpair-allreduce-harirdgg4-client-0.mpi-allpair-allreduce-harirdgg4 closed by remote host.
+Received signal 15; terminating.
