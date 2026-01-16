@@ -22,6 +22,7 @@ python3 /workspace/c-val/utils/functions.py add-storage-result \
 
 #nccl DB update
 NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
+
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
     "$GCRTIME" \
