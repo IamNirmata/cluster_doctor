@@ -6,6 +6,7 @@ NCCL_OUTPUT_DIR="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIM
 echo "NCCL Output dir: $NCCL_OUTPUT_DIR"
 
 #main DB update
+
 python /workspace/c-val/utils/functions.py add-result \
     "$GCRNODE" \
     "all" \
@@ -14,7 +15,7 @@ python /workspace/c-val/utils/functions.py add-result \
     --db-path /data/continuous_validation/metadata/validation.db
 
 #storage DB update
-ec
+echo "Updating storage db with test results"
 python3 /workspace/c-val/utils/functions.py add-storage-result \
     "$GCRNODE" \
     "$GCRTIME" \
