@@ -1,5 +1,5 @@
 mkdir -p /data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/
-mkdir -p /data/continuous_validation/-loopback/$GCRNODE/
+mkdir -p /data/continuous_validation/nccl-loopback/$GCRNODE/
 apt-get update && apt-get install -y fio
 
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee /data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/storage-$GCRNODE-$GCRTIME.log
