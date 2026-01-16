@@ -32,3 +32,5 @@ python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCR_BUSBW" \
     "$GCR_LATENCY" \
     --db-path /data/continuous_validation/metadata/test-nccl.db
+
+echo "DB update completed."
