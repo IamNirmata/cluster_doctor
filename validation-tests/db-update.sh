@@ -6,7 +6,7 @@ NCCL_OUTPUT_DIR="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIM
 echo "NCCL Output dir: $NCCL_OUTPUT_DIR"
 
 #main DB update
-
+echo "Updating main db with test results"
 python /workspace/c-val/utils/functions.py add-result \
     "$GCRNODE" \
     "all" \
