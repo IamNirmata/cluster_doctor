@@ -31,3 +31,4 @@ python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRTIME" \
     "$GCR_BUSBW" \
     "$GCR_LATENCY" \
+    
