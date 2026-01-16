@@ -198,6 +198,89 @@ def init_storage_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAUL
     
     return _exec_python_on_pod(code, pod, namespace)
 
+def init_nccl_db(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_NCCL_DB_PATH):
+    """
+    Initializes the NCCL performance database and percentile ranking view remotely.
+    """
+    code = textwrap.dedent(f"""
+    import sqlite3, os, sys, socket
+
+    print(f'Running initialization inside pod: {{socket.gethostname()}}')
+    db_path = '{db_path}'
+    print(f'Target DB path: {{db_path}}')
+
+    try:
+        db_dir = os.path.dirname(db_path)
+        if not os.path.exists(db_dir):
+            print(f'Creating directory: {{db_dir}}')
+            os.makedirs(db_dir, exist_ok=True)
+        else:
+            print(f'Directory {{db_dir}} already exists.')
+
+        conn = sqlite3.connect(db_path)
+        conn.execute('PRAGMA journal_mode=WAL;')
+        conn.execute('PRAGMA synchronous=NORMAL;')
+
+        # 1. Create Main Performance Table
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS nccl_performance (
+                node TEXT NOT NULL,
+                timestamp INTEGER NOT NULL,
+                busbw REAL,
+                latency REAL,
+                PRIMARY KEY (node, timestamp)
+            );
+        ''')
+
+        # 2. Create Index
+        conn.execute('CREATE INDEX IF NOT EXISTS idx_nccl_node_ts ON nccl_performance(node, timestamp);')
+
+        # 3. Create View with Percentile Rankings
+        conn.execute("DROP VIEW IF EXISTS latest_nccl_performance_stats;")
+        
+        conn.execute('''
+            CREATE VIEW latest_nccl_performance_stats AS
+            WITH latest_runs AS (
+                SELECT node, MAX(timestamp) as max_ts
+                FROM nccl_performance
+                GROUP BY node
+            ),
+            current_stats AS (
+                SELECT sp.*
+                FROM nccl_performance sp
+                JOIN latest_runs lr ON sp.node = lr.node AND sp.timestamp = lr.max_ts
+            ),
+            ranked_stats AS (
+                SELECT 
+                    *,
+                    PERCENT_RANK() OVER (ORDER BY busbw) as r1,
+                    PERCENT_RANK() OVER (ORDER BY latency DESC) as r2 -- Latency: Lower is better, so inverted sort for rank (Best=1.0)
+                FROM current_stats
+            )
+            SELECT
+                node,
+                timestamp AS latest_timestamp,
+                
+                busbw,
+                ROUND(r1, 2) as busbw_pct,
+                
+                latency,
+                ROUND(r2, 2) as latency_pct
+
+            FROM ranked_stats;
+        ''')
+
+        conn.commit()
+        print(f'Successfully initialized NCCL DB at {{db_path}}')
+        
+    except Exception as e:
+        print(f'Error initializing DB: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    
+    return _exec_python_on_pod(code, pod, namespace)
+
+
 
 # ==========================================
 # FLOW STEP 1: Get Free Node List
