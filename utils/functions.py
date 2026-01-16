@@ -884,6 +884,14 @@ if __name__ == "__main__":
     p_add_store.add_argument("results_dir")
     p_add_store.add_argument("--db-path", default=DEFAULT_STORAGE_DB_PATH)
 
+    # Command: add-nccl-result (Local) - NEW
+    p_add_nccl = subparsers.add_parser("add-nccl-result", help="Add NCCL results to local DB")
+    p_add_nccl.add_argument("node")
+    p_add_nccl.add_argument("timestamp")
+    p_add_nccl.add_argument("busbw")
+    p_add_nccl.add_argument("latency")
+    p_add_nccl.add_argument("--db-path", default=DEFAULT_NCCL_DB_PATH)
+
     # Command: init-db (General)
     p_init = subparsers.add_parser("init-db", help="Initialize Main DB")
     p_init.add_argument("--pod", default=DEFAULT_POD)
@@ -892,16 +900,22 @@ if __name__ == "__main__":
 
     # Command: create-test (New Intializer)
     p_create = subparsers.add_parser("create-test", help="Initialize a specific test DB")
-    p_create.add_argument("type", choices=["storage"], help="Test type (e.g., storage)")
+    p_create.add_argument("type", choices=["storage", "nccl"], help="Test type (e.g., storage, nccl)")
     p_create.add_argument("--pod", default=DEFAULT_POD)
     p_create.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE)
-    p_create.add_argument("--db-path", default=DEFAULT_STORAGE_DB_PATH)
+    p_create.add_argument("--db-path", default=None, help="Override DB path (defaults to standard path for type)")
 
     # Command: storage (New Viewer with CSV Save)
     p_storage = subparsers.add_parser("storage", help="View Storage DB results")
     p_storage.add_argument("--pod", default=DEFAULT_POD)
     p_storage.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE)
     p_storage.add_argument("--db-path", default=DEFAULT_STORAGE_DB_PATH)
+
+    # Command: nccl (New Viewer with CSV Save)
+    p_nccl = subparsers.add_parser("nccl", help="View NCCL DB results")
+    p_nccl.add_argument("--pod", default=DEFAULT_POD)
+    p_nccl.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE)
+    p_nccl.add_argument("--db-path", default=DEFAULT_NCCL_DB_PATH)
 
     args = parser.parse_args()
 
@@ -933,6 +947,8 @@ if __name__ == "__main__":
         add_result_local(args.node, args.test, args.result, args.timestamp, args.db_path)
     elif args.command == "add-storage-result":
         add_storage_result_local(args.node, args.timestamp, args.results_dir, args.db_path)
+    elif args.command == "add-nccl-result":
+        add_nccl_result_local(args.node, args.timestamp, args.busbw, args.latency, args.db_path)
     elif args.command == "init-db":
         print(init_db(args.pod, args.namespace, args.db_path))
     elif args.command == "delete-job":
@@ -941,7 +957,11 @@ if __name__ == "__main__":
     # New Handlers
     elif args.command == "create-test":
         if args.type == "storage":
-            print(init_storage_db(args.pod, args.namespace, args.db_path))
+            target_path = args.db_path if args.db_path else DEFAULT_STORAGE_DB_PATH
+            print(init_storage_db(args.pod, args.namespace, target_path))
+        elif args.type == "nccl":
+            target_path = args.db_path if args.db_path else DEFAULT_NCCL_DB_PATH
+            print(init_nccl_db(args.pod, args.namespace, target_path))
     
     elif args.command == "storage":
         print("Fetching storage data from cluster...")
@@ -957,6 +977,20 @@ if __name__ == "__main__":
             # Likely an error message or empty
             print(data)
 
+    elif args.command == "nccl":
+        print("Fetching NCCL data from cluster...")
+        data = get_nccl_status_csv(args.pod, args.namespace, args.db_path)
+        
+        # Validation: Check if data looks like CSV (header present)
+        if "latest_timestamp" in data and "," in data:
+            filename = f"nccl_report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            with open(filename, "w") as f:
+                f.write(data)
+            print(f"✅ NCCL report saved to: {os.path.abspath(filename)}")
+        else:
+            # Likely an error message or empty
+            print(data)
+
     elif args.command == "help" or args.command is None:
         print("\n" + "="*60)
         print(" CLUSTER VALIDATIONS FUNCTIONS - USAGE GUIDE")
@@ -964,7 +998,9 @@ if __name__ == "__main__":
         print("  python3 functions.py freenodes      # List free nodes table")
         print("  python3 functions.py status         # View Main DB status")
         print("  python3 functions.py storage        # Save Storage DB results to CSV")
+        print("  python3 functions.py nccl           # Save NCCL DB results to CSV")
         print("  python3 functions.py create-test storage # Init Storage DB")
+        print("  python3 functions.py create-test nccl    # Init NCCL DB")
         print("  python3 functions.py init-db        # Initialize Main DB")
         print("  python3 functions.py ls [path]      # List files in pod")
         print("  python3 functions.py exec [pod]     # Exec into a pod")
@@ -972,4 +1008,5 @@ if __name__ == "__main__":
         print("  python3 functions.py add-result NODE TEST RESULT [TIMESTAMP] [--db-path PATH]  # Add result to local DB")
         print("  python3 functions.py create-test storage --pod POD --namespace NAMESPACE --db-path PATH  # Initialize Storage DB remotely")
         print("  python3 functions.py add-storage-result <node> <time> <dir> # Add results")
+        print("  python3 functions.py add-nccl-result <node> <time> <busbw> <latency> # Add results")
         print("\n" + "="*60 + "\n")
