@@ -29,4 +29,4 @@ export GCR_BUSBW=$(grep "BusBW:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
     "$GCRTIME" \
-    "
+    "$GCR
