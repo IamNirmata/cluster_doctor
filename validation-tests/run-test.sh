@@ -3,11 +3,13 @@ mkdir -p /data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/
 mkdir -p /data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/
 apt-get update && apt-get install -y fio
 
-
+#storage test
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee /data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/storage-$GCRNODE-$GCRTIME.log
 $GCRRESULT1=pass
 
+#nccl test
 NCCL_NET=IB  NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO torchrun --nproc_per_node=8 /workspace/c-val/validation-tests/nccl/single-node-allreduce.py 2>&1 | tee /data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/nccl-$GCRNODE-$GCRTIME.log
 $GCRRESULT2=pass
+
 
 
