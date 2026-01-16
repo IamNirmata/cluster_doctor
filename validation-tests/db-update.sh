@@ -14,11 +14,14 @@ python /workspace/c-val/utils/functions.py add-result \
     --db-path /data/continuous_validation/metadata/validation.db
 
 #storage DB update
+ec
 python3 /workspace/c-val/utils/functions.py add-storage-result \
     "$GCRNODE" \
     "$GCRTIME" \
     "$STORAGE_OUTPUT_DIR" \
     --db-path /data/continuous_validation/metadata/test-storage.db
+echo "Storage DB update completed."
+
 
 #nccl DB update
 NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
