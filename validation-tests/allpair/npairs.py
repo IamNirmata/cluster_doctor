@@ -3,39 +3,50 @@ import os
 import time
 import torch
 
-# Retrieve environment variables for distributed training configuration        
-local_world_size = int(os.environ.get("LOCAL_WORLD", 1))     
-local_rank = int(os.environ.get("OMPI_COMM_WORLD_LOCAL_RANK", 0))                                        
-world_size = int(os.environ.get("OMPI_COMM_WORLD_SIZE", 1))                                        
-world_rank = int(os.environ.get("OMPI_COMM_WORLD_RANK", 0))                                              
-node_rank = world_rank // local_world_size         
-node_world_size = world_size // local_world_size      
-ITERATIONS = 7
+# --- Environment Variable Setup for torchrun ---
+# torchrun automatically sets these variables
+local_rank = int(os.environ.get("LOCAL_RANK", 0))
+world_rank = int(os.environ.get("RANK", 0))
+world_size = int(os.environ.get("WORLD_SIZE", 1))
 
-# Create local groups for each node
-
-# Initialize the process group for distributed training
+# --- Initialization ---
+# init_method="env://" tells NCCL to look for MASTER_ADDR/PORT vars set by torchrun
 dist.init_process_group("nccl", init_method="env://", rank=world_rank, world_size=world_size)
-world_group = dist.group.WORLD 
-
-# Set the current CUDA device to the local rank
 torch.cuda.set_device(local_rank)
 
-g = 1024*1024*1024  # Define 1 GB in bytes
-size = 8*g*2  # Total size of data to be reduced
+# --- Configuration ---
+ITERATIONS = 20
+GB_UNIT = 1024 * 1024 * 1024
 
-# Allocate memory for the data to be reduced
-npair_data = torch.zeros(8*g, dtype=torch.bfloat16).to('cuda')
+# 8GB * 2 (bfloat16) = 16GB per GPU
+# Note: Ensure you have enough memory. B200s have plenty, but reduce '8' if needed.
+data_size_elements = 8 * GB_UNIT 
+total_size_bytes = data_size_elements * 2  # bfloat16 = 2 bytes
 
+# Allocate memory
+npair_data = torch.zeros(data_size_elements, dtype=torch.bfloat16, device='cuda')
+
+# --- Warmup ---
 dist.all_reduce(npair_data)
 torch.cuda.synchronize()
+
+# --- Benchmark ---
 pre = time.perf_counter()
 for _ in range(ITERATIONS):
     dist.all_reduce(npair_data)
 torch.cuda.synchronize()
 duration = (time.perf_counter() - pre) / ITERATIONS
-busbw = ((size/g) / (duration)) *(2 * (world_size - 1) / world_size)
-print(f"latency: {duration} busbw: {busbw}")
 
+# --- Bandwidth Calculation ---
+# Bus BW Formula: (DataSize / Time) * (2 * (N - 1) / N)
+correction_factor = 2 * (world_size - 1) / world_size
+alg_bw = (total_size_bytes / GB_UNIT) / duration
+bus_bw = alg_bw * correction_factor
+
+if world_rank == 0:
+    print(f"World Size: {world_size}")
+    print(f"Latency: {duration * 1000:.4f} ms")
+    print(f"AlgBW: {alg_bw:.4f} GB/s")
+    print(f"BusBW: {bus_bw:.4f} GB/s")
 
 dist.destroy_process_group()
