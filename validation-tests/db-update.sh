@@ -22,6 +22,9 @@ python3 /workspace/c-val/utils/functions.py add-storage-result \
 
 #nccl DB update
 NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
+export GCR_LATENCY=$(grep "Latency:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
+export GCR_ALGBW=$(grep "AlgBW:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
+export GCR_BUSBW=$(grep "BusBW:" "$LOG_FILE" | tail -n 1 | awk '{print $2}')
 
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
