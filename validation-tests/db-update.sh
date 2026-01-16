@@ -31,4 +31,4 @@ python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRTIME" \
     "$GCR_BUSBW" \
     "$GCR_LATENCY" \
-    
+    --db-path /data/continuous_validation/metadata/test-nccl.db
