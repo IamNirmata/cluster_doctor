@@ -5,6 +5,7 @@ echo "Storage Output dir: $STORAGE_OUTPUT_DIR"
 NCCl_OUTPUT_DIR="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME"
 echo "NCCL Output dir: $NCCl_OUTPUT_DIR"
 
+#
 python /workspace/c-val/utils/functions.py add-result \
     "$GCRNODE" \
     "all" \
