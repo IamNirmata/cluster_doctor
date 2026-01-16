@@ -1,3 +1,4 @@
+#create 
 mkdir -p /data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/
 mkdir -p /data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/
 apt-get update && apt-get install -y fio
