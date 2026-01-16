@@ -1,37 +1,43 @@
 #!/usr/bin/env bash
-# ib_bw_watch_tab.sh   --  show per-device TX bandwidth in MB/s as a table
-# Usage:  ./ib_bw_watch_tab.sh <highest_idx> [interval]
-# Example: ./ib_bw_watch_tab.sh 7          # watch mlx5_ib0 … mlx5_ib7 every 1 s
-#          ./ib_bw_watch_tab.sh 3 2        # …every 2 s
+# Real-time InfiniBand Bandwidth Monitoring Script
+# Usage: ./ibbw.sh <start_device> <end_device>
+# Example: ./ibbw.sh 5 12    # Monitor mlx5_5 through mlx5_12 (8 GPU devices)
+# Example: ./ibbw.sh 0 12    # Monitor all devices mlx5_0 through mlx5_12
 
-N=${1:-0}          # highest mlx5_ib index to watch
-INT=${2:-1}        # sampling interval in seconds
-COLW=12            # column width (chars)
+space='    '
 
-# ---------- helper ----------
-read_ctr () { cat "/host/sys/class/infiniband/mlx5_ib$1/ports/1/counters/port_xmit_data"; }
+# Initialize arrays for storing counter values
+declare -a old
+declare -a new
 
-# ---------- print header ----------
-printf "%-${COLW}s" "Time"
-for i in $(seq 0 "$N"); do
-    printf "%-${COLW}s" "mlx5_ib$i"
-done
-printf "\n"
+echo " Press Ctrl+C to stop"
 
-# ---------- prime the “old” array ----------
-for i in $(seq 0 "$N"); do
-    old[$i]=$(read_ctr "$i")
-done
-
-# ---------- main loop ----------
-while true; do
-    sleep "$INT"
-    printf "%-${COLW}s" "$(date +%H:%M:%S)"
-    for i in $(seq 0 "$N"); do
-        new=$(read_ctr "$i")
-        delta_mb=$(( (new - old[$i]) / 262144 ))   # words→bytes→MB
-        printf "%-${COLW}s" "${delta_mb}MB/s"
-        old[$i]=$new
+# Main monitoring loop
+while :
+do
+    # Read initial counter values for all devices
+    for i in $(seq $1 $2); do
+        old[${i}]=$(cat /sys/class/infiniband/mlx5_${i}/ports/1/counters/port_xmit_data 2>/dev/null || echo 0)
     done
-    printf "\n"
+
+    # Wait 1 second
+    sleep 1
+
+    # Read new counter values for all devices
+    for i in $(seq $1 $2); do
+        new[${i}]=$(cat /sys/class/infiniband/mlx5_${i}/ports/1/counters/port_xmit_data 2>/dev/null || echo 0)
+    done
+
+    # Calculate and display bandwidth for each device
+    echo -n "$(date +%H:%M:%S) | "
+    for i in $(seq $1 $2); do
+        # Counter is in 4-byte (32-bit) units
+        # Multiply by 4 to get bytes, then divide by 1048576 (1024^2) to get MB/s
+        bw=$(( (new[${i}] - old[${i}]) * 4 / 1048576 ))
+        printf "mlx5_%d: %5d MB/s${space}" $i $bw
+        
+        # Store current value for next iteration
+        old[${i}]=${new[${i}]}
+    done
+    echo
 done
