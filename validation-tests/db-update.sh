@@ -13,6 +13,8 @@ python /workspace/c-val/utils/functions.py add-result \
     "pass" \
     "$GCRTIME" \
     --db-path /data/continuous_validation/metadata/validation.db
+echo "Main DB update completed."
+
 
 #storage DB update
 echo "Updating storage db with test results"
