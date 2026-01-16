@@ -416,6 +416,55 @@ def get_storage_status_csv(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path
     """)
     return _exec_python_on_pod(code, pod, namespace)
 
+def get_nccl_status_csv(pod=DEFAULT_POD, namespace=DEFAULT_NAMESPACE, db_path=DEFAULT_NCCL_DB_PATH):
+    """
+    Fetches the latest VIEW from the NCCL database in CSV format.
+    """
+    code = textwrap.dedent(f"""
+    import sqlite3, sys, datetime, os, csv
+
+    db_path = '{db_path}'
+    try:
+        if not os.path.exists(db_path):
+            print(f"NCCL DB not found at {{db_path}}.")
+            sys.exit(0)
+
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        
+        # Check if view exists
+        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='view' AND name='latest_nccl_performance_stats';")
+        if not cursor.fetchone():
+            print("View 'latest_nccl_performance_stats' not found.")
+            sys.exit(0)
+
+        rows = conn.execute('SELECT * FROM latest_nccl_performance_stats ORDER BY latest_timestamp DESC').fetchall()
+
+        if rows:
+            # Output CSV
+            headers = list(rows[0].keys())
+            writer = csv.writer(sys.stdout)
+            writer.writerow(headers)
+            
+            for r in rows:
+                vals = []
+                for k in headers:
+                    val = r[k]
+                    # Convert timestamp to readable string for CSV
+                    if 'timestamp' in k and isinstance(val, int):
+                         val = datetime.datetime.fromtimestamp(val, tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                    vals.append(val)
+                writer.writerow(vals)
+        else:
+            print("No results found in NCCL DB.")
+
+    except Exception as e:
+        print(f'Error: {{e}}', file=sys.stderr)
+        sys.exit(1)
+    """)
+    return _exec_python_on_pod(code, pod, namespace)
+
+
 def parse_db_status_output(output_string):
     status_map = {}
     lines = output_string.strip().split('\n')
