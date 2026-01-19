@@ -50,3 +50,24 @@ if world_rank == 0:
     print(f"BusBW: {bus_bw:.4f} GB/s")
 
 dist.destroy_process_group()
+
+
+# ... [Inside your Python script, near the end] ...
+
+if world_rank == 0:
+    # 1. Print to Standard Out (For your human-readable logs)
+    print(f"World Size: {world_size}")
+    print(f"Latency: {duration * 1000:.4f} ms")
+    print(f"AlgBW: {alg_bw:.4f} GB/s")
+    print(f"BusBW: {bus_bw:.4f} GB/s")
+
+    # 2. [NEW] Write to Metrics File (For the Bash script)
+    # We check if the environment variable exists first
+    metrics_file_path = os.environ.get("METRICS_OUTPUT_FILE")
+    
+    if metrics_file_path:
+        with open(metrics_file_path, "w") as f:
+            # We write these as bash commands
+            f.write(f"export GCR_LATENCY={duration * 1000:.4f}\n")
+            f.write(f"export GCR_ALGBW={alg_bw:.4f}\n")
+            f.write(f"export GCR_BUSBW={bus_bw:.4f}\n")
