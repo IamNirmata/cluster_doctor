@@ -41,7 +41,7 @@ echo "Starting storage tests..."
 
 # 1. Random Write
 echo "Running random write test... (1/6)"
-fio "$JOB_DIR/randwrite.fio" --output-format=json --output="$OUTPUT_DIR/randwrite.json"
+fio "$JOB_DIR/randwrite.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/randwrite.json"
 
 # 2. Random Read
 echo "Running random read test... (2/6)"
