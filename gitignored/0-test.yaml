@@ -75,8 +75,7 @@ spec:
                   git clone https://github.com/IamNirmata/c-val.git /workspace/c-val
                   cd /workspace/c-val/validation-tests/
                   source 0-env.sh
-                  chmod +x run-test.sh
-                  source ./run-test.sh
+                  bash run-test.sh
                   source ./db-update.sh
                   echo "Completed."
                   sleep infinity
