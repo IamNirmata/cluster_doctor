@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #prep
-apt-get update && apt-get install -y fio 
+apt-get update > /dev/null 2>&1 && apt-get install -y fio > /dev/null 2>&1
 
 #create dirs
 storage_dir="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/"
