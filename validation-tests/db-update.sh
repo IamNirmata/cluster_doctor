@@ -49,14 +49,6 @@ else
     exit 1
 fi
 
-    
-echo "----------------------------------------"
-echo "Captured Metrics:"
-echo "GCR_LATENCY : $GCR_LATENCY"
-echo "GCR_ALGBW   : $GCR_ALGBW"
-echo "GCR_BUSBW   : $GCR_BUSBW"
-echo "----------------------------------------"
-
 python3 /workspace/c-val/utils/functions.py add-nccl-result \
     "$GCRNODE" \
     "$GCRTIME" \
