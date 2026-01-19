@@ -3,11 +3,7 @@
 #prep
 apt-get update > /dev/null 2>&1 && apt-get install -y fio > /dev/null 2>&1 
 
-#create dirs
-storage_dir="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/"
-nccl_dir="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/"
-mkdir -p "$storage_dir"
-mkdir -p "$nccl_dir"
+
 
 echo "#########################################################################"
 echo "Running tests on node: $GCRNODE at time: $GCRTIME"
