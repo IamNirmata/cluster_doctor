@@ -84,7 +84,7 @@ fi
     echo "--------------------------------------------------------------------------------"
 
     # Parse all JSON files in the output directory
-    for file in "$OUTPUT_DIR"/*.json; do
+    for file in "$STORAGE_OUTPUT_DIR"/*.json; do
         [ -e "$file" ] || continue
         
         filename=$(basename "$file")
