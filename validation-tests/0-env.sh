@@ -10,4 +10,5 @@ mkdir -p "$NCCL_OUTPUT_DIR"
 export STORAGE_LOG_FILE="$STORAGE_OUTPUT_DIR/storage-$GCRNODE-$GCRTIME.log"
 export NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
 
-#s
+#summary files
+export NCCL_SUMMARY_FILE="$NCCL_OUTPUT_DIR/nccl-summary-$GCR
