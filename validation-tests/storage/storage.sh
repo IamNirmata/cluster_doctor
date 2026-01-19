@@ -102,7 +102,7 @@ fi
     done
     echo "================================================================================"
 
-} > "$SUMMARY_FILE"
+} > "$STORAGE_SUMMARY_FILE"
 
 echo "Summary report generated at: $SUMMARY_FILE"
 # Optional: print the file to console as well so you see it immediately
