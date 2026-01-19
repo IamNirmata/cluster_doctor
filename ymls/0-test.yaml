@@ -45,7 +45,7 @@ spec:
               requiredDuringSchedulingIgnoredDuringExecution:
                 - labelSelector:
                     matchLabels:
-                      app: hari-gcr-bonete-test
+                      app: hari-gcr-ceval-test
                   topologyKey: kubernetes.io/hostname
           containers:
             - name: server
