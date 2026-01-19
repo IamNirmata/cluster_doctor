@@ -23,7 +23,7 @@ echo "NCCL output dir: $NCCL_OUTPUT_DIR"
 echo "#########################################################################"
 
 #storage test
-storage-log-file= "$storage_dir/storage-$GCRNODE-$GCRTIME.log"
+
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$storage-log-file"
 echo "Storage test is complete. Log file: $storage-log-file"
 export GCRRESULT1=pass
