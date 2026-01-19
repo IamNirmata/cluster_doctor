@@ -49,7 +49,7 @@ else
     exit 1
 fi
 
-
+    
 echo "----------------------------------------"
 echo "Captured Metrics:"
 echo "GCR_LATENCY : $GCR_LATENCY"
