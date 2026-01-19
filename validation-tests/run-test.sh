@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#pre
+#pre[]
 
 #create dirs
 storage_dir="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/"
