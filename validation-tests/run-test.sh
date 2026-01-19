@@ -24,8 +24,20 @@ export GCRRESULT1=pass
 
 
 #nccl test
-nccl-test-command="/workspace/c-val/validation-tests/nccl/single-node-allreduce.py --result-file $NCCL_SUMMARY_FILE"
-NCCL_NET=IB  NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO torchrun --nproc_per_node=8 "$nccl-test-command" | tee "$NCCL_LOG_FILE"
+# ... (Previous code remains the same)
+
+# nccl test
+# 1. Use underscores for variable name
+# 2. Separate the script path from the arguments for clarity
+NCCL_SCRIPT="/workspace/c-val/validation-tests/nccl/single-node-allreduce.py"
+NCCL_ARGS="--result-file $NCCL_SUMMARY_FILE"
+
+echo "Running NCCL Test..."
+
+# 3. Do NOT quote the arguments variable ($NCCL_ARGS) so bash can split it correctly
+NCCL_NET=IB NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO \
+torchrun --nproc_per_node=8 "$NCCL_SCRIPT" $NCCL_ARGS | tee "$NCCL_LOG_FILE"
+
 echo "NCCL test is complete. Log file: $NCCL_LOG_FILE Summary file: $NCCL_SUMMARY_FILE"
 export GCRRESULT2=pass
 echo "All tests completed."
