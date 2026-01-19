@@ -17,7 +17,7 @@ echo "DLTEST_LOG_FILE: $DLTEST_LOG_FILE"
 
 echo "NCCL_LOG_FILE: $NCCL_LOG_FILE"
 echo "NCCL_SUMMARY_FILE: $NCCL_SUMMARY_FILE"
-
+echo "DLTEST_SUMMARY_FILE: $DLTEST_SUMMARY_FILE"
 echo "#########################################################################"
 
 #storage test
