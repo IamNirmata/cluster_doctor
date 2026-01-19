@@ -14,12 +14,6 @@ echo "STORAGE_SUMMARY_FILE: $STORAGE_SUMMARY_FILE"
 
 echo "NCCL_LOG_FILE: $NCCL_LOG_FILE"
 echo "NCCL_SUMMARY_FILE: $NCCL_SUMMARY_FILE"
-
-
-echo "#########################################################################"
-
-echo "Storage output dir: $STORAGE_OUTPUT_DIR"
-echo "NCCL output dir: $NCCL_OUTPUT_DIR"
 echo "#########################################################################"
 
 #storage test
