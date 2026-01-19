@@ -78,9 +78,6 @@ spec:
                   bash run-test.sh
                   bash db-update.sh
                   echo "Completed."
-                  source ./db-update.sh
-                  echo "Completed."
-                  sleep infinity
               resources:
                 requests:
                   nvidia.com/gpu: "8"
