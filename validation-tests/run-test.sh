@@ -3,7 +3,7 @@
 #prep
 apt-get update > /dev/null 2>&1 && apt-get install -y fio > /dev/null 2>&1 
 
-echo "
+echo "STORAGE_OUTPUT_DIR
 
 echo "#########################################################################"
 echo "Running tests on node: $GCRNODE at time: $GCRTIME"
