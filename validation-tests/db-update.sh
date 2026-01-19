@@ -33,7 +33,7 @@ NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
 echo "NCCL Log file: $NCCL_LOG_FILE"
 
 
-if [ -f "$RESULT_JSON" ]; then
+if [ -f "$STORAGE_SUMMARY_FILE" ]; then
     # Use python to parse the JSON (available on all systems, unlike 'jq')
     export GCR_LATENCY=$(python3 -c "import json; print(json.load(open('$RESULT_JSON'))['GCR_LATENCY'])")
     export GCR_ALGBW=$(python3 -c "import json; print(json.load(open('$RESULT_JSON'))['GCR_ALGBW'])")
