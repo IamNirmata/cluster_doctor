@@ -6,7 +6,6 @@ apt-get update && apt-get install -y fio
 #create dirs
 storage_dir="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/"
 nccl_dir="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/"
-
 mkdir -p "$storage_dir"
 mkdir -p "$nccl_dir"
 
