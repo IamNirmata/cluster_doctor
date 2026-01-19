@@ -6,4 +6,5 @@ export NCCL_OUTPUT_DIR="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-
 mkdir -p "$STORAGE_OUTPUT_DIR"
 mkdir -p "$NCCL_OUTPUT_DIR"
 
-#
+#log files
+export STORAGE_LOG_FILE="$STORAGE_OUTPUT_DIR/storage-$GCRNODE-$GCRTIME.log
