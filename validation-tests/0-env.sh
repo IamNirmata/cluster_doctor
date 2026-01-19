@@ -1,1 +1,1 @@
-#setup dire
+#setup directories and environment variables
