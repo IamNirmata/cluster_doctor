@@ -22,7 +22,7 @@ echo "Storage test is complete. Log file: $storage-log-file"
 export GCRRESULT1=pass
 
 #nccl test
-
+nccl-log-file= "$nccl_dir/nccl-$GCRNODE-$GCRTIME.log"
 NCCL_NET=IB  NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO torchrun --nproc_per_node=8 /workspace/c-val/validation-tests/nccl/single-node-allreduce.py 2>&1 | tee "$nccl_dir/nccl-$GCRNODE-$GCRTIME.log"
 export GCRRESULT2=pass
 
