@@ -16,6 +16,7 @@ echo "NCCL output dir: $nccl_dir"
 echo "#########################################################################"
 
 #storage test
+
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$storage_dir/storage-$GCRNODE-$GCRTIME.log"
 export GCRRESULT1=pass
 
