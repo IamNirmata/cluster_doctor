@@ -15,7 +15,6 @@ echo "NCCL_LOG_FILE: $NCCL_LOG_FILE"
 echo "NCCL_SUMMARY_FILE: $NCCL_SUMMARY_FILE"
 
 
-
 echo "#########################################################################"
 echo "Running tests on node: $GCRNODE at time: $GCRTIME"
 echo "Storage output dir: $STORAGE_OUTPUT_DIR"
