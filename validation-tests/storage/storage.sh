@@ -23,7 +23,7 @@ echo " STORAGE VALIDATION SUITE"
 echo " Node:       $GCRNODE"
 echo " Time:       $GCRTIME"
 echo " Job Source: $JOB_DIR"
-echo " Output Dir: 
+echo " Output Dir: STORAGE_OUTPUT_DIR
 echo "================================================================================"
 
 # --- CHECKS ---
