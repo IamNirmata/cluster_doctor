@@ -28,3 +28,4 @@ nccl-test-command="/workspace/c-val/validation-tests/nccl/single-node-allreduce.
 NCCL_NET=IB  NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO torchrun --nproc_per_node=8 "$nccl-test-command" | tee "$nccl-log-file"
 echo "NCCL test is complete. Log file: $nccl-log-file Summary file: $nccl-summary-file"
 export GCRRESULT2=pass
+echo "All tests completed."
