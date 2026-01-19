@@ -52,8 +52,7 @@ fio "$JOB_DIR/iodepth_write_1file.fio" --output-format=json --output="$STORAGE_O
 
 # 4. Sequential Read (QD128)
 echo "Running iodepth read test... (4/6)"
-fio "$JOB_DIR/iodepth_read_1file.fio" --output-format=json --output="$OUTPUT_DIR/iodepth_read_1file.json"
-
+fio "$JOB_DIR/iodepth_read_1file.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/iodepth_read_1file.json"
 # 5. Aggregate Write (Numjobs)
 echo "Running numjobs write test... (5/6)"
 fio "$JOB_DIR/numjobs_write_nfiles.fio" --output-format=json --output="$OUTPUT_DIR/numjobs_write_nfiles.json"
