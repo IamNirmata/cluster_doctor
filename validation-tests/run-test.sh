@@ -24,11 +24,6 @@ export GCRRESULT1=pass
 
 
 #nccl test
-# ... (Previous code remains the same)
-
-# nccl test
-# 1. Use underscores for variable name
-# 2. Separate the script path from the arguments for clarity
 NCCL_SCRIPT="/workspace/c-val/validation-tests/nccl/single-node-allreduce.py"
 NCCL_ARGS="--result-file $NCCL_SUMMARY_FILE"
 
