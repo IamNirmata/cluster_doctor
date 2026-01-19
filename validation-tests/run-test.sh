@@ -36,4 +36,5 @@ torchrun --nproc_per_node=8 "$NCCL_SCRIPT" $NCCL_ARGS | tee "$NCCL_LOG_FILE"
 
 echo "NCCL test is complete. Log file: $NCCL_LOG_FILE Summary file: $NCCL_SUMMARY_FILE"
 export GCRRESULT2=pass
-echo "All tests completed."
+
+#dltest
