@@ -16,7 +16,7 @@ spec:
       template:
         metadata:
           labels:
-            app: hari-gcr-bonete-test
+            app: hari-gcr-ceval-test
             role: server
         spec:
           schedulerName: volcano
