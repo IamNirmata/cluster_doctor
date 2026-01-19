@@ -29,3 +29,4 @@ echo "NCCL test is complete. Log file: $nccl-log-file"
 export GCRRESULT2=pass
 
 
+/workspace/c-val/validation-tests/nccl/single-node-allreduce.py 2>&1 | tee "$nccl-log-file"
