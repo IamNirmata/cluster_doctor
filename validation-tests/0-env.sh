@@ -11,4 +11,4 @@ export STORAGE_LOG_FILE="$STORAGE_OUTPUT_DIR/storage-$GCRNODE-$GCRTIME.log"
 export NCCL_LOG_FILE="$NCCL_OUTPUT_DIR/nccl-$GCRNODE-$GCRTIME.log"
 
 #summary files
-export NCCL_SUMMARY_FILE="$NCCL_OUTPUT_DIR/nccl-summary-$GCR
+export NCCL_SUMMARY_FILE="$NCCL_OUTPUT_DIR/nccl-summary-$GCRNODE-$GCRTIME.json"
