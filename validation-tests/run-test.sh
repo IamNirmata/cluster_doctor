@@ -6,6 +6,8 @@ apt-get update > /dev/null 2>&1 && apt-get install -y fio > /dev/null 2>&1
 echo "STORAGE_OUTPUT_DIR: $STORAGE_OUTPUT_DIR"
 echo "NCCL_OUTPUT_DIR: $NCCL_OUTPUT_DIR"
 
+ec
+
 echo "#########################################################################"
 echo "Running tests on node: $GCRNODE at time: $GCRTIME"
 echo "Storage output dir: $STORAGE_OUTPUT_DIR"
