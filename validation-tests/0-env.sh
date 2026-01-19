@@ -22,3 +22,4 @@ export DLTEST_SUMMARY_FILE="$DLTEST_OUTPUT_DIR/dltest-summary-$GCRNODE-$GCRTIME.
 #result variables
 export GCRRESULT1=fail
 export GCRRESULT2=fail
+export GCRRESULT3=fail
