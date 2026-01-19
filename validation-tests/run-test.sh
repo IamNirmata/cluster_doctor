@@ -22,8 +22,8 @@ bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$STORAGE_LOG_FI
 echo "Storage test is complete. Log file: $STORAGE_LOG_FILE Summary file: $STORAGE_SUMMARY_FILE"
 export GCRRESULT1=pass
 
-#nccl test
 
+#nccl test
 nccl-test-command="/workspace/c-val/validation-tests/nccl/single-node-allreduce.py --result-file $NCCL_SUMMARY_FILE"
 NCCL_NET=IB  NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO torchrun --nproc_per_node=8 "$nccl-test-command" | tee "$NCCL_LOG_FILE"
 echo "NCCL test is complete. Log file: $NCCL_LOG_FILE Summary file: $NCCL_SUMMARY_FILE"
