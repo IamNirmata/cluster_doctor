@@ -8,8 +8,8 @@ echo "NCCL_OUTPUT_DIR: $NCCL_OUTPUT_DIR"
 
 echo "#########################################################################"
 echo "Running tests on node: $GCRNODE at time: $GCRTIME"
-echo "Storage output dir: $storage_dir"
-echo "NCCL output dir: $nccl_dir"
+echo "Storage output dir: $STORAGE_OUTPUT_DIR"
+echo "NCCL output dir: $NCCL_OUTPUT_DIR"
 echo "#########################################################################"
 
 #storage test
