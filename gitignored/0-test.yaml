@@ -76,6 +76,8 @@ spec:
                   cd /workspace/c-val/validation-tests/
                   source 0-env.sh
                   bash run-test.sh
+                  bash db-update.sh
+                  echo "Completed."
                   source ./db-update.sh
                   echo "Completed."
                   sleep infinity
