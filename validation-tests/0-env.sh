@@ -3,7 +3,7 @@
 
 export STORAGE_OUTPUT_DIR="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME"
 export NCCL_OUTPUT_DIR="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME"
-export DLTEST
+export DLTEST_OUTPUT_DIR="/data/continuous_validation/dltest/$GCRNODE/dltest-$GCRNODE-$GCRTIME"
 
 mkdir -p "$STORAGE_OUTPUT_DIR"
 mkdir -p "$NCCL_OUTPUT_DIR"
