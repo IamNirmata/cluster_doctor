@@ -104,6 +104,6 @@ fi
 
 } > "$STORAGE_SUMMARY_FILE"
 
-echo "Summary report generated at: $SUMMARY_FILE"
+echo "Summary report generated at: $STORAGE_SUMMARY_FILE"
 # Optional: print the file to console as well so you see it immediately
-cat "$SUMMARY_FILE"
+cat "$STORAGE_SUMMARY_FILE"
