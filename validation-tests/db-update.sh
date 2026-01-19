@@ -35,10 +35,9 @@ echo "NCCL Log file: $NCCL_LOG_FILE"
 
 if [ -f "$NCCL_SUMMARY_FILE" ]; then
     # Use python to parse the JSON (available on all systems, unlike 'jq')
-    export GCR_LATENCY=$(python3 -c "import json; print(json.load(open('$RESULT_JSON'))['GCR_LATENCY'])")
-    export GCR_ALGBW=$(python3 -c "import json; print(json.load(open('$RESULT_JSON'))['GCR_ALGBW'])")
-    export GCR_BUSBW=$(python3 -c "import json; print(json.load(open('$RESULT_JSON'))['GCR_BUSBW'])")
-
+    export GCR_LATENCY=$(python3 -c "import json; print(json.load(open('$NCCL_SUMMARY_FILE'))['GCR_LATENCY'])")
+    export GCR_ALGBW=$(python3 -c "import json; print(json.load(open('$NCCL_SUMMARY_FILE'))['GCR_ALGBW'])")
+    export GCR_BUSBW=$(python3 -c "import json; print(json.load(open('$NCCL_SUMMARY_FILE'))['GCR_BUSBW'])")
     echo "--------------------------------"
     echo "Successfully Loaded Metrics:"
     echo "GCR_BUSBW:   $GCR_BUSBW"
