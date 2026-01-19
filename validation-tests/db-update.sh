@@ -45,7 +45,7 @@ if [ -f "$NCCL_SUMMARY_FILE" ]; then
     echo "GCR_LATENCY: $GCR_LATENCY"
     echo "--------------------------------"
 else
-    echo "Error: Result file $RESULT_JSON was not created."
+    echo "Error: Result file $NCCL_SUMMARY_FILE was not created."
     exit 1
 fi
 
