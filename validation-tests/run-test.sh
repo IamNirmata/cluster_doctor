@@ -11,6 +11,9 @@ mkdir -p "$nccl_dir"
 
 echo "#########################################################################"
 echo "Running tests on node: $GCRNODE at time: $GCRTIME"
+echo "Storage output dir: $storage_dir"
+echo "NCCL output dir: $nccl_dir"
+echo "#########################################################################"
 
 #storage test
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$storage_dir/storage-$GCRNODE-$GCRTIME.log"
