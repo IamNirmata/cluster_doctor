@@ -18,6 +18,7 @@ echo "#########################################################################"
 #storage test
 storage-log-file= "$storage_dir/storage-$GCRNODE-$GCRTIME.log"
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$storage-log-file"
+echo "Storage Log file: $storage-log-file"
 export GCRRESULT1=pass
 
 #nccl test
