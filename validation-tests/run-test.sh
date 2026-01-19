@@ -2,8 +2,8 @@
 storage_dir="/data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/"
 nccl_dir="/data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/"
 
-mkdir -p /data/continuous_validation/storage/$GCRNODE/storage-$GCRNODE-$GCRTIME/
-mkdir -p /data/continuous_validation/nccl/$GCRNODE/nccl-$GCRNODE-$GCRTIME/
+mkdir -p "$storage_dir"
+mkdir -p "$nccl_dir"
 apt-get update && apt-get install -y fio
 
 #storage test
