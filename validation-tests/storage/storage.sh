@@ -61,7 +61,7 @@ fio "$JOB_DIR/numjobs_write_nfiles.fio" --output-format=json --output="$STORAGE_
 echo "Running numjobs read test... (6/6)"
 fio "$JOB_DIR/numjobs_read_nfiles.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/numjobs_read_nfiles.json"
 echo "Storage tests completed."
-echo "Results saved in $OUTPUT_DIR"
+echo "Results saved in $STORAGE_OUTPUT_DIR"
 
 # --- SUMMARY REPORTING ---
 echo "Generating summary report..."
