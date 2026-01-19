@@ -7,6 +7,7 @@ export DLTEST_OUTPUT_DIR="/data/continuous_validation/dltest/$GCRNODE/dltest-$GC
 
 mkdir -p "$STORAGE_OUTPUT_DIR"
 mkdir -p "$NCCL_OUTPUT_DIR"
+mkdir -p "$DLTEST_OUTPUT_DIR"
 
 #log files
 export STORAGE_LOG_FILE="$STORAGE_OUTPUT_DIR/storage-$GCRNODE-$GCRTIME.log"
