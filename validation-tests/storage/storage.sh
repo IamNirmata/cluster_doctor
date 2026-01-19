@@ -45,11 +45,10 @@ fio "$JOB_DIR/randwrite.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/
 
 # 2. Random Read
 echo "Running random read test... (2/6)"
-fio "$JOB_DIR/randread.fio" --output-format=json --output="$OUTPUT_DIR/randread.json"
-
+fio "$JOB_DIR/randread.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/randread.json"
 # 3. Sequential Write (QD128)
 echo "Running iodepth write test... (3/6)"
-fio "$JOB_DIR/iodepth_write_1file.fio" --output-format=json --output="$OUTPUT_DIR/iodepth_write_1file.json"
+fio "$JOB_DIR/iodepth_write_1file.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/iodepth_write_1file.json"
 
 # 4. Sequential Read (QD128)
 echo "Running iodepth read test... (4/6)"
