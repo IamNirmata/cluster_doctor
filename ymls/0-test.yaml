@@ -1,7 +1,7 @@
 apiVersion: batch.volcano.sh/v1alpha1
 kind: Job
 metadata:
-  name: hari-gcr-ceval-slc01-cl02-test
+  name: hari-gcr-ceval-slc01-cl0-test
   namespace: gcr-admin
 spec:
   queue: gcr-admin
