@@ -23,7 +23,7 @@ export GCRRESULT1=pass
 
 #nccl test
 nccl-log-file= "$nccl_dir/nccl-$GCRNODE-$GCRTIME.log"
-nccl-test-c="/workspace/c-val/validation-tests/nccl/single-node-allreduce.py"
+nccl-test-co="/workspace/c-val/validation-tests/nccl/single-node-allreduce.py"
 NCCL_NET=IB  NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_DEBUG=INFO torchrun --nproc_per_node=8 "$nccl-test-file" | tee "$nccl-log-file"
 echo "NCCL test is complete. Log file: $nccl-log-file"
 export GCRRESULT2=pass
