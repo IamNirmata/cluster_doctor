@@ -55,12 +55,11 @@ echo "Running iodepth read test... (4/6)"
 fio "$JOB_DIR/iodepth_read_1file.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/iodepth_read_1file.json"
 # 5. Aggregate Write (Numjobs)
 echo "Running numjobs write test... (5/6)"
-fio "$JOB_DIR/numjobs_write_nfiles.fio" --output-format=json --output="$OUTPUT_DIR/numjobs_write_nfiles.json"
+fio "$JOB_DIR/numjobs_write_nfiles.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/numjobs_write_nfiles.json"
 
 # 6. Aggregate Read (Numjobs)
 echo "Running numjobs read test... (6/6)"
-fio "$JOB_DIR/numjobs_read_nfiles.fio" --output-format=json --output="$OUTPUT_DIR/numjobs_read_nfiles.json"
-
+fio "$JOB_DIR/numjobs_read_nfiles.fio" --output-format=json --output="$STORAGE_OUTPUT_DIR/numjobs_read_nfiles.json"
 echo "Storage tests completed."
 echo "Results saved in $OUTPUT_DIR"
 
