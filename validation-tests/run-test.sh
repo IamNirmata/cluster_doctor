@@ -6,6 +6,8 @@ apt-get update > /dev/null 2>&1 && apt-get install -y fio > /dev/null 2>&1
 echo "STORAGE_OUTPUT_DIR: $STORAGE_OUTPUT_DIR"
 echo "NCCL_OUTPUT_DIR: $NCCL_OUTPUT_DIR"
 
+echo "STORAGE_LOG_FILE: $STORAGE_LOG_FILE"
+echo "STORAGE_SUMMARY_FILE: $STORAGE_SUMMARY_FILE"
 
 echo "NCCL_LOG_FILE: $NCCL_LOG_FILE"
 echo "NCCL_SUMMARY_FILE: $NCCL_SUMMARY_FILE"
