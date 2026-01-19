@@ -69,7 +69,7 @@ echo "Generating summary report..."
 # Check if jq is installed before trying to generate the file
 if ! command -v jq &> /dev/null; then
     echo "Error: 'jq' is not installed. Cannot generate summary table."
-    echo "Raw JSON files are available in $OUTPUT_DIR"
+    echo "Raw JSON files are available in $STORAGE_OUTPUT_DIR"
     exit 0
 fi
 
