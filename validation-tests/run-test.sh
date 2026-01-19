@@ -25,7 +25,7 @@ echo "#########################################################################"
 #storage test
 
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$STORAGE_LOG_FILE"
-echo "Storage test is complete. Log file: $STORAGE_LOG_FILE"
+echo "Storage test is complete. Log file: $STORAGE_LOG_FILE Summary file: $STORAGE_SUMMARY_FILE"
 export GCRRESULT1=pass
 
 #nccl test
