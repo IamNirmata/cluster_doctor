@@ -10,7 +10,7 @@ mkdir -p "$storage_dir"
 mkdir -p "$nccl_dir"
 
 echo "#########################################################################"
-
+echo "Running tests on node: $GCRNODE at time: $GCRTIME"
 
 #storage test
 bash /workspace/c-val/validation-tests/storage/storage.sh | tee "$storage_dir/storage-$GCRNODE-$GCRTIME.log"
