@@ -33,7 +33,7 @@ if [ ! -d "$JOB_DIR" ]; then
 fi
 
 echo "Setting up output directory..."
-mkdir -p "$OUTPUT_DIR"
+mkdir -p "$STORAGE_OUTPUT_DIR"
 echo "Directory created."
 
 # --- EXECUTION ---
