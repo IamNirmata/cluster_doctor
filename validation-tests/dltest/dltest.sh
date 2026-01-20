@@ -9,6 +9,5 @@ torchrun --nnodes=1 --nproc-per-node "$1" "$DLTEST_COMMAND" \
   --test_plan 80gb-b200 \
   --baseline_test_id b200-pt2.8.0-cuda12.9 \
   --iterations 20 \
-  >"$log" 2>&1
-
+  >"$DLTEST_LOG_FILE" 2>&1
 rc=$?
