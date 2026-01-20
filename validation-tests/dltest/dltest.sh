@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Running DL Test on node: $GCRNODE at time: $GCRTIME"
-DLTEST_C="/data/continuous_validation/deeplearning_unit_test"
+DLTEST_COMMAND="/data/continuous_validation/deeplearning_unit_test"
 
 
 
