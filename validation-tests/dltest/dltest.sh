@@ -11,3 +11,4 @@ torchrun --nnodes=1 --nproc-per-node "$1" "$DLTEST_COMMAND" \
   --iterations 20 \
   >"$DLTEST_LOG_FILE" 2>&1
 rc=$?
+
