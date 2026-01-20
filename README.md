@@ -116,7 +116,7 @@ Once scheduled, the validation pod:
 ## Future Works / Next Steps
 
 1. Results classification currently relies on simple heuristics. Future iterations will implement more sophisticated statistical analysis:
-    1.  **Baseline-Based Classification**: When definitive performance baselines are available, the system will compare gathered metrics against these thresholds to deterministically classify results as "Pass" or "Fail".
+    -  **Baseline-Based Classification**: When definitive performance baselines are available, the system will compare gathered metrics against these thresholds to deterministically classify results as "Pass" or "Fail".
     2.  **Peer Comparison & Outlier Detection**: In the absence of baselines, the system will utilize peer comparison. By analyzing a node's performance relative to the cluster cohort, we can statistically isolate outliers and "bad" nodes without pre-defined limits.
 
 
