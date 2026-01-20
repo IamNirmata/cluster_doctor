@@ -119,7 +119,7 @@ Once scheduled, the validation pod:
     -  **Baseline-Based Classification**: When definitive performance baselines are available, the system will compare gathered metrics against these thresholds to deterministically classify results as "Pass" or "Fail".
     -  **Peer Comparison & Outlier Detection**: In the absence of baselines, the system will utilize peer comparison. By analyzing a node's performance relative to the cluster cohort, we can statistically isolate outliers and "bad" nodes without pre-defined limits.
 2. Codebase refactoring to modularize components for easier maintenance and extensibility ( bash scripts to Python modules).
-3. Run scheduled orchestrator for fully automated continuous validation ( e.g., run every weekend or ).
+3. Run scheduled orchestrator for fully automated continuous validation ( e.g., run every weekend or less ).
 
 
 
