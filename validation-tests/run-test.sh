@@ -39,4 +39,4 @@ export GCRRESULT2=pass
 
 #dltest
 echo "Running DL Test..."
-
+bash /workspace/c-val/validation-tests/dltest/dltest.sh 8
