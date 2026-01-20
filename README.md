@@ -113,7 +113,7 @@ Once scheduled, the validation pod:
 3.  Streams logs to the shared PVC.
 4.  Updates the `validation.db` directly with the node-id,timestamp, and `Pass`/`Fail` outcome.
 
-## Future Works / Next Steps
+## Next Steps
 
 1. Results classification currently relies on simple heuristics. Future iterations will implement more sophisticated statistical analysis:
     -  **Baseline-Based Classification**: When definitive performance baselines are available, the system will compare gathered metrics against these thresholds to deterministically classify results as "Pass" or "Fail".
