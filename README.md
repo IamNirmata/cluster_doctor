@@ -6,7 +6,10 @@ This is a continuous validation framework designed for large-scale GPU clusters.
 ## Assumptions & Design Philosophy
 This framework operates based on several key assumptions about cluster management and failure modes:
 
-- **Prioritized Opportunistic Sampling**: The framework operates opportunistically by utilizing free nodes as they become available between user workloads. However, the selection of which available nodes to test is strictly prioritized. By consulting historical test data, the system targets nodes with stale or missing validation results first, ensuring systematic and complete cluster coverage without requiring dedicated downtime.
+- **Prioritized Opportunistic Sampling**: The framework operates opportunistically by utilizing free nodes as they become available between user workloads. However, the selection of which available nodes to test is strictly prioritized:
+    1. Filter out nodes that already have valid test results (test result validity within certain threshold days).
+    2. Prioritize nodes without any test results history available.
+    3. Order the nodes with oldest test results first, latest result last.
 - **Node Availability Heuristic**: "Bad" nodes are statistically more likely to be free than "good" nodes. This is based on the observation that jobs scheduled on faulty nodes tend to crash or fail quickly, releasing the resource back to the pool. Prioritizing free nodes naturally targets potential problem areas.
 - **Cost-Benefit Balance**: Performing full online validation (pre-flight or post-flight) for every user job is  expensive in terms of time and compute resources. An out-of-band continuous validation loop balances deep validation coverage with cluster utilization.
 - **Application-Level Validation**: Standard infrastructure monitoring (e.g., Kubernetes Node Problem Detector) often misses subtle ecosystem instabilities. This framework validates the stack at the level user workloads operate (e.g., Deep Learning unit tests, NCCL tests, and storage benchmarks).
