@@ -69,7 +69,7 @@ Logs are organized by test type and node name:
 `/data/continuous_validation/<test-name>/<node-name>/`
 
 **Example:**
-`/data/continuous_validation/Storage/Node_001/Storage_node001_1736367000.log`
+`/data/continuous_validation/Storage/Node_001/Storage_slc01-cl02-hgx-0311_1736367000.log`
 
 ### 2. Test Results Metadata
 The central source of truth is the SQLite database:
