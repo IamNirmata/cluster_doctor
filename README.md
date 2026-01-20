@@ -80,7 +80,7 @@ It tracks the latest validation timestamp and result for every node-test pair:
 | Node | Test Name | Timestamp | Result |
 |-----:|-----------|----------:|--------|
 | slc01-cl02-hgx-0311 | nccl-loop-back | 1736367000 | Pass |
-| slc01-cl02-hgx-0312 | DL unit test | 1736367000 | Fail |
+| slc01-cl02-hgx-0312 | storage | 1736367000 | Fail |
 
 ## Workflow Internals
 
