@@ -39,3 +39,4 @@ export GCRRESULT2=pass
 
 #dltest
 echo "Running DL Test..."
+
