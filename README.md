@@ -111,7 +111,7 @@ Once scheduled, the validation pod:
 1.  Clones the latest test scripts.
 2.  Runs the specified validation suite (storage, NCCL loop-back, DL unit tests).
 3.  Streams logs to the shared PVC.
-4.  Updates the `validation.db` directly with the  `Pass`/`Fail` outcome.
+4.  Updates the `validation.db` directly with the node `Pass`/`Fail` outcome.
 
 ## Future Works / Next Steps
 
