@@ -38,4 +38,4 @@ echo "NCCL test is complete. Log file: $NCCL_LOG_FILE Summary file: $NCCL_SUMMAR
 export GCRRESULT2=pass
 
 #dltest
-
+echo "Running DL Test..."
