@@ -98,7 +98,7 @@ The orchestration logic in `job-runner.ipynb` follows these steps:
 - **Function:** `build_priority_queue(free_nodes_list, db_latest_status, Z_days_threshold)`
 - **Logic:**
     1.  **Filter:** Intersect free nodes with the history.
-    2.  **Qualify:** Select nodes where test res is older than `Z` days.
+    2.  **Qualify:** Select nodes where test result is older than `Z` days.
     3.  **Sort:** Order by timestamp ascending (oldest tested -> highest priority).
 - **Output:** A priority queue of nodes requiring validation.
 
