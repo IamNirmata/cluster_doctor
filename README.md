@@ -79,7 +79,7 @@ It tracks the latest validation timestamp and result for every node-test pair:
 
 | Node | Test Name | Timestamp | Result |
 |-----:|-----------|----------:|--------|
-| 001 | DL unit test | 1736367000 | Pass |
+| slc01-cl02-hgx-0311 | DL unit test | 1736367000 | Pass |
 | 002 | DL unit test | 1736367000 | Fail |
 
 ## Workflow Internals
