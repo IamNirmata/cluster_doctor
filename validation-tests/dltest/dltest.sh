@@ -12,3 +12,11 @@ torchrun --nnodes=1 --nproc-per-node "$1" "$DLTEST_COMMAND" \
   >"$DLTEST_LOG_FILE" 2>&1
 rc=$?
 
+if [ $rc -ne 0 ]; then
+  echo "DL Test torchrun FAILED with rc=$rc"
+  echo "Check log file: $DLTEST_LOG_FILE"
+  export GCRRESULT3=fail
+else
+  echo "DL Test completed successfully. Log file: $DLTEST_LOG_FILE"
+  export GCRRESULT3=pass
+fi
