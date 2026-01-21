@@ -848,7 +848,6 @@ def agent_summary(
       base_dir: root artifacts directory (default: /data/continuous_validation)
       max_alarm_lines: cap number of alarm lines printed per test.
     """
-    import shlex
     import textwrap
 
     # Pass args into remote python safely (space/quote-safe)
@@ -856,7 +855,7 @@ def agent_summary(
     ts_arg = str(timestamp) if timestamp is not None else "__LATEST__"
     tests_arg = ",".join(tests) if tests else "nccl,storage,deeplearning_unit_test"
 
-    code = textwrap.dedent(r"""
+    code = textwrap.dedent(r'''
     import os, sys, re, json, datetime
 
     BASE_DIR = sys.argv[1]
@@ -1136,7 +1135,7 @@ def agent_summary(
             summarize_node(n)
     else:
         summarize_node(NODE)
-    """)
+    ''')
 
     # Execute remotely
     return _exec_python_on_pod(
