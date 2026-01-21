@@ -1288,7 +1288,7 @@ if __name__ == "__main__":
     elif args.command == "delete-job":
         print(delete_job(args.job_name, namespace=args.namespace))
 
-    # New Han
+    # 
     elif args.command == "create-test":
         if args.type == "storage":
             target_path = args.db_path if args.db_path else DEFAULT_STORAGE_DB_PATH
