@@ -1300,7 +1300,6 @@ if __name__ == "__main__":
             max_alarm_lines=args.max_alarms,
         ))
 
-
     # test-db related commands
     elif args.command == "create-test":
         if args.type == "storage":
