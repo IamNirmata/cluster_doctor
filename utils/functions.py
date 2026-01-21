@@ -1289,16 +1289,16 @@ if __name__ == "__main__":
         print(delete_job(args.job_name, namespace=args.namespace))
 
     elif args.command == "agent-summary":
-    tests = [t.strip() for t in args.tests.split(",") if t.strip()]
-    print(agent_summary(
-        node=args.node,
-        timestamp=args.timestamp,
-        tests=tests,
-        base_dir=args.base_dir,
-        pod=args.pod,
-        namespace=args.namespace,
-        max_alarm_lines=args.max_alarms,
-    ))
+        tests = [t.strip() for t in args.tests.split(",") if t.strip()]
+        print(agent_summary(
+            node=args.node,
+            timestamp=args.timestamp,
+            tests=tests,
+            base_dir=args.base_dir,
+            pod=args.pod,
+            namespace=args.namespace,
+            max_alarm_lines=args.max_alarms,
+        ))
 
 
     # test-db related commands
