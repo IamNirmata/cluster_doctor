@@ -824,6 +824,328 @@ def exec_pod(pod_name, namespace=DEFAULT_NAMESPACE):
     print(f"Starting interactive session in {pod_name}...")
     subprocess.call(["kubectl", "exec", "-it", pod_name, "-n", namespace, "--", "/bin/bash"])
 
+def agent_summary(
+    node=None,
+    timestamp=None,
+    tests=("nccl", "storage", "deeplearning_unit_test"),
+    base_dir="/data/continuous_validation",
+    pod=DEFAULT_POD,
+    namespace=DEFAULT_NAMESPACE,
+    max_alarm_lines=20,
+):
+    """
+    Generate a node health report by reading *stored* test artifacts:
+      - per-test run directory
+      - stdout/stderr log (*.log)
+      - summary json (e.g., nccl-summary-*.json)
+
+    Runs remotely inside the pvc-access pod via kubectl exec.
+
+    Args:
+      node: node name (e.g., slc01-cl02-hgx-0003). If None -> summarize all nodes found.
+      timestamp: int/str timestamp. If None -> use latest run per node per test.
+      tests: iterable of test folder names under base_dir.
+      base_dir: root artifacts directory (default: /data/continuous_validation)
+      max_alarm_lines: cap number of alarm lines printed per test.
+    """
+    import shlex
+    import textwrap
+
+    # Pass args into remote python safely (space/quote-safe)
+    node_arg = node if node else "__ALL__"
+    ts_arg = str(timestamp) if timestamp is not None else "__LATEST__"
+    tests_arg = ",".join(tests) if tests else "nccl,storage,deeplearning_unit_test"
+
+    code = textwrap.dedent(r"""
+    import os, sys, re, json, datetime
+
+    BASE_DIR = sys.argv[1]
+    NODE = sys.argv[2]
+    TS = sys.argv[3]
+    TESTS = [t.strip() for t in sys.argv[4].split(",") if t.strip()]
+    MAX_ALARMS = int(sys.argv[5])
+
+    # Heuristics: patterns that usually indicate node/test problems.
+    # You can tune these over time.
+    PATTERNS = [
+        ("CRITICAL", r"(?i)\b(segfault|core dumped|illegal instruction|abort|fatal|unhandled exception)\b"),
+        ("CRITICAL", r"(?i)\b(oomkilled|out of memory|cuda out of memory)\b"),
+        ("CRITICAL", r"(?i)\b(watchdog|collective operation timeout|timeout)\b"),
+        ("CRITICAL", r"(?i)\b(xid\b|gpu has fallen off the bus)\b"),
+
+        ("WARNING",  r"(?i)\b(nccl warn)\b"),
+        ("WARNING",  r"(?i)\b(error|failed|failure)\b"),
+        ("WARNING",  r"Could not find: libnccl-env\.so"),
+        ("WARNING",  r"(?i)\b(ibv_|rdma|mlx5|link down)\b"),
+    ]
+
+    def _read_text(path, max_bytes=5_000_000):
+        try:
+            with open(path, "rb") as f:
+                b = f.read(max_bytes)
+            return b.decode("utf-8", errors="replace")
+        except Exception as e:
+            return f"<<failed to read {path}: {e}>>"
+
+    def _read_json(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return None
+
+    def _list_nodes_for_test(test_dir):
+        try:
+            return sorted([d for d in os.listdir(test_dir) if os.path.isdir(os.path.join(test_dir, d))])
+        except FileNotFoundError:
+            return []
+
+    def _pick_run_dir(test_dir, node, ts):
+        """
+        Expected layout (example for nccl):
+          /data/continuous_validation/nccl/<node>/nccl-<node>-<ts>/
+        We pick:
+          - if ts is provided: the directory containing that ts
+          - else: the newest directory by parsed timestamp suffix
+        """
+        node_dir = os.path.join(test_dir, node)
+        if not os.path.isdir(node_dir):
+            return None
+
+        run_dirs = []
+        for d in os.listdir(node_dir):
+            full = os.path.join(node_dir, d)
+            if os.path.isdir(full):
+                # Extract last "-<digits>" as timestamp when possible
+                m = re.search(r"-(\d{8,})$", d)
+                run_ts = int(m.group(1)) if m else -1
+                run_dirs.append((run_ts, full))
+
+        if not run_dirs:
+            return None
+
+        if ts != "__LATEST__":
+            # match exact timestamp if possible
+            target = None
+            for run_ts, full in run_dirs:
+                if str(run_ts) == str(ts):
+                    target = full
+                    break
+            if target:
+                return target
+            # fallback: substring match
+            for _, full in run_dirs:
+                if str(ts) in os.path.basename(full):
+                    return full
+            return None
+
+        # latest by timestamp (fallback: mtime)
+        run_dirs.sort(key=lambda x: x[0], reverse=True)
+        if run_dirs[0][0] != -1:
+            return run_dirs[0][1]
+        run_dirs.sort(key=lambda x: os.path.getmtime(x[1]), reverse=True)
+        return run_dirs[0][1]
+
+    def _find_first(glob_dir, suffixes):
+        for name in os.listdir(glob_dir):
+            for s in suffixes:
+                if name.endswith(s):
+                    return os.path.join(glob_dir, name)
+        return None
+
+    def _scan_alarms(text):
+        alarms = []
+        lines = text.splitlines()
+        for level, pat in PATTERNS:
+            rx = re.compile(pat)
+            for ln in lines:
+                if rx.search(ln):
+                    alarms.append((level, ln.strip()))
+        # de-dupe while preserving order
+        seen = set()
+        out = []
+        for lvl, ln in alarms:
+            key = (lvl, ln)
+            if key not in seen:
+                seen.add(key)
+                out.append((lvl, ln))
+        return out
+
+    def _parse_nccl(run_dir):
+        """
+        NCCL: prefer summary json metrics, enrich with log details.
+        """
+        log_path = _find_first(run_dir, (".log",))
+        # Prefer a file that looks like "nccl-summary-*.json" if present
+        summary_path = None
+        for name in os.listdir(run_dir):
+            if name.startswith("nccl-summary-") and name.endswith(".json"):
+                summary_path = os.path.join(run_dir, name)
+                break
+
+        log_text = _read_text(log_path) if log_path else ""
+        summary = _read_json(summary_path) if summary_path else None
+
+        world_size = None
+        m = re.search(r"World Size:\s*(\d+)", log_text)
+        if m:
+            world_size = int(m.group(1))
+
+        # Pull common NCCL info if present
+        nccl_ver = None
+        m = re.search(r"NCCL version\s+([^\s]+)", log_text)
+        if m:
+            nccl_ver = m.group(1)
+
+        bootstrap_if = None
+        m = re.search(r"Bootstrap:\s+Using\s+([a-zA-Z0-9_.-]+):", log_text)
+        if m:
+            bootstrap_if = m.group(1)
+
+        metrics = {}
+        if isinstance(summary, dict):
+            metrics.update(summary)
+
+        # Normalize keys for display
+        out_metrics = {
+            "world_size": world_size,
+            "nccl_version": nccl_ver,
+            "bootstrap_if": bootstrap_if,
+            "latency_ms": metrics.get("GCR_LATENCY"),
+            "algbw_gbps": metrics.get("GCR_ALGBW"),
+            "busbw_gbps": metrics.get("GCR_BUSBW"),
+        }
+
+        alarms = _scan_alarms(log_text) if log_text else []
+        return {
+            "run_dir": run_dir,
+            "log_path": log_path,
+            "summary_path": summary_path,
+            "metrics": out_metrics,
+            "alarms": alarms,
+        }
+
+    def _parse_storage(run_dir):
+        # Skeleton: looks for a *.log and any "*summary*.json" if you add one later.
+        log_path = _find_first(run_dir, (".log",))
+        log_text = _read_text(log_path) if log_path else ""
+        alarms = _scan_alarms(log_text) if log_text else []
+        return {
+            "run_dir": run_dir,
+            "log_path": log_path,
+            "summary_path": None,
+            "metrics": {},
+            "alarms": alarms,
+        }
+
+    def _parse_dltest(run_dir):
+        # Skeleton: same idea; tune once you decide what summary artifacts you want.
+        log_path = _find_first(run_dir, (".log",))
+        log_text = _read_text(log_path) if log_path else ""
+        alarms = _scan_alarms(log_text) if log_text else []
+        return {
+            "run_dir": run_dir,
+            "log_path": log_path,
+            "summary_path": None,
+            "metrics": {},
+            "alarms": alarms,
+        }
+
+    PARSERS = {
+        "nccl": _parse_nccl,
+        "storage": _parse_storage,
+        "deeplearning_unit_test": _parse_dltest,
+        "dltest": _parse_dltest,  # alias if your folder is named dltest
+    }
+
+    def _render_test_block(test, parsed):
+        m = parsed["metrics"] or {}
+        alarms = parsed["alarms"] or []
+
+        # Severity roll-up
+        sev = "OK"
+        if any(a[0] == "CRITICAL" for a in alarms):
+            sev = "CRITICAL"
+        elif any(a[0] == "WARNING" for a in alarms):
+            sev = "WARNING"
+
+        lines = []
+        lines.append(f"  Test: {test}   Severity: {sev}")
+        lines.append(f"    RunDir: {parsed.get('run_dir')}")
+        if parsed.get("log_path"):
+            lines.append(f"    Log:    {parsed.get('log_path')}")
+        if parsed.get("summary_path"):
+            lines.append(f"    Summary:{parsed.get('summary_path')}")
+
+        # Metrics (only show non-null)
+        show = {k: v for k, v in m.items() if v is not None and v != ""}
+        if show:
+            lines.append("    Metrics:")
+            for k, v in show.items():
+                lines.append(f"      - {k}: {v}")
+
+        if alarms:
+            lines.append(f"    Alarms (showing up to {MAX_ALARMS}):")
+            for lvl, ln in alarms[:MAX_ALARMS]:
+                lines.append(f"      - [{lvl}] {ln}")
+            if len(alarms) > MAX_ALARMS:
+                lines.append(f"      ... {len(alarms)-MAX_ALARMS} more")
+
+        return "\n".join(lines)
+
+    def summarize_node(node_name):
+        print("=" * 88)
+        print(f"Node: {node_name}")
+        print(f"Generated: {datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')}")
+        print(f"BaseDir: {BASE_DIR}")
+        print("-" * 88)
+
+        any_found = False
+        for test in TESTS:
+            test_dir = os.path.join(BASE_DIR, test)
+            if not os.path.isdir(test_dir):
+                continue
+            run_dir = _pick_run_dir(test_dir, node_name, TS)
+            if not run_dir:
+                continue
+
+            any_found = True
+            parser = PARSERS.get(test, None)
+            if not parser:
+                # default skeleton
+                parser = _parse_dltest
+
+            parsed = parser(run_dir)
+            print(_render_test_block(test, parsed))
+            print()
+
+        if not any_found:
+            print("  No artifacts found for this node under the requested tests/timestamp.")
+        print("=" * 88)
+        print()
+
+    # Run
+    if NODE == "__ALL__":
+        # Build union of nodes across tests
+        nodes = set()
+        for test in TESTS:
+            test_dir = os.path.join(BASE_DIR, test)
+            for n in _list_nodes_for_test(test_dir):
+                nodes.add(n)
+        for n in sorted(nodes):
+            summarize_node(n)
+    else:
+        summarize_node(NODE)
+    """)
+
+    # Execute remotely
+    return _exec_python_on_pod(
+        code,
+        pod=pod,
+        namespace=namespace,
+        args=[base_dir, node_arg, ts_arg, tests_arg, max_alarm_lines],
+    )
+
 
 # ==========================================
 # MAIN EXECUTION
