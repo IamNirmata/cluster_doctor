@@ -1241,14 +1241,14 @@ if __name__ == "__main__":
 
 
     # Add near argparse setup
-p_agent = subparsers.add_parser("agent-summary", help="Summarize node health from test logs/artifacts")
-p_agent.add_argument("--node", default=None, help="Node name (default: all nodes found)")
-p_agent.add_argument("--timestamp", default=None, help="Run timestamp (default: latest)")
-p_agent.add_argument("--tests", default="nccl,storage,deeplearning_unit_test", help="Comma-separated test dirs")
-p_agent.add_argument("--base-dir", default="/data/continuous_validation", help="Artifacts base directory")
-p_agent.add_argument("--max-alarms", type=int, default=20, help="Max alarm lines per test")
-p_agent.add_argument("--pod", default=DEFAULT_POD)
-p_agent.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE)
+    p_agent = subparsers.add_parser("agent-summary", help="Summarize node health from test logs/artifacts")
+    p_agent.add_argument("--node", default=None, help="Node name (default: all nodes found)")
+    p_agent.add_argument("--timestamp", default=None, help="Run timestamp (default: latest)")
+    p_agent.add_argument("--tests", default="nccl,storage,deeplearning_unit_test", help="Comma-separated test dirs")
+    p_agent.add_argument("--base-dir", default="/data/continuous_validation", help="Artifacts base directory")
+    p_agent.add_argument("--max-alarms", type=int, default=20, help="Max alarm lines per test")
+    p_agent.add_argument("--pod", default=DEFAULT_POD)
+    p_agent.add_argument("--namespace", "-n", default=DEFAULT_NAMESPACE)
 
 
     args = parser.parse_args()
