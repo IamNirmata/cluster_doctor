@@ -3,6 +3,26 @@
 
 This is a continuous validation framework designed for large-scale GPU clusters. It orchestrates health checks on currently free nodes in a prioritized manner, ensuring comprehensive coverage and automated result tracking over time.
 
+## Challenge
+Large-scale GPU clusters experience frequent hardware and software degradation.
+*   **Silent Failures**: "Bad" nodes often appear "Ready" to Kubernetes but fail user jobs immediately upon launch.
+*   **Inconsistent Performance**: Inconsistent hardware and software stack can lead to "slow" nodes that drag down the performance of distributed jobs (stragglers).
+*   **Operational Friction**: Debugging failures often requires distinguishing between user code bugs and infrastructure issues, wasting valuable researcher and engineering time.
+
+## Goals
+
+The primary objective of this framework is to transition from reactive troubleshooting to proactive assurance.
+
+### 1. Successful Job Submissions
+Ensure that the cluster provides a stable foundation for user workloads, minimizing job failures due to infrastructure issues.
+*   **Consistency**: Guarantee uniform performance behavior across all nodes in the cluster. Users should experience the same runtime characteristics regardless of which specific GPU node their job lands on.
+*   **Predictability**: Establish a reliable baseline expectation for job performance. General Deep Learning (DL) workloads should run within defined performance tolerances, allowing researchers to accurately estimate training times and resource requirements.
+
+### 2. Performance and Scalability
+Verify that the infrastructure can support high-performance, large-scale distributed training.
+*   **Streamlined Investigation**: Decouple application debugging from infrastructure debugging. By ensuring the underlying stack (hardware, drivers, network, storage) is continuously validated, users and admins can investigate workload issues with the confidence that the platform itself is healthy.
+*   **Scalability Verification**: Continuously verify the cluster's capability to scale out. Ensure that network interconnects (NCCL) and storage throughput can sustain the demands of multi-node distributed training without degradation.
+
 ## Assumptions & Design Philosophy
 This framework operates based on several key assumptions about cluster management and failure modes:
 
