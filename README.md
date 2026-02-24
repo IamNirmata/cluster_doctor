@@ -39,7 +39,7 @@ This framework operates based on several key assumptions about cluster managemen
 Before running the orchestrator, ensure the following are in place:
 
 - **Environment**:
-    - **Python 3.x** with Jupyter Notebook support.
+    - **Python 3.x** .
     - **Kubernetes Access**: `kubectl` configured with cluster admin rights. (Context must be active).
     - **Volcano/Scheduler**: Required for specific node targeting features used in job templates.
 - **Infrastructure**:
